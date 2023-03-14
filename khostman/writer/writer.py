@@ -1,11 +1,11 @@
 import shutil
 from socket import gethostname
 from pathlib import Path
+
 from khostman.formatter.formatter import Formatter
-from khostman.utils.utils import timer
-from khostman.utils.utils import func_and_args_logging
+from khostman.utils.utils import func_and_args_logging, timer
 from khostman.logger.logger import logger
-from khostman.unformatted_domains.unformatted_domains import UnformattedDomains
+from khostman.cli.prompt import UserInteraction
 
 
 class Writer:
@@ -53,24 +53,28 @@ class Writer:
                     temp.write(line)
 
                 if not found:
-                    print(f"No occurrence of '{whitelisted_url}' found in file '{hosts_path}'")
-                    logger.info(f"No occurrence of '{whitelisted_url}' found in file '{hosts_path}'")
+                    print(f"No occurrence of '{whitelisted_url}'"
+                          f" found in file '{hosts_path}'")
+                    logger.info(f"No occurrence of '{whitelisted_url}'"
+                                f" found in file '{hosts_path}'")
         hosts_path.unlink()
         temp_hosts_path.rename(hosts_path)
 
+    @timer
     @func_and_args_logging
-    def create_backup(self, backup_path):
+    def create_backup(self):
         """Creates the backup of the user's original Hosts file"""
-
         original_hosts = Path(self._path)
-        backup_path = Path(backup_path)
-
+        backup_path = UserInteraction().ask_backup_directory()
+        if not backup_path:
+            return
+        backup_hosts = Path(backup_path) / 'hosts_backup'
         try:
-            # use shutil.copy() to copy the file
-            shutil.copy(original_hosts, backup_path)
-            print(f'Backup created: {backup_path}')
+            with original_hosts.open('rb') as src, backup_hosts.open('wb') as dst:
+                shutil.copyfileobj(src, dst)
+            print(f'Backup file was created here: {backup_path}')
+            logger.info('Backup of the original Hosts'
+                        f' file was created at: {backup_path}')
         except OSError as e:
+            logger.warning(f'Error creating backup: {e}')
             print(f'Error creating backup: {e}')
-            backup_path = None
-
-        return backup_path

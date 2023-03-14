@@ -1,20 +1,14 @@
 from khostman.logger.logger import logger
 from tkinter.filedialog import askdirectory
 from os.path import isfile
-import time
-from concurrent.futures import ProcessPoolExecutor
 
-from khostman.unformatted_domains.unformatted_domains import UnformattedDomains
-from khostman.formatter.formatter import Formatter
-from khostman.writer.writer import Writer
 from khostman.utils.utils import func_and_args_logging
-# from khostman.cli.parser import Parser
 
 class UserInteraction:
 
     @func_and_args_logging
     def ask_backup_directory(self) -> str:
-        backup_path = askdirectory(title='Select Backup Directory')  # shows dialog box and return the path
+        backup_path = askdirectory(title='Select Backup Directory')  # shows dialog box and returns the path
         return backup_path
 
     def ask_if_backup_needed(self):
@@ -45,23 +39,6 @@ class UserInteraction:
             'For more details type "help". To start type "go": ')
 
         if initial_choice == 'help':
-            Parser().help()
+            pass
         elif initial_choice == 'go':
             self.ask_if_backup_needed()
-            UnformattedDomains().generate_hosts_tmp()
-            sources = open('./sources/blacklist_sources.txt', 'r').readlines()
-
-            with ProcessPoolExecutor() as executor:
-                executor.submit(Formatter().get_whitelist)
-                for link in sources:
-                    link = link.rstrip()
-                    logger.debug(link)
-                    executor.submit(UnformattedDomains().get_hosts_from_source, link)
-
-            t1 = time.perf_counter()
-            Writer(Formatter().extract_domains()).write_to_hosts()
-            t2 = time.perf_counter()
-            print(t2 - t1)
-
-    def help_(self):
-        pass

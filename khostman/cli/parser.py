@@ -1,14 +1,16 @@
 import argparse
+
 from khostman.writer.writer import Writer
 from khostman.suspender.suspender import Suspender
 from khostman.utils.utils import func_and_args_logging
 from khostman.utils.utils import is_root
 
+
 class Parser:
     def __init__(self):
         is_root()
         self.flag_map = {
-            # 'backup': UserInteraction().ask_backup_directory,
+            'backup': Writer().create_backup,
             'suspend': Suspender().suspend,
             'resume': Suspender().resume,
             'blocklist_domain': Writer().block_domain,
@@ -69,4 +71,3 @@ class Parser:
             self.flag_map[arg](value)
         else:
             self.flag_map[arg]()
-
