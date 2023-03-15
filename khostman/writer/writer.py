@@ -3,13 +3,13 @@ from socket import gethostname
 from pathlib import Path
 
 from khostman.formatter.formatter import Formatter
-from khostman.utils.utils import func_and_args_logging, timer
+from khostman.utils.utils import func_and_args_logging, path_to_hosts
 from khostman.logger.logger import logger
 from khostman.cli.prompt import UserInteraction
 
 
 class Writer:
-    _path = 'hosts'
+    _path = path_to_hosts()
 
     @staticmethod
     def add_header():
@@ -36,14 +36,12 @@ class Writer:
             for website in args:
                 hosts.write(f"0.0.0.0 {website}\n")
 
-    @staticmethod
     @func_and_args_logging
-    def whitelist_domain(whitelisted_url):
-        hosts_path = Path('hosts')
-        temp_hosts_path = hosts_path.with_suffix('.temp')
+    def whitelist_domain(self, whitelisted_url):
+        temp_hosts_path = self._path.with_suffix('.temp')
 
         with open(temp_hosts_path, 'w') as temp:
-            with open(hosts_path, 'r') as original:
+            with open(self._path, 'r') as original:
                 whitelisted_url = Formatter().strip_domain_prefix(whitelisted_url)
                 found = False
                 for line in original:
@@ -54,23 +52,21 @@ class Writer:
 
                 if not found:
                     print(f"No occurrence of '{whitelisted_url}'"
-                          f" found in file '{hosts_path}'")
+                          f" found in file '{self._path}'")
                     logger.info(f"No occurrence of '{whitelisted_url}'"
-                                f" found in file '{hosts_path}'")
-        hosts_path.unlink()
-        temp_hosts_path.rename(hosts_path)
+                                f" found in file '{self._path}'")
+        self._path.unlink()
+        temp_hosts_path.rename(self._path)
 
-    @timer
     @func_and_args_logging
     def create_backup(self):
         """Creates the backup of the user's original Hosts file"""
-        original_hosts = Path(self._path)
         backup_path = UserInteraction().ask_backup_directory()
         if not backup_path:
             return
         backup_hosts = Path(backup_path) / 'hosts_backup'
         try:
-            with original_hosts.open('rb') as src, backup_hosts.open('wb') as dst:
+            with self._path.open('rb') as src, backup_hosts.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
             print(f'Backup file was created here: {backup_path}')
             logger.info('Backup of the original Hosts'

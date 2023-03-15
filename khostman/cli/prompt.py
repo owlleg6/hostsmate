@@ -1,17 +1,19 @@
-from khostman.logger.logger import logger
 from tkinter.filedialog import askdirectory
 from os.path import isfile
 
 from khostman.utils.utils import func_and_args_logging
+from khostman.logger.logger import logger
 
 class UserInteraction:
 
+    @staticmethod
     @func_and_args_logging
-    def ask_backup_directory(self) -> str:
+    def ask_backup_directory() -> str:
         backup_path = askdirectory(title='Select Backup Directory')  # shows dialog box and returns the path
         return backup_path
 
-    def ask_if_backup_needed(self):
+    @staticmethod
+    def ask_if_backup_needed():
         need_backup = input('Do you want to backup your original Hosts file? '
                             '(y or n)').lower()
         while True:

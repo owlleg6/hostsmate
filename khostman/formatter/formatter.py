@@ -1,4 +1,3 @@
-from functools import lru_cache
 import pathlib
 from os import remove
 from typing import Set

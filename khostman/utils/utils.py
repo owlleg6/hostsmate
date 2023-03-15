@@ -6,8 +6,7 @@ from os import getuid
 import ctypes
 import functools
 from time import time
-from sys import platform
-
+from pathlib import Path
 
 
 def is_root():
@@ -22,7 +21,24 @@ def is_root():
 
 
 def get_platform():
-    return sys.platform
+    platform = sys.platform
+    if platform.startswith('linux') \
+            or platform.startswith('darwin') \
+            or platform.startswith('freebsd'):
+        return 'unix_like'
+    elif platform.startswith('win'):
+        return 'windows'
+
+
+def path_to_hosts() -> Path:
+    platform = get_platform()
+    if platform == 'unix_like':
+        hosts_path = Path('/etc/hosts')
+        return hosts_path
+    elif platform == 'windows':
+        root_drive = Path(sys.executable).anchor
+        hosts_path = Path(root_drive + r'Windows\System32\drivers\etc\hosts')
+        return hosts_path
 
 
 def timer(func):
