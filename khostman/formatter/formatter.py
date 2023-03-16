@@ -3,28 +3,31 @@ from os import remove
 from typing import Set
 from requests import get
 from urllib.parse import urlparse
+from io import StringIO
+import re
 
 from khostman.utils.utils import timer
 from khostman.logger.logger import logger
-import re
+from khostman.sources.sources import Sources
 
 
 class Formatter:
+    localhost = '127.0.0.1'
+    void_id = '0.0.0.0'
+    domain_regex = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
 
     def __init__(self):
         self.unique_domains = set()
-        logger.info(f'Initialization of the {__class__.__name__} class instance')
-        self.domain_regex = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
-        self.localhost = '127.0.0.1'
-        self.void_id = '0.0.0.0'
+        self.whitelist = self.get_whitelist()
 
     @staticmethod
-    @timer
     def get_whitelist():
-        resp = get('https://raw.githubusercontent.com/agneevX/whitelist/master/whitelist.txt').text
-        with open('tmp', 'w') as f:
-            f.write(resp)
-        return open('tmp').readlines()
+        whitelist = set()
+        for whitelist_source in Sources().whitelist_sources:
+            resp = get(whitelist_source).text
+            buffer = StringIO(resp)
+            whitelist.update(buffer.readlines())
+        return whitelist
 
     def extract_domain(self, line: str) -> str:
         """Extract domain from the given string(line)"""
@@ -60,7 +63,8 @@ class Formatter:
         with open(contents, 'r') as raw_hosts:
             for line in raw_hosts:
                 if line.startswith(('#', '<', '\n')) \
-                        or ('::1' in line):
+                        or ('::1' in line) \
+                        or line in self.whitelist:
                     continue
                 else:
                     domain = self.extract_domain(line)

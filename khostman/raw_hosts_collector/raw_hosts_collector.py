@@ -13,7 +13,7 @@ class RawHostsCollector:
 
 
     Attributes:
-        _blacklist_sources (list): A list of URLs containing blacklisted domains.
+        blacklist_sources (list): A list of URLs containing blacklisted domains.
 
     Methods:
         __init__(): Initializes an instance of the class.
