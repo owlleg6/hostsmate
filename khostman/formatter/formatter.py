@@ -10,9 +10,6 @@ import re
 
 
 class Formatter:
-    """
-    Formats the UnformattedDomains instance raw file to extract domains
-    """
 
     def __init__(self):
         self.unique_domains = set()

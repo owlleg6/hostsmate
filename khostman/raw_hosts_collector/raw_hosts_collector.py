@@ -7,7 +7,7 @@ from khostman.sources.sources import Sources
 from khostman.utils.utils import func_and_args_logging
 
 
-class UnformattedDomains:
+class RawHostsCollector:
     """A class for extracting raw contents from blacklist sources and storing them in a temporary file.
        This needed for cleaning and formatting the data by Formatter class
 
@@ -68,4 +68,4 @@ class UnformattedDomains:
                 executor.submit(self.get_hosts_from_source, source, tmp)
 
     def __repr__(self):
-        return f'UnformattedDomains()'
+        return f'RawHostsCollector()'
