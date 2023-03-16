@@ -25,7 +25,7 @@ class RawHostsCollector:
 
     @func_and_args_logging
     def __init__(self):
-        self._blacklist_sources = Sources.blacklist_sources
+        self.blacklist_sources = Sources.blacklist_sources
 
     @staticmethod
     @func_and_args_logging
@@ -64,7 +64,7 @@ class RawHostsCollector:
             # run get_whitelist method in parallel as a single process
             # executor.submit(Formatter().get_whitelist)
             # iterate through blacklist sources and fetch hosts in parallel
-            for source in self._blacklist_sources:
+            for source in self.blacklist_sources:
                 executor.submit(self.get_hosts_from_source, source, tmp)
 
     def __repr__(self):

@@ -4,6 +4,7 @@ from os.path import isfile
 from khostman.utils.utils import func_and_args_logging
 from khostman.logger.logger import logger
 
+
 class UserInteraction:
 
     @staticmethod

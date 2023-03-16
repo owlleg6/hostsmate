@@ -9,7 +9,7 @@ from khostman.cli.prompt import UserInteraction
 
 
 class Writer:
-    _path = path_to_hosts()
+    path = path_to_hosts()
 
     @staticmethod
     def add_header():
@@ -24,24 +24,24 @@ class Writer:
     def write_to_hosts(self, blacklist_domains: str) -> None:
         """Writes domains to the system's hosts file."""
         print('Writing to /etc/hosts...')
-        with open(self._path, 'w') as hosts:
+        with open(self.path, 'w') as hosts:
             for line in blacklist_domains:
                 hosts.write(line)
 
         print(f'Blocked {len(blacklist_domains)} websites.')
 
     def block_domain(self, *args):
-        with open(self._path, 'a+') as hosts:
+        with open(self.path, 'a+') as hosts:
             hosts.write("\n############   User's custom blocked hosts   ############\n\n")
             for website in args:
                 hosts.write(f"0.0.0.0 {website}\n")
 
     @func_and_args_logging
     def whitelist_domain(self, whitelisted_url):
-        temp_hosts_path = self._path.with_suffix('.temp')
+        temp_hosts_path = self.path.with_suffix('.temp')
 
         with open(temp_hosts_path, 'w') as temp:
-            with open(self._path, 'r') as original:
+            with open(self.path, 'r') as original:
                 whitelisted_url = Formatter().strip_domain_prefix(whitelisted_url)
                 found = False
                 for line in original:
@@ -52,11 +52,11 @@ class Writer:
 
                 if not found:
                     print(f"No occurrence of '{whitelisted_url}'"
-                          f" found in file '{self._path}'")
+                          f" found in file '{self.path}'")
                     logger.info(f"No occurrence of '{whitelisted_url}'"
-                                f" found in file '{self._path}'")
-        self._path.unlink()
-        temp_hosts_path.rename(self._path)
+                                f" found in file '{self.path}'")
+        self.path.unlink()
+        temp_hosts_path.rename(self.path)
 
     @func_and_args_logging
     def create_backup(self):
@@ -66,7 +66,7 @@ class Writer:
             return
         backup_hosts = Path(backup_path) / 'hosts_backup'
         try:
-            with self._path.open('rb') as src, backup_hosts.open('wb') as dst:
+            with self.path.open('rb') as src, backup_hosts.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
             print(f'Backup file was created here: {backup_path}')
             logger.info('Backup of the original Hosts'
