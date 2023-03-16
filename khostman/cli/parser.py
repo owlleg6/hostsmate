@@ -2,22 +2,22 @@ import argparse
 
 from khostman.writer.writer import Writer
 from khostman.suspender.suspender import Suspender
-from khostman.utils.utils import func_and_args_logging
-from khostman.utils.utils import is_root
+from khostman.utils.utils import func_and_args_logging, is_root
 
 
 class Parser:
+    flag_map = {
+        'backup': Writer().create_backup,
+        'suspend': Suspender().suspend,
+        'resume': Suspender().resume,
+        'blocklist_domain': Writer().block_domain,
+        'whitelist_domain': Writer().whitelist_domain,
+    }
+
     def __init__(self):
         is_root()
-        self.flag_map = {
-            'backup': Writer().create_backup,
-            'suspend': Suspender().suspend,
-            'resume': Suspender().resume,
-            'blocklist_domain': Writer().block_domain,
-            'whitelist_domain': Writer().whitelist_domain,
-        }
         self.parser = self.create_parser()
-        self.args_dict = vars(self.parser.parse_args())
+        self.args_ = vars(self.parser.parse_args())
 
     @staticmethod
     def create_parser() -> argparse.ArgumentParser:
@@ -51,12 +51,13 @@ class Parser:
     def help(self):
         self.parser.print_help()
 
+    @func_and_args_logging
     def parse_arg(self) -> tuple:
         """
         Parse the argument and its value
         :return tuple containing argument and its value
         """
-        for arg, value in self.args_dict.items():
+        for arg, value in self.args_.items():
             if value:
                 return arg, value
 
@@ -71,3 +72,6 @@ class Parser:
             self.flag_map[arg](value)
         else:
             self.flag_map[arg]()
+
+    def __repr__(self):
+        return f'{__class__.__name__}(args_:{self.args_})'
