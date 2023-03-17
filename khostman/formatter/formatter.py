@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from io import StringIO
 import re
 
-from khostman.utils.utils import timer
+from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import logger
 from khostman.sources.sources import Sources
 
@@ -55,7 +55,7 @@ class Formatter:
         else:
             self.unique_domains.add(f'0.0.0.0 {domain}')
 
-    @timer
+    @LoggingUtils.timer
     def get_unique_domains(self, contents: str) -> Set[str]:
         print('Extracting domains, formatting and removing duplicates...')
         if not pathlib.Path(contents).exists():

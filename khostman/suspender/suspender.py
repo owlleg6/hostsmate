@@ -1,5 +1,5 @@
 from khostman.logger.logger import logger
-from khostman.utils.utils import path_to_hosts
+from khostman.utils.utils2 import path_to_hosts
 
 
 class Suspender:

@@ -4,7 +4,7 @@ from requests import get, RequestException
 
 from khostman.logger.logger import logger
 from khostman.sources.sources import Sources
-from khostman.utils.utils import func_and_args_logging
+from khostman.utils.logging_utils import LoggingUtils
 
 
 class RawHostsCollector:
@@ -23,12 +23,12 @@ class RawHostsCollector:
 
     """
 
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def __init__(self):
         self.blacklist_sources = Sources.blacklist_sources
 
     @staticmethod
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def download_file_contents(url):
         try:
             print(f"Downloading hosts from {url}")
@@ -40,7 +40,7 @@ class RawHostsCollector:
             logger.error(f"Error downloading contents from {url}: {e}")
             return None
 
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def get_hosts_from_source(self, url, tmp):
         """ 
         Gets the domains from a given source URL, and writes them to a temporary file 
@@ -53,7 +53,7 @@ class RawHostsCollector:
             logger.warning(f'Could not fetch blacklisted hosts from {url}')
             print(f'Could not fetch blacklisted hosts from {url}')
 
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def extract_raw_sources_contents(self, tmp: str):
         """
         Extracts raw contents from blacklist sources and whitelist, and stores them in a temporary file.
@@ -69,3 +69,4 @@ class RawHostsCollector:
 
     def __repr__(self):
         return f'RawHostsCollector()'
+

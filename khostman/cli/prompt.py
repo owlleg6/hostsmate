@@ -1,14 +1,14 @@
 from tkinter.filedialog import askdirectory
 from os.path import isfile
 
-from khostman.utils.utils import func_and_args_logging
+from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import logger
 
 
 class UserInteraction:
 
     @staticmethod
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def ask_backup_directory() -> str:
         backup_path = askdirectory(title='Select Backup Directory')  # shows dialog box and returns the path
         return backup_path

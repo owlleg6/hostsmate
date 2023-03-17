@@ -9,4 +9,6 @@ khostman/sources/__pycache__/sources.cpython-310.pyc
 khostman/suspender/__pycache__/suspender.cpython-310.pyc
 khostman/raw_hosts_collector/__pycache__/raw_hosts_collector.cpython-310.pyc
 khostman/utils/__pycache__/utils.cpython-310.pyc
+khostman/utils/__pycache__/logging_utils.cpython-310.pyc
+khostman/utils/__pycache__/os_utils.cpython-310.pyc
 khostman/writer/__pycache__/writer.cpython-310.pyc

@@ -2,7 +2,8 @@ import argparse
 
 from khostman.writer.writer import Writer
 from khostman.suspender.suspender import Suspender
-from khostman.utils.utils import func_and_args_logging, is_root
+from khostman.utils.os_utils import OSUtils
+from khostman.utils.logging_utils import LoggingUtils
 
 
 class Parser:
@@ -15,7 +16,7 @@ class Parser:
     }
 
     def __init__(self):
-        is_root()
+        OSUtils.ensure_root_privileges()
         self.parser = self.create_parser()
         self.args_ = vars(self.parser.parse_args())
 
@@ -51,7 +52,7 @@ class Parser:
     def help(self):
         self.parser.print_help()
 
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def parse_arg(self) -> tuple:
         """
         Parse the argument and its value
@@ -61,7 +62,7 @@ class Parser:
             if value:
                 return arg, value
 
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def run_method(self, parsed_arg: tuple) -> None:
         """
         Run the method based on the parsed argument

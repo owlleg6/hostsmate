@@ -3,13 +3,14 @@ from socket import gethostname
 from pathlib import Path
 
 from khostman.formatter.formatter import Formatter
-from khostman.utils.utils import func_and_args_logging, path_to_hosts
+from khostman.utils.os_utils import OSUtils
+from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import logger
 from khostman.cli.prompt import UserInteraction
 
 
 class Writer:
-    path = path_to_hosts()
+    path = OSUtils().path_to_hosts()
 
     @staticmethod
     def add_header():
@@ -36,7 +37,7 @@ class Writer:
             for website in args:
                 hosts.write(f"0.0.0.0 {website}\n")
 
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def whitelist_domain(self, whitelisted_url):
         temp_hosts_path = self.path.with_suffix('.temp')
 
@@ -58,7 +59,7 @@ class Writer:
         self.path.unlink()
         temp_hosts_path.rename(self.path)
 
-    @func_and_args_logging
+    @LoggingUtils.func_and_args_logging
     def create_backup(self):
         """Creates the backup of the user's original Hosts file"""
         backup_path = UserInteraction().ask_backup_directory()
