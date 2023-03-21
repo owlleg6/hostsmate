@@ -7,23 +7,23 @@ from io import StringIO
 import re
 
 from khostman.utils.logging_utils import LoggingUtils
+from khostman.utils.data_utils import DataUtils
 from khostman.logger.logger import logger
-from khostman.sources.sources import Sources
 
 
 class Formatter:
     localhost = '127.0.0.1'
     void_id = '0.0.0.0'
     domain_regex = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
+    whitelist_sources = DataUtils.extract_sources_from_json(whitelist=True)
 
     def __init__(self):
         self.unique_domains = set()
         self.whitelist = self.get_whitelist()
 
-    @staticmethod
-    def get_whitelist():
+    def get_whitelist(self):
         whitelist = set()
-        for whitelist_source in Sources().whitelist_sources:
+        for whitelist_source in self.whitelist_sources:
             resp = get(whitelist_source).text
             buffer = StringIO(resp)
             whitelist.update(buffer.readlines())

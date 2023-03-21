@@ -3,7 +3,7 @@ import concurrent.futures
 from requests import get, RequestException
 
 from khostman.logger.logger import logger
-from khostman.sources.sources import Sources
+from khostman.utils.data_utils import DataUtils
 from khostman.utils.logging_utils import LoggingUtils
 
 
@@ -25,7 +25,7 @@ class RawHostsCollector:
 
     @LoggingUtils.func_and_args_logging
     def __init__(self):
-        self.blacklist_sources = Sources.blacklist_sources
+        self.blacklist_sources = DataUtils.extract_sources_from_json(blacklist=True)
 
     @staticmethod
     @LoggingUtils.func_and_args_logging
@@ -61,8 +61,6 @@ class RawHostsCollector:
         :param tmp: path to temporary file
         """
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            # run get_whitelist method in parallel as a single process
-            # executor.submit(Formatter().get_whitelist)
             # iterate through blacklist sources and fetch hosts in parallel
             for source in self.blacklist_sources:
                 executor.submit(self.get_hosts_from_source, source, tmp)
