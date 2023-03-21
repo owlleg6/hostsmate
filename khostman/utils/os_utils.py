@@ -1,4 +1,5 @@
 import ctypes
+import pathlib
 import sys
 from os import getuid
 from os.path import join
@@ -38,6 +39,11 @@ class OSUtils(Utils):
             logger.info('Not running as root. Exiting.')
             exit('Please run the application as a '
                  'root/administrator to continue.')
+
+    @staticmethod
+    def get_project_root() -> pathlib.Path:
+        project_root = Path(__file__).resolve().parents[2]
+        return project_root
 
     @staticmethod
     def get_platform():
