@@ -1,5 +1,5 @@
 {
-    "whitelist_sources": [
+    "sources": [
         "https://raw.githubusercontent.com/agneevX/whitelist/master/whitelist.txt"
     ]
 }
