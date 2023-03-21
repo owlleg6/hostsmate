@@ -42,12 +42,22 @@ class OSUtils(Utils):
 
     @staticmethod
     def get_project_root() -> pathlib.Path:
+        """
+        Returns the root directory of the project.
+
+        The root directory is defined as the parent directory of the directory containing
+        the module that this method is called from.
+
+        Returns:
+            pathlib.Path: The root directory of the project.
+        """
         project_root = Path(__file__).resolve().parents[2]
         return project_root
 
     @staticmethod
     def get_platform():
-        """Returns a string indicating the platform of the operating system that the code is running on.
+        """
+        Returns a string indicating the platform of the operating system that the code is running on.
 
         Returns:
         str: A string that can be one of the following:
