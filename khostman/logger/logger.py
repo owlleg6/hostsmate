@@ -1,12 +1,11 @@
 import logging
-
-from khostman.utils.os_utils import OSUtils
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s\t[%(levelname)s]\t%(message)s')
 
-project_root = OSUtils.get_project_root()
+project_root = Path(__file__).resolve().parents[2]
 logs_dir = project_root / 'logs'
 
 if not logs_dir.exists():
