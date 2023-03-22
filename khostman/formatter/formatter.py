@@ -1,6 +1,5 @@
 import pathlib
 from os import remove
-from typing import Set
 from requests import get
 from urllib.parse import urlparse
 from io import StringIO
@@ -9,6 +8,7 @@ import re
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.utils.data_utils import DataUtils
 from khostman.logger.logger import logger
+from khostman.unique_domains.unique_domains import UniqueDomains
 
 
 class Formatter:
@@ -18,7 +18,7 @@ class Formatter:
     whitelist_sources = DataUtils.extract_sources_from_json(whitelist=True)
 
     def __init__(self):
-        self.unique_domains = set()
+        self.unique_domains = UniqueDomains()
         self.whitelist = self.get_whitelist()
 
     def get_whitelist(self):
@@ -51,12 +51,12 @@ class Formatter:
         if domain is None:
             return
         if domain.startswith('0.0.0.0'):
-            self.unique_domains.add(domain)
+            self.unique_domains.add_domain(domain)
         else:
-            self.unique_domains.add(f'0.0.0.0 {domain}')
+            self.unique_domains.add_domain(f'0.0.0.0 {domain}')
 
     @LoggingUtils.timer
-    def get_unique_domains(self, contents: str) -> Set[str]:
+    def format_raw_lines(self, contents: str) -> None:
         print('Extracting domains, formatting and removing duplicates...')
         if not pathlib.Path(contents).exists():
             exit('Please check your internet connection and try again.')
@@ -69,8 +69,6 @@ class Formatter:
                 else:
                     domain = self.extract_domain(line)
                     self.remove_duplicates(domain)
-        logger.info('unique_domains set was created. Temporary file was removed.')
-        return self.unique_domains
 
     @staticmethod
     def strip_domain_prefix(url):
