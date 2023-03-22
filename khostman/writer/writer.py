@@ -7,6 +7,7 @@ from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import logger
 from khostman.cli.prompt import UserInteraction
+from khostman.unique_domains.unique_domains import UniqueDomains
 
 
 class Writer:
@@ -22,9 +23,12 @@ class Writer:
         "127.0.0.1 localhost\n"
         f"127.0.1.1	{gethostname()}\n\n"
 
-    def write_to_hosts(self, blacklist_domains: str) -> None:
-        """Writes domains to the system's hosts file."""
-        print('Writing to /etc/hosts...')
+    def write_to_hosts(self) -> None:
+        """
+        Writes domains to the system's hosts file.
+        """
+        blacklist_domains = UniqueDomains().get_unique_domains()
+        print(f'Writing to {self.path}...')
         with open(self.path, 'w') as hosts:
             for line in blacklist_domains:
                 hosts.write(line)
