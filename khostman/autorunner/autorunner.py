@@ -1,12 +1,12 @@
-from pathlib import Path
 import subprocess
 
 from khostman.cli.prompt import UserInteraction
+from khostman.utils.data_utils import OSUtils
 
 
 class Autorunner:
-    khostman_app = Path(__file__).resolve().parents[2] / 'app.py'
-    job_setter_sh = Path(__file__).resolve().parents[2] / 'anacron_job_setter.sh'
+    khostman_app = OSUtils.get_project_root() / 'app.py'
+    job_setter_sh = OSUtils.get_project_root() / 'anacron_job_setter.sh'
 
     def __init__(self):
         self.check_anacron_dependency()
