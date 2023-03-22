@@ -1,5 +1,5 @@
 from khostman.logger.logger import logger
-from khostman.utils.utils2 import path_to_hosts
+from khostman.utils.os_utils import OSUtils
 
 
 class Suspender:
@@ -7,7 +7,7 @@ class Suspender:
     A class for suspending and resuming an adblocker by renaming the hosts file.
     """
 
-    org_hosts_name = path_to_hosts()
+    org_hosts_name = OSUtils().path_to_hosts()
 
     renamed_hosts = org_hosts_name.with_name(org_hosts_name.name + '~')
 
