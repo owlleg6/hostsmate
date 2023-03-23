@@ -5,10 +5,12 @@ from khostman.suspender.suspender import Suspender
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.autorunner.autorunner import Autorunner
+from khostman.hosts_file_updater.hosts_file_updater import HostsFileUpdater
 
 
 class Parser:
     flag_map = {
+        'go': HostsFileUpdater().run,
         'autorun': Autorunner().set_anacron_job,
         'backup': Writer().create_backup,
         'suspend': Suspender().suspend,
