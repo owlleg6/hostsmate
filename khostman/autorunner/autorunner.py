@@ -8,10 +8,6 @@ class Autorunner:
     khostman_app = OSUtils.get_project_root() / 'app.py'
     job_setter_sh = OSUtils.get_project_root() / 'anacron_job_setter.sh'
 
-    def __init__(self):
-        self.check_anacron_dependency()
-        self.autorun_frequency = UserInteraction.ask_autorun_frequency()
-
     @staticmethod
     def check_anacron_dependency() -> None:
         """
@@ -25,8 +21,10 @@ class Autorunner:
         subprocess.run(['chmod', '+x', self.job_setter_sh])
 
     def set_anacron_job(self):
+        self.check_anacron_dependency()
+        autorun_frequency = UserInteraction.ask_autorun_frequency()
         self.add_exec_permissions()
         subprocess.run(['bash',
                         self.job_setter_sh,
-                        self.autorun_frequency,
-                        f'"python3 {self.khostman_app} --go"'])
+                        autorun_frequency,
+                        f'python3 {self.khostman_app} --go'])
