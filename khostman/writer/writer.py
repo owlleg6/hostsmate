@@ -2,7 +2,7 @@ import shutil
 from socket import gethostname
 from pathlib import Path
 
-from khostman.hosts_write_manger.formatter import Formatter
+from khostman.formatter.formatter import Formatter
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import logger
@@ -40,6 +40,7 @@ class Writer:
             hosts.write("\n############   User's custom blocked hosts   ############\n\n")
             for website in args:
                 hosts.write(f"0.0.0.0 {website}\n")
+                logger.debug(f'Blacklisted {website}')
 
     @LoggingUtils.func_and_args_logging
     def whitelist_domain(self, whitelisted_url):

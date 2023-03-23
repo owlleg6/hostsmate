@@ -4,14 +4,16 @@ from khostman.writer.writer import Writer
 from khostman.suspender.suspender import Suspender
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
+from khostman.autorunner.autorunner import Autorunner
 
 
 class Parser:
     flag_map = {
+        'autorun': Autorunner().set_anacron_job,
         'backup': Writer().create_backup,
         'suspend': Suspender().suspend,
         'resume': Suspender().resume,
-        'blocklist_domain': Writer().block_domain,
+        'blacklist_domain': Writer().block_domain,
         'whitelist_domain': Writer().whitelist_domain,
     }
 
@@ -30,7 +32,10 @@ class Parser:
         group = parser.add_mutually_exclusive_group()
         group.add_argument('-g', '--go',
                            action='store_true',
-                           help="Parse domains from blacklist sources and start the adblocker.")
+                           help='Parse domains from blacklist sources and start the adblocker.')
+        group.add_argument('-a', '--autorun',
+                           action='store_true',
+                           help='Setup automatic update of your Hosts file (Linux only)')
         group.add_argument('-s', '--suspend',
                            action='store_true',
                            help="Suspend the adblocker. Don't forget to turn it back!")
