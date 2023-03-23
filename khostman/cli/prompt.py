@@ -14,9 +14,9 @@ class UserInteraction:
         return backup_path
 
     @staticmethod
-    def ask_autorun_frequency() -> int:
+    def ask_autorun_frequency() -> str:
         wrong_input = 'Unrecognized input. Try again.\n'
-        try:
+        while True:
             frequency = input(
                 'How often do you want to autorun Khostman to update your Hosts file?\n'
                 '(enter 1, 2 or 3)\n'
@@ -27,15 +27,10 @@ class UserInteraction:
             )
             if frequency.lower() == 'q':
                 exit()
-            frequency = int(frequency)
-        except ValueError:
-            print(wrong_input)
-            return UserInteraction.ask_autorun_frequency()
-        if frequency not in [1, 2, 3]:
-            print(wrong_input)
-            return UserInteraction.ask_autorun_frequency()
-        return frequency
-
+            if frequency in ['1', '2', '3']:
+                return frequency
+            else:
+                print(wrong_input)
 
     @staticmethod
     def ask_if_backup_needed():
