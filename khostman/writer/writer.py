@@ -2,7 +2,7 @@ import shutil
 from socket import gethostname
 from pathlib import Path
 
-from khostman.formatter.formatter import Formatter
+from khostman.hosts_write_manger.formatter import Formatter
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import logger
