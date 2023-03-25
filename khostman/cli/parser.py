@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 from khostman.writer.writer import Writer
 from khostman.suspender.suspender import Suspender
@@ -22,6 +23,7 @@ class Parser:
     def __init__(self):
         OSUtils.ensure_root_privileges()
         self.parser = self.create_parser()
+        self.help_if_no_args()
         self.args_ = vars(self.parser.parse_args())
 
     @staticmethod
@@ -56,8 +58,13 @@ class Parser:
 
         return parser
 
-    def help(self):
-        self.parser.print_help()
+    def help_if_no_args(self):
+        """
+        Prints help message and exits if ran with no arguments.
+        """
+        if len(sys.argv) == 1:
+            self.parser.print_help()
+            exit()
 
     @LoggingUtils.func_and_args_logging
     def parse_arg(self) -> tuple:
