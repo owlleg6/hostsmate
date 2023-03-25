@@ -1,7 +1,6 @@
 import shutil
-from socket import gethostname
 from pathlib import Path
-
+from datetime import datetime
 from khostman.formatter.formatter import Formatter
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
@@ -14,14 +13,33 @@ class Writer:
     path = OSUtils().path_to_hosts()
 
     @staticmethod
-    def add_header():
-        header = "\n############   "
-        "System-wide adblocker by Kravchenkoda. "
-        "Inspired by Hosty"
-        "   ############\n\n"
-        "127.0.0.1 view-localhost\n"
-        "127.0.0.1 localhost\n"
-        f"127.0.1.1	{gethostname()}\n\n"
+    def header():
+        return \
+            f"""
+# This Hosts file was generated using the Khostman app
+#
+# Updated: {datetime.now().strftime("%d-%b-%Y")}
+#
+# Total amount of entries:
+#
+# Github repository: https://github.com/kravchenkoda/khostman
+#
+#
+#######################################
+127.0.0.1 localhost
+127.0.0.1 localhost.localdomain
+127.0.0.1 local
+255.255.255.255 broadcasthost
+::1 localhost
+::1 ip6-localhost
+::1 ip6-loopback
+fe80::1%lo0 localhost
+ff00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+"""
 
     def write_to_hosts(self) -> None:
         """
