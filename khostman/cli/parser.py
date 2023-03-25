@@ -28,10 +28,19 @@ class Parser:
 
     @staticmethod
     def create_parser() -> argparse.ArgumentParser:
+        """
+        Creates an ArgumentParser object with predefined arguments for the Khostman CLI.
+        The predefined arguments include options to start, suspend, or resume the adblocker, create a backup of the
+        existing Hosts file, blacklist or whitelist specified domains, and set up automatic updates for the Hosts file.
+
+        Returns:
+            argparse.ArgumentParser: An ArgumentParser object with the predefined arguments.
+        """
         parser = argparse.ArgumentParser(
             description='Welcome to the system-wide ad blocker by Kravchenkoda.\n'
                         'Protect yourself from malware, tracking, ads and spam.\n'
-                        '1 400 000+ malicious domains from almost 50 sources that update regularly.',
+                        'Khostman uses 1.4 million+ domains from almost 50 sources '
+                        'that update regularly to keep you safer.\n'
         )
         group = parser.add_mutually_exclusive_group()
         group.add_argument('-g', '--go',
@@ -70,7 +79,8 @@ class Parser:
     def parse_arg(self) -> tuple:
         """
         Parse the argument and its value
-        :return tuple containing argument and its value
+        Returns:
+             tuple containing argument and its value
         """
         for arg, value in self.args_.items():
             if value:
