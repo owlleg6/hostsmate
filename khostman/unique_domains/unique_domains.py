@@ -19,3 +19,9 @@ class UniqueDomains:
             set: The set of unique domain names.
         """
         return self.unique_domains
+
+    def count_domains(self):
+        """
+        Return the number of unique domains
+        """
+        return len(self.unique_domains)
