@@ -20,7 +20,7 @@ class Writer:
 #
 # Updated: {datetime.now().strftime("%d-%b-%Y")}
 #
-# Total amount of entries:
+# Total amount of unique entries: {UniqueDomains().count_domains()}
 #
 # Github repository: https://github.com/kravchenkoda/khostman
 #
