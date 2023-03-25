@@ -44,6 +44,14 @@ class Writer:
 
     @LoggingUtils.func_and_args_logging
     def whitelist_domain(self, whitelisted_url):
+        """
+        Removes the given domain name from the blacklisted domains in the system's Hosts file if it is present.
+
+        Args:
+            whitelisted_url (str): The domain to be whitelisted.
+        Returns:
+            None
+        """
         temp_hosts_path = self.path.with_suffix('.temp')
 
         with open(temp_hosts_path, 'w') as temp:
