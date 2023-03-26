@@ -14,18 +14,25 @@ class Writer:
 
     @staticmethod
     def header():
+        total_domains = UniqueDomains().count_domains()
+        formatted_domains = '{:,}'.format(total_domains)
+        current_date = datetime.now().strftime("%d-%b-%Y")
         return \
             f"""
-# This Hosts file was generated using the Khostman app
-#
-# Updated: {datetime.now().strftime("%d-%b-%Y")}
-#
-# Total amount of unique entries: {UniqueDomains().count_domains()}
-#
-# Github repository: https://github.com/kravchenkoda/khostman
-#
-#
-#######################################
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# #                                                                   # #
+# #   This file was generated with the Khostman app                   # #
+# #                                                                   # #
+# #   Created on {current_date.ljust(53)}# #
+# #                                                                   # #
+# #   Total number of unique entries: {formatted_domains.ljust(32)}# #
+# #                                                                   # #
+# #   Github repository: https://github.com/kravchenkoda/khostman     # #
+# #                                                                   # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+\n
 127.0.0.1 localhost
 127.0.0.1 localhost.localdomain
 127.0.0.1 local
@@ -39,6 +46,7 @@ ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts
+\n
 """
 
     def write_to_hosts(self) -> None:
@@ -48,6 +56,7 @@ ff02::3 ip6-allhosts
         blacklist_domains = UniqueDomains().get_unique_domains()
         print(f'Writing to {self.path}...')
         with open(self.path, 'w') as hosts:
+            hosts.write(self.header())
             for line in blacklist_domains:
                 hosts.write(line)
 
