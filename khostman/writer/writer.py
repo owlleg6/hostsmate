@@ -11,6 +11,7 @@ from khostman.unique_domains.unique_domains import UniqueDomains
 
 class Writer:
     path = OSUtils().path_to_hosts()
+    temp_hosts_path = path.with_suffix('.temp')
 
     @staticmethod
     def header():
@@ -45,8 +46,9 @@ ff00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
-ff02::3 ip6-allhosts
-\n
+ff02::3 ip6-allhosts\n\n
+# Start of the user's custom domains\n
+\n# End of the user's custom domains\n\n
 """
 
     def write_to_hosts(self) -> None:
@@ -62,12 +64,29 @@ ff02::3 ip6-allhosts
 
         print(f'Blocked {len(blacklist_domains)} websites.')
 
-    def block_domain(self, *args):
-        with open(self.path, 'a+') as hosts:
-            hosts.write("\n############   User's custom blocked hosts   ############\n\n")
-            for website in args:
-                hosts.write(f"0.0.0.0 {website}\n")
-                logger.debug(f'Blacklisted {website}')
+    def block_domain(self, blacklisted_domain: str) -> None:
+        """
+        Blacklists the given domain by writing it to the user's custom domains section of the
+        Hosts file with 0.0.0.0 prefix.
+
+        Args:
+            blacklisted_domain (str) domain name to be added to the Hosts file
+        Returns:
+            None
+        """
+        blacklisted_domain = Formatter().strip_domain_prefix(blacklisted_domain)
+        domain_added = False
+        with open(self.path, 'r') as hosts_old:
+            with open(self.temp_hosts_path, 'w') as hosts_new:
+                for line in hosts_old:
+                    hosts_new.write(line)
+                    if not domain_added and line.startswith("# Start"):
+                        hosts_new.write(f'\n0.0.0.0 {blacklisted_domain}')
+                        domain_added = True
+                        print(f'"{blacklisted_domain}" domain name has been blacklisted')
+                        logger.info(f'"{blacklisted_domain}" domain name has been blacklisted')
+        self.path.unlink()
+        self.temp_hosts_path.rename(self.path)
 
     @LoggingUtils.func_and_args_logging
     def whitelist_domain(self, whitelisted_url):
@@ -79,9 +98,8 @@ ff02::3 ip6-allhosts
         Returns:
             None
         """
-        temp_hosts_path = self.path.with_suffix('.temp')
 
-        with open(temp_hosts_path, 'w') as temp:
+        with open(self.temp_hosts_path, 'w') as temp:
             with open(self.path, 'r') as original:
                 whitelisted_url = Formatter().strip_domain_prefix(whitelisted_url)
                 found = False
@@ -97,7 +115,7 @@ ff02::3 ip6-allhosts
                     logger.info(f"No occurrence of '{whitelisted_url}'"
                                 f" found in file '{self.path}'")
         self.path.unlink()
-        temp_hosts_path.rename(self.path)
+        self.temp_hosts_path.rename(self.path)
 
     @LoggingUtils.func_and_args_logging
     def create_backup(self):
