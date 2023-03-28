@@ -1,8 +1,6 @@
-from os import remove
 import concurrent.futures
 from typing import Optional
 from requests import get, RequestException
-
 
 from khostman.logger.logger import logger
 from khostman.utils.data_utils import DataUtils
@@ -73,14 +71,16 @@ class RawHostsCollector:
                 logger.error(f'Failed to write contents of {url} to {temp_file}: {e}')
 
     @LoggingUtils.func_and_args_logging
-    def extract_raw_sources_contents(self, tmp: str):
-        """
-        Extracts raw contents from blacklist sources and whitelist, and stores them in a temporary file.
+    def process_sources_concurrently(self, tmp: str):
+        """Extract raw contents from all blacklist sources and write them to a temporary file.
 
-        :param tmp: path to temporary file
+        This method uses a process pool executor to fetch and write the contents of each blacklist source
+        to the same temporary file in parallel.
+
+        Args:
+            tmp (str): The path to the temporary file where the extracted contents will be written.
         """
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            # iterate through blacklist sources and fetch hosts in parallel
             for source in self.blacklist_sources:
                 executor.submit(self.write_source_to_tmp, source, tmp)
 
