@@ -21,4 +21,4 @@ class HostsFileUpdater:
         RawHostsCollector().extract_raw_sources_contents(self.tmp)
         Formatter().format_raw_lines(self.tmp)
         UniqueDomains().get_unique_domains()
-        Writer().write_to_hosts()
+        Writer().build_hosts_file()
