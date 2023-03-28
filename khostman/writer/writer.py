@@ -73,7 +73,7 @@ ff02::3 ip6-allhosts\n\n
 \n# End of the user's custom domains\n\n
 """
 
-    def write_to_hosts(self) -> None:
+    def build_hosts_file(self) -> None:
         """Write the list of unique blacklisted domains to the system's hosts file.
 
         This method uses the file path stored in the `hosts_path` attribute to open the
@@ -94,8 +94,10 @@ ff02::3 ip6-allhosts\n\n
             print(f'Writing to {self.hosts_path} failed: {e}')
             logger.error(f'Writing to {self.hosts_path} failed: {e}')
             return
-        logger.info(f'Blacklisted {self.domains_total_num} unique domains.')
-        print(f'Blacklisted {self.domains_total_num} unique domains.')
+        logger.info(f'Hosts file at {self.hosts_path} was created/updated. '
+                    f'Blacklisted {self.domains_total_num} unique domains.')
+        print(f'Done. Blacklisted {self.domains_total_num} unique domains.\n'
+              f'Enjoy the browsing!')
 
     def block_domain(self, blacklisted_domain: str) -> None:
         """Blacklist the given domain by writing it to the user's custom domains section of the
