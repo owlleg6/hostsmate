@@ -1,6 +1,8 @@
 from os import remove
 import concurrent.futures
+from typing import Optional
 from requests import get, RequestException
+
 
 from khostman.logger.logger import logger
 from khostman.utils.data_utils import DataUtils
@@ -29,16 +31,25 @@ class RawHostsCollector:
 
     @staticmethod
     @LoggingUtils.func_and_args_logging
-    def download_file_contents(url):
+    def fetch_source_contents(url: str) -> Optional[str]:
+        """Fetch source contents and return it as a string.
+
+        Args:
+            url (str): the URL containing list of blacklisted domains.
+
+        Returns:
+            A string with the complete source contents.
+            If an error occurs while fetching the contents, None is returned.
+        """
         try:
-            print(f'Downloading hosts from {url}')
+            print(f'Fetching blacklisted domains from {url}')
             response = get(url)
-            response.raise_for_status()  # Raise an exception for 4xx and 5xx status codes
+            response.raise_for_status()
             contents = response.text
             return contents
         except RequestException as e:
-            logger.error(f"Error downloading contents from {url}: {e}")
-            print(f'Could not fetch blacklisted hosts from {url}')
+            logger.error(f'Could not fetch blacklisted domains from {url}: {e}')
+            print(f'Could not fetch blacklisted domains from {url}')
             return None
 
     @LoggingUtils.func_and_args_logging
@@ -46,7 +57,7 @@ class RawHostsCollector:
         """ 
         Gets the domains from a given source URL, and writes them to a temporary file 
         """
-        contents = self.download_file_contents(url)
+        contents = self.fetch_source_contents(url)
         if contents is not None:
             with open(temp_file, 'a') as f:
                 f.write(f'{contents}\n')
