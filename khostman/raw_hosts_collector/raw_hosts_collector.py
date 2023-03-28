@@ -31,27 +31,25 @@ class RawHostsCollector:
     @LoggingUtils.func_and_args_logging
     def download_file_contents(url):
         try:
-            print(f"Downloading hosts from {url}")
+            print(f'Downloading hosts from {url}')
             response = get(url)
             response.raise_for_status()  # Raise an exception for 4xx and 5xx status codes
             contents = response.text
             return contents
-        except (RequestException, ValueError) as e:
+        except RequestException as e:
             logger.error(f"Error downloading contents from {url}: {e}")
+            print(f'Could not fetch blacklisted hosts from {url}')
             return None
 
     @LoggingUtils.func_and_args_logging
-    def get_hosts_from_source(self, url, tmp):
+    def get_hosts_from_source(self, url, temp_file):
         """ 
         Gets the domains from a given source URL, and writes them to a temporary file 
         """
         contents = self.download_file_contents(url)
         if contents is not None:
-            with open(tmp, 'a') as f:
+            with open(temp_file, 'a') as f:
                 f.write(f'{contents}\n')
-        else:
-            logger.warning(f'Could not fetch blacklisted hosts from {url}')
-            print(f'Could not fetch blacklisted hosts from {url}')
 
     @LoggingUtils.func_and_args_logging
     def extract_raw_sources_contents(self, tmp: str):
@@ -66,5 +64,4 @@ class RawHostsCollector:
                 executor.submit(self.get_hosts_from_source, source, tmp)
 
     def __repr__(self):
-        return f'RawHostsCollector()'
-
+        return f'{__class__.__name__}'
