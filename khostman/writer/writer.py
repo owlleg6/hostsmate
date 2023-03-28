@@ -1,6 +1,7 @@
 import shutil
 from pathlib import Path
 from datetime import datetime
+
 from khostman.formatter.formatter import Formatter
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
@@ -10,18 +11,39 @@ from khostman.unique_domains.unique_domains import UniqueDomains
 
 
 class Writer:
-    path = OSUtils().path_to_hosts()
-    temp_hosts_path = path.with_suffix('.temp')
+    """A class responsible for writing operations related to the user's Hosts file.
+
+    Attributes:
+        hosts_path (pathlib.Path): a path to the system's hosts file
+        hosts_new_path (pathlib.Path): a path to the new hosts file to be written with updated data
+
+    Methods:
+        header() -> str
+        write_to_hosts(self) -> None
+        block_domain(self, str: blacklisted_domain) -> None
+        whitelist_domain(self, str: whitelisted_domain) -> None
+        create_backup(self) -> None
+    """
+    hosts_path = OSUtils().path_to_hosts()
+    hosts_new_path = hosts_path.with_suffix('.temp')
 
     @staticmethod
-    def header():
+    def header() -> str:
+        """Return the common header for the Hosts file.
+
+        This method uses the `UniqueDomains` class to count the number of domains,
+        and the `datetime` module to get the current date.
+
+        Returns:
+            A string containing header for the Hosts file.
+        """
         total_domains = UniqueDomains().count_domains()
         formatted_domains = '{:,}'.format(total_domains)
         current_date = datetime.now().strftime("%d-%b-%Y")
         return \
             f"""
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # #                                                                   # #
 # #   This file was generated with the Khostman app                   # #
 # #                                                                   # #
@@ -31,7 +53,7 @@ class Writer:
 # #                                                                   # #
 # #   Github repository: https://github.com/kravchenkoda/khostman     # #
 # #                                                                   # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 \n
 127.0.0.1 localhost
@@ -52,12 +74,18 @@ ff02::3 ip6-allhosts\n\n
 """
 
     def write_to_hosts(self) -> None:
+        """Write the list of unique blacklisted domains to the system's hosts file.
+
+        This method uses the file path stored in the `hosts_path` attribute to open the
+        hosts file and write the contents of the `blacklist_domains` list, which is
+        obtained by calling the `get_unique_domains` method of the `UniqueDomains` class.
+        The method also writes the header of the hosts file using the `header` method
+        of the `Writer` class.
         """
-        Writes domains to the system's hosts file.
-        """
+
         blacklist_domains = UniqueDomains().get_unique_domains()
-        print(f'Writing to {self.path}...')
-        with open(self.path, 'w') as hosts:
+        print(f'Writing to {self.hosts_path}...')
+        with open(self.hosts_path, 'w') as hosts:
             hosts.write(self.header())
             for line in blacklist_domains:
                 hosts.write(line)
@@ -65,19 +93,16 @@ ff02::3 ip6-allhosts\n\n
         print(f'Blocked {len(blacklist_domains)} websites.')
 
     def block_domain(self, blacklisted_domain: str) -> None:
-        """
-        Blacklists the given domain by writing it to the user's custom domains section of the
+        """Blacklist the given domain by writing it to the user's custom domains section of the
         Hosts file with 0.0.0.0 prefix.
 
         Args:
-            blacklisted_domain (str) domain name to be added to the Hosts file
-        Returns:
-            None
+            blacklisted_domain (str): domain name to be added to the Hosts file
         """
         blacklisted_domain = Formatter().strip_domain_prefix(blacklisted_domain)
         domain_added = False
-        with open(self.path, 'r') as hosts_old:
-            with open(self.temp_hosts_path, 'w') as hosts_new:
+        with open(self.hosts_path, 'r') as hosts_old:
+            with open(self.hosts_new_path, 'w') as hosts_new:
                 for line in hosts_old:
                     hosts_new.write(line)
                     if not domain_added and line.startswith("# Start"):
@@ -85,22 +110,18 @@ ff02::3 ip6-allhosts\n\n
                         domain_added = True
                         print(f'"{blacklisted_domain}" domain name has been blacklisted')
                         logger.info(f'"{blacklisted_domain}" domain name has been blacklisted')
-        self.path.unlink()
-        self.temp_hosts_path.rename(self.path)
+        self.hosts_path.unlink()
+        self.hosts_new_path.rename(self.hosts_path)
 
     @LoggingUtils.func_and_args_logging
-    def whitelist_domain(self, whitelisted_url):
-        """
-        Removes the given domain name from the blacklisted domains in the system's Hosts file if it is present.
+    def whitelist_domain(self, whitelisted_url: str) -> None:
+        """Remove the given domain name from the blacklisted domains in the system's Hosts file if it is present.
 
         Args:
             whitelisted_url (str): The domain to be whitelisted.
-        Returns:
-            None
         """
-
-        with open(self.temp_hosts_path, 'w') as temp:
-            with open(self.path, 'r') as original:
+        with open(self.hosts_new_path, 'w') as temp:
+            with open(self.hosts_path, 'r') as original:
                 whitelisted_url = Formatter().strip_domain_prefix(whitelisted_url)
                 found = False
                 for line in original:
@@ -111,25 +132,28 @@ ff02::3 ip6-allhosts\n\n
 
                 if not found:
                     print(f"No occurrence of '{whitelisted_url}'"
-                          f" found in file '{self.path}'")
+                          f" found in file '{self.hosts_path}'")
                     logger.info(f"No occurrence of '{whitelisted_url}'"
-                                f" found in file '{self.path}'")
-        self.path.unlink()
-        self.temp_hosts_path.rename(self.path)
+                                f" found in file '{self.hosts_path}'")
+        self.hosts_path.unlink()
+        self.hosts_new_path.rename(self.hosts_path)
 
     @LoggingUtils.func_and_args_logging
-    def create_backup(self):
-        """Creates the backup of the user's original Hosts file"""
+    def create_backup(self) -> None:
+        """Create the backup of the user's original Hosts file in the specified directory.
+
+        Backup path is obtained by calling ask_backup_directory method of the UserInteraction class.
+        """
         backup_path = UserInteraction().ask_backup_directory()
         if not backup_path:
             return
         backup_hosts = Path(backup_path) / 'hosts_backup'
         try:
-            with self.path.open('rb') as src, backup_hosts.open('wb') as dst:
+            with self.hosts_path.open('rb') as src, backup_hosts.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
             print(f'Backup file was created here: {backup_path}')
             logger.info('Backup of the original Hosts'
                         f' file was created at: {backup_path}')
         except OSError as e:
-            logger.warning(f'Error creating backup: {e}')
+            logger.error(f'Error creating backup: {e}')
             print(f'Error creating backup: {e}')
