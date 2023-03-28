@@ -49,7 +49,7 @@ class Formatter:
 
         for whitelist_source in self.whitelist_sources:
             try:
-                print(f'Fetching whitelist domains from {whitelist_source}')
+                print(f'Fetching whitelisted domains from {whitelist_source}')
                 resp = get(whitelist_source).text
                 buffer = StringIO(resp)
                 whitelist.update(buffer.readlines())
@@ -59,7 +59,14 @@ class Formatter:
         return whitelist
 
     def extract_domain(self, line: str) -> str:
-        """Extract domain from the given string(line)"""
+        """Extracts domain from the given input string (line).
+
+        Args:
+            line (str): A string containing the domain to be extracted.
+
+        Returns:
+            A string containing the extracted domain.
+        """
         try:
             if line.startswith(self.localhost):
                 line = line.strip()
@@ -72,8 +79,8 @@ class Formatter:
                 match = self.domain_regex.search(line)
                 if match:
                     return match.group() + '\n'
-        except IndexError:
-            logger.debug(line)
+        except IndexError as e:
+            logger.error(f'Error while formatting the line {line}: {e}')
 
     def remove_duplicates(self, domain: str) -> None:
         """Add a domain to the unique_domains set"""
