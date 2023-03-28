@@ -126,32 +126,34 @@ ff02::3 ip6-allhosts\n\n
         self.hosts_new_path.rename(self.hosts_path)
 
     @LoggingUtils.func_and_args_logging
-    def whitelist_domain(self, whitelisted_url: str) -> None:
+    def whitelist_domain(self, whitelisted_domain: str) -> None:
         """Remove the given domain name from the blacklisted domains in the system's Hosts file if it is present.
 
         Args:
-            whitelisted_url (str): The domain to be whitelisted.
+            whitelisted_domain (str): The domain to be whitelisted.
         """
         try:
-            with open(self.hosts_new_path, 'w') as temp:
-                with open(self.hosts_path, 'r') as original:
-                    whitelisted_url = Formatter().strip_domain_prefix(whitelisted_url)
+            with open(self.hosts_new_path, 'w') as hosts_new:
+                with open(self.hosts_path, 'r') as hosts_old:
+                    whitelisted_domain = Formatter().strip_domain_prefix(whitelisted_domain)
                     found = False
-                    for line in original:
-                        if whitelisted_url in line:
+                    for line in hosts_old:
+                        if not found and whitelisted_domain in line:
                             found = True
                             continue
-                        temp.write(line)
+                        hosts_new.write(line)
         except OSError as e:
             print(f'Operation failed: {e}')
             logger.error(f'Operation failed: {e}')
             return
 
         if not found:
-            print(f"No occurrence of '{whitelisted_url}'"
+            print(f"No occurrence of '{whitelisted_domain}'"
                   f" found in file '{self.hosts_path}'")
-            logger.info(f"No occurrence of '{whitelisted_url}'"
+            logger.info(f"No occurrence of '{whitelisted_domain}'"
                         f" found in file '{self.hosts_path}'")
+        else:
+            logger.info(f'"{whitelisted_domain}" has been whitelisted')
 
         self.hosts_path.unlink()
         self.hosts_new_path.rename(self.hosts_path)
