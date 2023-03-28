@@ -16,6 +16,7 @@ class Writer:
     Attributes:
         hosts_path (pathlib.Path): a path to the system's hosts file
         hosts_new_path (pathlib.Path): a path to the new hosts file to be written with updated data
+        domains_total_num (int): total number of unique blacklisted domains
 
     Methods:
         header() -> str
@@ -26,9 +27,9 @@ class Writer:
     """
     hosts_path = OSUtils().path_to_hosts()
     hosts_new_path = hosts_path.with_suffix('.temp')
+    domains_total_num = UniqueDomains().count_domains()
 
-    @staticmethod
-    def header() -> str:
+    def header(self) -> str:
         """Return the common header for the Hosts file.
 
         This method uses the `UniqueDomains` class to count the number of domains,
@@ -37,8 +38,7 @@ class Writer:
         Returns:
             A string containing header for the Hosts file.
         """
-        total_domains = UniqueDomains().count_domains()
-        formatted_domains = '{:,}'.format(total_domains)
+        formatted_domains = '{:,}'.format(self.domains_total_num)
         current_date = datetime.now().strftime("%d-%b-%Y")
         return \
             f"""
@@ -94,8 +94,8 @@ ff02::3 ip6-allhosts\n\n
             print(f'Writing to {self.hosts_path} failed: {e}')
             logger.error(f'Writing to {self.hosts_path} failed: {e}')
             return
-        logger.info(f'Blacklisted {UniqueDomains().count_domains()} unique domains.')
-        print(f'Blacklisted {UniqueDomains().count_domains()} unique domains.')
+        logger.info(f'Blacklisted {self.domains_total_num} unique domains.')
+        print(f'Blacklisted {self.domains_total_num} unique domains.')
 
     def block_domain(self, blacklisted_domain: str) -> None:
         """Blacklist the given domain by writing it to the user's custom domains section of the
