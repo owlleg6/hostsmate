@@ -1,5 +1,4 @@
 import pathlib
-from os import remove
 from requests import get
 from urllib.parse import urlparse
 from io import StringIO
@@ -12,16 +11,35 @@ from khostman.unique_domains.unique_domains import UniqueDomains
 
 
 class Formatter:
+    """A class for formatting and cleaning the data fetched into temporary file from blacklist domain sources.
+
+    Extract domain names and pass them to UniqueDomains class for unique_domains set creation.
+
+    Attributes:
+        localhost (str): localhost ip address.
+        void_id (str): non-routable ip address.
+        domain_regex (): regular expression for domain name.
+        whitelist_sources (list): a list containing URLs with whitelist sources.
+        whitelist (set): a set of whitelisted domain names.
+        unique_domains (UniqueDomains): an instance that contains a set of unique blacklisted domain names.
+
+    Methods:
+        get_whitelist() -> Set
+        extract_domain(line: str) -> str
+        remove_duplicates(domain: str) -> None
+        format_raw_lines(contents: str) -> None
+        strip_domain_prefix(url) -> str
+    """
     localhost = '127.0.0.1'
     void_id = '0.0.0.0'
     domain_regex = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
     whitelist_sources = DataUtils.extract_sources_from_json(whitelist=True)
+    unique_domains = UniqueDomains()
 
     def __init__(self):
-        self.unique_domains = UniqueDomains()
         self.whitelist = self.get_whitelist()
 
-    def get_whitelist(self):
+    def get_whitelist(self) -> set:
         whitelist = set()
         for whitelist_source in self.whitelist_sources:
             resp = get(whitelist_source).text
@@ -71,7 +89,7 @@ class Formatter:
                     self.remove_duplicates(domain)
 
     @staticmethod
-    def strip_domain_prefix(url):
+    def strip_domain_prefix(url) -> str:
         """
         Given a URL string, returns the domain name with any leading "www." prefix removed.
 
