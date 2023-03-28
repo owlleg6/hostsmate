@@ -1,5 +1,5 @@
 import pathlib
-from requests import get
+from requests import get, RequestException
 from urllib.parse import urlparse
 from io import StringIO
 import re
@@ -40,11 +40,22 @@ class Formatter:
         self.whitelist = self.get_whitelist()
 
     def get_whitelist(self) -> set:
+        """Fetches and returns a set of domains from the whitelist sources.
+
+        Returns:
+            A set of whitelisted domain names.
+        """
         whitelist = set()
+
         for whitelist_source in self.whitelist_sources:
-            resp = get(whitelist_source).text
-            buffer = StringIO(resp)
-            whitelist.update(buffer.readlines())
+            try:
+                print(f'Fetching whitelist domains from {whitelist_source}')
+                resp = get(whitelist_source).text
+                buffer = StringIO(resp)
+                whitelist.update(buffer.readlines())
+            except RequestException as e:
+                logger.error(f'Error fetching whitelist domains from {whitelist_source}: {e}')
+                print(f'Could not fetch whitelist domains from {whitelist_source}')
         return whitelist
 
     def extract_domain(self, line: str) -> str:
