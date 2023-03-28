@@ -83,7 +83,11 @@ class Formatter:
             logger.error(f'Error while formatting the line {line}: {e}')
 
     def remove_duplicates(self, domain: str) -> None:
-        """Add a domain to the unique_domains set"""
+        """Remove duplicates by adding a domain to the unique_domains set.
+
+        Args:
+            domain (str): domain name to be added.
+        """
         if domain is None:
             return
         if domain.startswith('0.0.0.0'):
@@ -93,9 +97,16 @@ class Formatter:
 
     @LoggingUtils.timer
     def format_raw_lines(self, contents: str) -> None:
+        """
+        Extracts domains from given the source file, formats them, and removes duplicates.
+
+        Args:
+            contents: A string representing the path to a file containing raw blacklist sources contents.
+
+        Raises:
+            SystemExit: If the file at `contents` does not exist.
+        """
         print('Extracting domains, formatting and removing duplicates...')
-        if not pathlib.Path(contents).exists():
-            exit('Please check your internet connection and try again.')
         with open(contents, 'r') as raw_hosts:
             for line in raw_hosts:
                 if line.startswith(('#', '<', '\n')) \
@@ -109,9 +120,9 @@ class Formatter:
     @staticmethod
     def strip_domain_prefix(url) -> str:
         """
-        Given a URL string, returns the domain name with any leading "www." prefix removed.
+        Given a URL string, returns the domain name with any leading protocol or "www." prefix removed.
 
-        Parameters:
+        Args:
             url (str): The URL string to strip.
 
         Returns:
