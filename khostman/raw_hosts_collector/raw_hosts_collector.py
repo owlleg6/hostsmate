@@ -9,23 +9,18 @@ from khostman.utils.logging_utils import LoggingUtils
 
 class RawHostsCollector:
     """A class for extracting raw contents from blacklist sources and storing them in a temporary file.
-       This needed for cleaning and formatting the data by Formatter class
-
+       This needed for further cleaning and formatting data to extract unique domains.
 
     Attributes:
         blacklist_sources (list): A list of URLs containing blacklisted domains.
 
     Methods:
-        __init__(): Initializes an instance of the class.
-        get_hosts_from_source(url, tmp): Downloads domains from a given source URL and writes them to a temporary file.
-        extract_raw_sources_contents(tmp): Extracts raw contents from blacklist sources and whitelist and stores them in a
-            temporary file.
+        fetch_source_contents(url: str) -> Optional[str]
+        write_source_to_tmp(url: str, temp_file: str) -> None
+        process_sources_concurrently(tmp: str) -> None
 
     """
-
-    @LoggingUtils.func_and_args_logging
-    def __init__(self):
-        self.blacklist_sources = DataUtils.extract_sources_from_json(blacklist=True)
+    blacklist_sources = DataUtils.extract_sources_from_json(blacklist=True)
 
     @staticmethod
     @LoggingUtils.func_and_args_logging
@@ -71,7 +66,7 @@ class RawHostsCollector:
                 logger.error(f'Failed to write contents of {url} to {temp_file}: {e}')
 
     @LoggingUtils.func_and_args_logging
-    def process_sources_concurrently(self, tmp: str):
+    def process_sources_concurrently(self, tmp: str) -> None:
         """Extract raw contents from all blacklist sources and write them to a temporary file.
 
         This method uses a process pool executor to fetch and write the contents of each blacklist source
@@ -83,6 +78,3 @@ class RawHostsCollector:
         with concurrent.futures.ProcessPoolExecutor() as executor:
             for source in self.blacklist_sources:
                 executor.submit(self.write_source_to_tmp, source, tmp)
-
-    def __repr__(self):
-        return f'{__class__.__name__}'
