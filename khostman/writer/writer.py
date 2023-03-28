@@ -82,15 +82,20 @@ ff02::3 ip6-allhosts\n\n
         The method also writes the header of the hosts file using the `header` method
         of the `Writer` class.
         """
-
         blacklist_domains = UniqueDomains().get_unique_domains()
-        print(f'Writing to {self.hosts_path}...')
-        with open(self.hosts_path, 'w') as hosts:
-            hosts.write(self.header())
-            for line in blacklist_domains:
-                hosts.write(line)
 
-        print(f'Blocked {len(blacklist_domains)} websites.')
+        try:
+            print(f'Writing to {self.hosts_path}...')
+            with open(self.hosts_path, 'w') as hosts:
+                hosts.write(self.header())
+                for line in blacklist_domains:
+                    hosts.write(line)
+        except OSError as e:
+            print(f'Writing to {self.hosts_path} failed: {e}')
+            logger.error(f'Writing to {self.hosts_path} failed: {e}')
+            return
+        logger.info(f'Blacklisted {UniqueDomains().count_domains()} unique domains.')
+        print(f'Blacklisted {UniqueDomains().count_domains()} unique domains.')
 
     def block_domain(self, blacklisted_domain: str) -> None:
         """Blacklist the given domain by writing it to the user's custom domains section of the
@@ -101,15 +106,22 @@ ff02::3 ip6-allhosts\n\n
         """
         blacklisted_domain = Formatter().strip_domain_prefix(blacklisted_domain)
         domain_added = False
-        with open(self.hosts_path, 'r') as hosts_old:
-            with open(self.hosts_new_path, 'w') as hosts_new:
-                for line in hosts_old:
-                    hosts_new.write(line)
-                    if not domain_added and line.startswith("# Start"):
-                        hosts_new.write(f'\n0.0.0.0 {blacklisted_domain}')
-                        domain_added = True
-                        print(f'"{blacklisted_domain}" domain name has been blacklisted')
-                        logger.info(f'"{blacklisted_domain}" domain name has been blacklisted')
+
+        try:
+            with open(self.hosts_path, 'r') as hosts_old:
+                with open(self.hosts_new_path, 'w') as hosts_new:
+                    for line in hosts_old:
+                        hosts_new.write(line)
+                        if not domain_added and line.startswith("# Start"):
+                            hosts_new.write(f'\n0.0.0.0 {blacklisted_domain}')
+                            domain_added = True
+                            print(f'"{blacklisted_domain}" domain name has been blacklisted')
+                            logger.info(f'"{blacklisted_domain}" domain name has been blacklisted')
+        except OSError as e:
+            print(f'Operation failed: {e}')
+            logger.error(f'Operation failed: {e}')
+            return
+
         self.hosts_path.unlink()
         self.hosts_new_path.rename(self.hosts_path)
 
@@ -120,21 +132,27 @@ ff02::3 ip6-allhosts\n\n
         Args:
             whitelisted_url (str): The domain to be whitelisted.
         """
-        with open(self.hosts_new_path, 'w') as temp:
-            with open(self.hosts_path, 'r') as original:
-                whitelisted_url = Formatter().strip_domain_prefix(whitelisted_url)
-                found = False
-                for line in original:
-                    if whitelisted_url in line:
-                        found = True
-                        continue
-                    temp.write(line)
+        try:
+            with open(self.hosts_new_path, 'w') as temp:
+                with open(self.hosts_path, 'r') as original:
+                    whitelisted_url = Formatter().strip_domain_prefix(whitelisted_url)
+                    found = False
+                    for line in original:
+                        if whitelisted_url in line:
+                            found = True
+                            continue
+                        temp.write(line)
+        except OSError as e:
+            print(f'Operation failed: {e}')
+            logger.error(f'Operation failed: {e}')
+            return
 
-                if not found:
-                    print(f"No occurrence of '{whitelisted_url}'"
-                          f" found in file '{self.hosts_path}'")
-                    logger.info(f"No occurrence of '{whitelisted_url}'"
-                                f" found in file '{self.hosts_path}'")
+        if not found:
+            print(f"No occurrence of '{whitelisted_url}'"
+                  f" found in file '{self.hosts_path}'")
+            logger.info(f"No occurrence of '{whitelisted_url}'"
+                        f" found in file '{self.hosts_path}'")
+
         self.hosts_path.unlink()
         self.hosts_new_path.rename(self.hosts_path)
 
@@ -148,6 +166,7 @@ ff02::3 ip6-allhosts\n\n
         if not backup_path:
             return
         backup_hosts = Path(backup_path) / 'hosts_backup'
+
         try:
             with self.hosts_path.open('rb') as src, backup_hosts.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
