@@ -23,7 +23,7 @@ class Autorunner:
         """
         Verify whether anacron package is installed on the system, exit if not.
         """
-        anacron = subprocess.run(['which', 'anacron'], capture_output=True)
+        anacron: subprocess.CompletedProcess = subprocess.run(['which', 'anacron'], capture_output=True)
         if not anacron.stdout:
             exit("Please install 'anacron' dependency and try again.")
 
