@@ -1,4 +1,3 @@
-import pathlib
 from requests import get, RequestException
 from urllib.parse import urlparse
 from io import StringIO
@@ -18,7 +17,7 @@ class Formatter:
     Attributes:
         localhost (str): localhost ip address.
         void_id (str): non-routable ip address.
-        domain_regex (): regular expression for domain name.
+        domain_regex (Pattern): regular expression for domain name.
         whitelist_sources (list): a list containing URLs with whitelist sources.
         whitelist (set): a set of whitelisted domain names.
         unique_domains (UniqueDomains): an instance that contains a set of unique blacklisted domain names.
@@ -30,14 +29,14 @@ class Formatter:
         format_raw_lines(contents: str) -> None
         strip_domain_prefix(url) -> str
     """
-    localhost = '127.0.0.1'
-    void_id = '0.0.0.0'
-    domain_regex = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
-    whitelist_sources = DataUtils.extract_sources_from_json(whitelist=True)
+    localhost: str = '127.0.0.1'
+    void_id: str = '0.0.0.0'
+    domain_regex: re.Pattern = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
+    whitelist_sources: list[str] = DataUtils.extract_sources_from_json(whitelist=True)
     unique_domains = UniqueDomains()
 
     def __init__(self):
-        self.whitelist = self.get_whitelist()
+        self.whitelist: set = self.get_whitelist()
 
     def get_whitelist(self) -> set:
         """Fetches and returns a set of domains from the whitelist sources.
@@ -50,8 +49,8 @@ class Formatter:
         for whitelist_source in self.whitelist_sources:
             try:
                 print(f'Fetching whitelisted domains from {whitelist_source}')
-                resp = get(whitelist_source).text
-                buffer = StringIO(resp)
+                resp: str = get(whitelist_source).text
+                buffer: StringIO = StringIO(resp)
                 whitelist.update(buffer.readlines())
             except RequestException as e:
                 logger.error(f'Error fetching whitelist domains from {whitelist_source}: {e}')
@@ -76,13 +75,13 @@ class Formatter:
                 line = line.strip()
                 return ' '.join(line.split(' ')[:2]) + '\n'
             else:
-                match = self.domain_regex.search(line)
+                match: re.Match[str] | None = self.domain_regex.search(line)
                 if match:
                     return match.group() + '\n'
         except IndexError as e:
             logger.error(f'Error while formatting the line {line}: {e}')
 
-    def remove_duplicates(self, domain: str) -> None:
+    def remove_duplicates(self, domain: str | None) -> None:
         """Remove duplicates by adding a domain to the unique_domains set.
 
         Args:
@@ -90,10 +89,10 @@ class Formatter:
         """
         if domain is None:
             return
-        if domain.startswith('0.0.0.0'):
+        if domain.startswith(self.void_id):
             self.unique_domains.add_domain(domain)
         else:
-            self.unique_domains.add_domain(f'0.0.0.0 {domain}')
+            self.unique_domains.add_domain(f'{self.void_id} {domain}')
 
     @LoggingUtils.timer
     def format_raw_lines(self, contents: str) -> None:
@@ -114,11 +113,11 @@ class Formatter:
                         or line in self.whitelist:
                     continue
                 else:
-                    domain = self.extract_domain(line)
+                    domain: str = self.extract_domain(line)
                     self.remove_duplicates(domain)
 
     @staticmethod
-    def strip_domain_prefix(url) -> str:
+    def strip_domain_prefix(url: str) -> str:
         """
         Given a URL string, returns the domain name with any leading protocol or "www." prefix removed.
 
@@ -133,12 +132,12 @@ class Formatter:
             'example.com'
         """
         if urlparse(url).scheme:
-            domain = urlparse(url).netloc.split(':')[0]
+            domain: str = urlparse(url).netloc.split(':')[0]
             if domain.startswith('www.'):
                 return domain[4:]
             return domain
         else:
-            domain = urlparse(url).path
+            domain: str = urlparse(url).path
             if domain.startswith('www.'):
                 return domain[4:]
             return url
