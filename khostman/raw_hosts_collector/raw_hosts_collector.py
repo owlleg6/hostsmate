@@ -1,6 +1,6 @@
 import concurrent.futures
-from typing import Optional
-from requests import get, RequestException
+
+from requests import get, RequestException, Response
 
 from khostman.logger.logger import logger
 from khostman.utils.data_utils import DataUtils
@@ -20,11 +20,11 @@ class RawHostsCollector:
         process_sources_concurrently(tmp: str) -> None
 
     """
-    blacklist_sources = DataUtils.extract_sources_from_json(blacklist=True)
+    blacklist_sources: list[str] = DataUtils.extract_sources_from_json(blacklist=True)
 
     @staticmethod
     @LoggingUtils.func_and_args_logging
-    def fetch_source_contents(url: str) -> Optional[str]:
+    def fetch_source_contents(url: str) -> str | None:
         """Fetch source contents and return it as a string.
 
         Args:
@@ -36,9 +36,9 @@ class RawHostsCollector:
         """
         try:
             print(f'Fetching blacklisted domains from {url}')
-            response = get(url)
+            response: Response = get(url)
             response.raise_for_status()
-            contents = response.text
+            contents: str = response.text
             logger.info(f'Successfully fetched contents of {url}')
             return contents
         except RequestException as e:
@@ -55,7 +55,7 @@ class RawHostsCollector:
              url (str): the URL containing list of blacklisted domains.
              temp_file (str): path to the temporary file
         """
-        contents = self.fetch_source_contents(url)
+        contents: str | None = self.fetch_source_contents(url)
 
         if contents is not None:
             try:
