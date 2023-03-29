@@ -3,6 +3,7 @@ from pathlib import Path
 
 from khostman.cli.prompt import UserInteraction
 from khostman.utils.data_utils import OSUtils
+from khostman.logger.logger import logger
 
 
 class Autorunner:
@@ -23,13 +24,31 @@ class Autorunner:
         """
         Verify whether anacron package is installed on the system, exit if not.
         """
-        anacron: subprocess.CompletedProcess = subprocess.run(['which', 'anacron'], capture_output=True)
+        try:
+            anacron: subprocess.CompletedProcess = subprocess.run(
+                ['which', 'anacron'],
+                capture_output=True
+            )
+        except subprocess.SubprocessError as e:
+            print('Operation failed.')
+            logger.error(f'Operation failed: {e}')
+
         if not anacron.stdout:
             exit("Please install 'anacron' dependency and try again.")
 
     def add_exec_permissions(self):
         """Add executable permissions to the anacron job setter bash script."""
-        subprocess.run(['chmod', '+x', self.job_setter_sh])
+        try:
+            subprocess.run(
+                ['chmod',
+                 '+x',
+                 self.job_setter_sh
+                 ]
+            )
+            logger.debug(f'executable permissions added to {self.job_setter_sh}')
+        except subprocess.SubprocessError as e:
+            print('Operation failed.')
+            logger.error(f'Operation failed: {e}')
 
     def set_anacron_job(self):
         """Run the anacron_job_setter.sh script."""
@@ -37,8 +56,12 @@ class Autorunner:
         self.check_anacron_dependency()
         autorun_frequency = UserInteraction.ask_autorun_frequency()
         self.add_exec_permissions()
-        subprocess.run(['bash',
-                        self.job_setter_sh,
-                        autorun_frequency,
-                        f'python3 {self.khostman_app} --go'
-                        ])
+        try:
+            subprocess.run(['bash',
+                            self.job_setter_sh,
+                            autorun_frequency,
+                            f'python3 {self.khostman_app} --go'
+                            ])
+        except subprocess.SubprocessError as e:
+            print('Operation failed.')
+            logger.error(f'Operation failed: {e}')
