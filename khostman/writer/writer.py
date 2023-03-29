@@ -25,9 +25,9 @@ class Writer:
         whitelist_domain(self, str: whitelisted_domain) -> None
         create_backup(self) -> None
     """
-    hosts_path = OSUtils().path_to_hosts()
-    hosts_new_path = hosts_path.with_suffix('.temp')
-    domains_total_num = UniqueDomains().count_domains()
+    hosts_path: Path = OSUtils().path_to_hosts()
+    hosts_new_path: Path = hosts_path.with_suffix('.temp')
+    domains_total_num: int = UniqueDomains().count_domains()
 
     def header(self) -> str:
         """Return the common header for the Hosts file.
@@ -38,8 +38,8 @@ class Writer:
         Returns:
             A string containing header for the Hosts file.
         """
-        formatted_domains = '{:,}'.format(self.domains_total_num)
-        current_date = datetime.now().strftime("%d-%b-%Y")
+        formatted_domains: str = '{:,}'.format(self.domains_total_num)
+        current_date: str = datetime.now().strftime("%d-%b-%Y")
         return \
             f"""
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -82,7 +82,7 @@ ff02::3 ip6-allhosts\n\n
         The method also writes the header of the hosts file using the `header` method
         of the `Writer` class.
         """
-        blacklist_domains = UniqueDomains().get_unique_domains()
+        blacklist_domains: set[str] = UniqueDomains().get_unique_domains()
 
         try:
             print(f'Writing to {self.hosts_path}...')
@@ -166,10 +166,10 @@ ff02::3 ip6-allhosts\n\n
 
         Backup path is obtained by calling ask_backup_directory method of the UserInteraction class.
         """
-        backup_path = UserInteraction().ask_backup_directory()
+        backup_path: str = UserInteraction().ask_backup_directory()
         if not backup_path:
             return
-        backup_hosts = Path(backup_path) / 'hosts_backup'
+        backup_hosts: Path = Path(backup_path) / 'hosts_backup'
 
         try:
             with self.hosts_path.open('rb') as src, backup_hosts.open('wb') as dst:
