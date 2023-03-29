@@ -57,10 +57,12 @@ class Parser:
             predefined arguments.
         """
         parser = argparse.ArgumentParser(
-            description='Welcome to the system-wide ad blocker by Kravchenkoda.\n'
+            description='Welcome to Khostman! A system-wide ad blocker by Kravchenkoda. '
                         'Protect yourself from malware, tracking, ads and spam.\n'
-                        'Khostman uses 1.4 million+ domains from almost 50 sources '
-                        'that update regularly to keep you safer.\n'
+                        'Khostman blacklists 1.4 million+ domains from 44 sources '
+                        'that update regularly to keep your system safer.\n\n'
+                        'GitHub repository: https://github.com/kravchenkoda/khostman',
+            formatter_class=argparse.RawDescriptionHelpFormatter
         )
         group = parser.add_mutually_exclusive_group()
 
@@ -91,17 +93,20 @@ class Parser:
             '-b',
             '--backup',
             action='store_true',
-            help='Create a backup of the existing Hosts file in the specific folder.'
+            help='Create a backup of the existing Hosts '
+                 'file in the specific folder.'
         )
         group.add_argument(
             '-x',
             '--blacklist_domain',
             type=str,
+            metavar='[domain-to-block]',
             help='Blacklist specified domain.'
         )
         group.add_argument(
             '-w',
             '--whitelist_domain',
+            metavar='[domain-to-whitelist]',
             type=str,
             help='Whitelist specified domain.')
 
