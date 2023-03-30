@@ -19,8 +19,7 @@ class OSUtils(Utils):
         ensure_root_privileges(): Ensure that the application is running with
         root/administrator privileges. Exit if it is not.
 
-        get_platform(): Returns a string indicating the platform of the
-        operating system that the code is running on.
+        get_project_root(): Return the root directory of the project.
 
         mk_tmp_hex_file(): Create a temporary file path using a random
         hexadecimal UUID.
@@ -49,7 +48,7 @@ class OSUtils(Utils):
     @staticmethod
     def get_project_root() -> pathlib.Path:
         """
-        Returns the root directory of the project.
+        Return the root directory of the project.
 
         The root directory is defined as the parent directory of the directory containing
         the module that this method is called from.
@@ -61,26 +60,6 @@ class OSUtils(Utils):
         return project_root
 
     @staticmethod
-    def get_platform() -> str:
-        """
-        Returns a string indicating the platform of the operating system that the code is running on.
-
-        Returns:
-            str: A string that can be one of the following:
-             - 'unix_like' if the code is running on a Linux, macOS, or FreeBSD system
-             - 'windows' if the code is running on a Windows system
-        """
-        platform: str = sys.platform
-        if platform.startswith('linux') \
-                or platform.startswith('darwin') \
-                or platform.startswith('freebsd'):
-            platform = 'unix_like'
-        elif platform.startswith('win'):
-            platform = 'windows'
-        logger.info(platform)
-        return platform
-
-    @staticmethod
     def mk_tmp_hex_file() -> str:
         """Create a temporary file path using a random hexadecimal UUID.
 
@@ -90,17 +69,22 @@ class OSUtils(Utils):
         tmp: str = join(gettempdir(), uuid4().hex)
         return tmp
 
-    def path_to_hosts(self) -> Path:
+    @staticmethod
+    def path_to_hosts() -> Path:
         """Return the path to the hosts file on the current system.
 
         Returns:
             Path: The path to the hosts file.
         """
-        platform: str = self.get_platform()
-        if platform == 'unix_like':
+        platform: str = sys.platform
+
+        if platform.startswith(('linux', 'freebsd', 'darwin')):
             hosts_path: Path = Path('/etc/hosts')
             return hosts_path
-        elif platform == 'windows':
+        elif platform.startswith('win'):
             root_drive: str = Path(sys.executable).anchor
             hosts_path: Path = Path(root_drive + r'Windows\System32\drivers\etc\hosts')
-            return hosts_path
+        else:
+            exit('This operating system is not supported.')
+        logger.debug(f'path to the hosts file is {hosts_path}')
+        return hosts_path
