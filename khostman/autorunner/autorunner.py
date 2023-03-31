@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 
 from khostman.cli.prompt import UserInteraction
@@ -18,6 +19,24 @@ class Autorunner:
     """
     khostman_app: Path = OSUtils.get_project_root() / 'app.py'
     job_setter_sh: Path = OSUtils.get_project_root() / 'anacron_job_setter.sh'
+
+    def __init__(self):
+        self.ensure_os_compatibility()
+
+    @staticmethod
+    def ensure_os_compatibility():
+        """Ensure that the current operating system is compatible with the
+        autorunner feature (Linux and FreeBSD), exit if it is not.
+
+        Raises:
+            SystemExit: If the current operating system is not in the list of
+            allowed platforms.
+        """
+        platform: str = sys.platform
+        allowed_platforms: list[str] = ['linux', 'freebsd']
+
+        if platform not in allowed_platforms:
+            sys.exit('This feature in not supported for your operating system.')
 
     @staticmethod
     def check_anacron_dependency() -> None:
