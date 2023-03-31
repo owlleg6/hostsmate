@@ -6,7 +6,7 @@ from khostman.formatter.formatter import Formatter
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import logger
-from khostman.cli.prompt import UserInteraction
+from khostman.cli.ask_user import AskUser
 from khostman.unique_domains.unique_domains import UniqueDomains
 
 
@@ -164,9 +164,9 @@ ff02::3 ip6-allhosts\n\n
     def create_backup(self) -> None:
         """Create the backup of the user's original Hosts file in the specified directory.
 
-        Backup path is obtained by calling ask_backup_directory method of the UserInteraction class.
+        Backup path is obtained by calling ask_backup_directory method of the AskUser class.
         """
-        backup_path: str = UserInteraction().ask_backup_directory()
+        backup_path: str = AskUser().ask_backup_directory()
         if not backup_path:
             return
         backup_hosts: Path = Path(backup_path) / 'hosts_backup'

@@ -2,7 +2,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from khostman.cli.prompt import UserInteraction
+from khostman.cli.ask_user import AskUser
 from khostman.utils.data_utils import OSUtils
 from khostman.logger.logger import logger
 
@@ -73,7 +73,7 @@ class Autorunner:
         """Run the anacron_job_setter.sh script."""
 
         self.check_anacron_dependency()
-        autorun_frequency = UserInteraction.ask_autorun_frequency()
+        autorun_frequency: str = AskUser.ask_autorun_frequency()
         self.add_exec_permissions()
         try:
             subprocess.run(['bash',
