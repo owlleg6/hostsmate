@@ -59,6 +59,19 @@ class OSUtils(Utils):
         project_root: pathlib.Path = Path(__file__).resolve().parents[2]
         return project_root
 
+    def get_logs_dir(self) -> Path:
+        """
+        Return the path to the directory where the log files will be stored.
+
+        Returns:
+            Path: The path to the logs directory.
+        """
+        logs_dir = self.get_logs_dir() / 'logs'
+
+        if not logs_dir.exists():
+            logs_dir.mkdir()
+        return logs_dir
+
     @staticmethod
     def mk_tmp_hex_file() -> str:
         """Create a temporary file path using a random hexadecimal UUID.
