@@ -39,8 +39,10 @@ class AskUser:
 
             backup_dir: Path = Path(backup_dir).resolve()
             if not backup_dir.is_dir():
+                self.logger.error(f'No such directory:\n{backup_dir}')
                 raise SystemExit(f'No such directory:\n{backup_dir}'
                                  '\nVerify the path and try again.')
+            self.logger.info(f'Backup dir: {backup_dir}')
             return backup_dir
 
     def ask_autorun_frequency(self) -> str:
