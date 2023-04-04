@@ -16,20 +16,32 @@ class AskUser:
         ask_if_backup_needed() -> bool
     """
     hosts_path: Path = OSUtils().path_to_hosts()
+    wrong_input = 'Unrecognized input. Try again.\n'
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
-    @LoggingUtils.func_and_args_logging
-    def ask_backup_directory(self) -> str:
-        """Prompt the user to select a backup directory and returns the path.
+    def ask_backup_directory(self) -> Path:
+        """Prompt the user to select a backup directory and return the path.
 
         Returns:
-            str: The selected backup directory path.
+            Path: The selected backup directory path.
+
+        Raises:
+            SystemExit: if specified directory is not exists.
         """
-        backup_path: str = askdirectory(title='Select Backup Directory')
-        self.logger.info(f'Backup directory: {backup_path}')
-        return backup_path
+        while True:
+            backup_dir: str = input('Please enter a path to the directory where '
+                                    'to backup the original Hosts file: \n')
+            if not backup_dir:
+                print(self.wrong_input)
+                self.ask_backup_directory()
+
+            backup_dir: Path = Path(backup_dir).resolve()
+            if not backup_dir.is_dir():
+                raise SystemExit(f'No such directory:\n{backup_dir}'
+                                 '\nVerify the path and try again.')
+            return backup_dir
 
     def ask_autorun_frequency(self) -> str:
         """Prompts the user to select the frequency of autorun for Khostman.
@@ -37,7 +49,7 @@ class AskUser:
         Returns:
             str: The selected autorun frequency ('1', '2', or '3').
         """
-        wrong_input = 'Unrecognized input. Try again.\n'
+
         while True:
             frequency: str = input(
                 'How often do you want to autorun Khostman to update your '
@@ -54,7 +66,7 @@ class AskUser:
                 self.logger.info(f'Chosen autorun frequency: {frequency}')
                 return frequency
             else:
-                print(wrong_input)
+                print(self.wrong_input)
 
     def ask_if_backup_needed(self) -> bool:
         """Prompts the user to select whether to backup the original Hosts file.
