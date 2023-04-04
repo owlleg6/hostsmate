@@ -1,11 +1,12 @@
 import shutil
 from pathlib import Path
 from datetime import datetime
+from logging import Logger
 
 from khostman.formatter.formatter import Formatter
 from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
-from khostman.logger.logger import logger
+from khostman.logger.logger import HostsLogger
 from khostman.cli.ask_user import AskUser
 from khostman.unique_domains.unique_domains import UniqueDomains
 
@@ -28,6 +29,9 @@ class Writer:
     hosts_path: Path = OSUtils().path_to_hosts()
     hosts_new_path: Path = hosts_path.with_suffix('.temp')
     domains_total_num: int = UniqueDomains().count_domains()
+
+    def __init__(self):
+        self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     def header(self) -> str:
         """Return the common header for the Hosts file.
@@ -92,9 +96,9 @@ ff02::3 ip6-allhosts\n\n
                     hosts.write(line)
         except OSError as e:
             print(f'Writing to {self.hosts_path} failed: {e}')
-            logger.error(f'Writing to {self.hosts_path} failed: {e}')
+            self.logger.error(f'Writing to {self.hosts_path} failed: {e}')
             return
-        logger.info(f'Hosts file at {self.hosts_path} was created/updated. '
+        self.logger.info(f'Hosts file at {self.hosts_path} was created/updated. '
                     f'Blacklisted {self.domains_total_num} unique domains.')
         print(f'Done. Blacklisted {self.domains_total_num} unique domains.\n'
               f'Enjoy the browsing!')
@@ -118,10 +122,10 @@ ff02::3 ip6-allhosts\n\n
                             hosts_new.write(f'\n0.0.0.0 {blacklisted_domain}')
                             domain_added = True
                             print(f'"{blacklisted_domain}" domain name has been blacklisted')
-                            logger.info(f'"{blacklisted_domain}" domain name has been blacklisted')
+                            self.logger.info(f'"{blacklisted_domain}" domain name has been blacklisted')
         except OSError as e:
             print(f'Operation failed: {e}')
-            logger.error(f'Operation failed: {e}')
+            self.logger.error(f'Operation failed: {e}')
             return
 
         self.hosts_path.unlink()
@@ -146,16 +150,16 @@ ff02::3 ip6-allhosts\n\n
                         hosts_new.write(line)
         except OSError as e:
             print(f'Operation failed: {e}')
-            logger.error(f'Operation failed: {e}')
+            self.logger.error(f'Operation failed: {e}')
             return
 
         if not found:
             print(f"No occurrence of '{whitelisted_domain}'"
                   f" found in file '{self.hosts_path}'")
-            logger.info(f"No occurrence of '{whitelisted_domain}'"
+            self.logger.info(f"No occurrence of '{whitelisted_domain}'"
                         f" found in file '{self.hosts_path}'")
         else:
-            logger.info(f'"{whitelisted_domain}" has been whitelisted')
+            self.logger.info(f'"{whitelisted_domain}" has been whitelisted')
 
         self.hosts_path.unlink()
         self.hosts_new_path.rename(self.hosts_path)
@@ -175,8 +179,8 @@ ff02::3 ip6-allhosts\n\n
             with self.hosts_path.open('rb') as src, backup_hosts.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
             print(f'Backup file was created here: {backup_path}')
-            logger.info('Backup of the original Hosts'
+            self.logger.info('Backup of the original Hosts'
                         f' file was created at: {backup_path}')
         except OSError as e:
-            logger.error(f'Error creating backup: {e}')
+            self.logger.error(f'Error creating backup: {e}')
             print(f'Error creating backup: {e}')

@@ -1,8 +1,9 @@
 import concurrent.futures
+from logging import Logger
 
 from requests import get, RequestException, Response
 
-from khostman.logger.logger import logger
+from khostman.logger.logger import HostsLogger
 from khostman.utils.data_utils import DataUtils
 from khostman.utils.logging_utils import LoggingUtils
 
@@ -22,9 +23,11 @@ class RawHostsCollector:
     """
     blacklist_sources: list[str] = DataUtils.extract_sources_from_json(blacklist=True)
 
-    @staticmethod
+    def __init__(self):
+        self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
+
     @LoggingUtils.func_and_args_logging
-    def fetch_source_contents(url: str) -> str | None:
+    def fetch_source_contents(self, url: str) -> str | None:
         """Fetch source contents and return it as a string.
 
         Args:
@@ -39,10 +42,10 @@ class RawHostsCollector:
             response: Response = get(url)
             response.raise_for_status()
             contents: str = response.text
-            logger.info(f'Successfully fetched contents of {url}')
+            self.logger.info(f'Successfully fetched contents of {url}')
             return contents
         except RequestException as e:
-            logger.error(f'Could not fetch blacklisted domains from {url}: {e}')
+            self.logger.error(f'Could not fetch blacklisted domains from {url}: {e}')
             print(f'Could not fetch blacklisted domains from {url}')
             return None
 
@@ -61,9 +64,9 @@ class RawHostsCollector:
             try:
                 with open(temp_file, 'a') as f:
                     f.write(f'{contents}\n')
-                    logger.info(f'Successfully wrote contents of {url} to {temp_file}')
+                    self.logger.info(f'Successfully wrote contents of {url} to {temp_file}')
             except OSError as e:
-                logger.error(f'Failed to write contents of {url} to {temp_file}: {e}')
+                self.logger.error(f'Failed to write contents of {url} to {temp_file}: {e}')
 
     @LoggingUtils.func_and_args_logging
     def process_sources_concurrently(self, tmp: str) -> None:

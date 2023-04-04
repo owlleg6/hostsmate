@@ -7,8 +7,8 @@ from pathlib import Path
 from tempfile import gettempdir
 from uuid import uuid4
 
-from khostman.logger.logger import logger
 from khostman.utils.utils import Utils
+import khostman.logger.logger as l
 
 
 class OSUtils(Utils):
@@ -27,8 +27,10 @@ class OSUtils(Utils):
         path_to_hosts(): Return the path to the hosts file on the current system.
     """
 
-    @staticmethod
-    def ensure_root_privileges():
+    def __init__(self):
+        self.logger = l.HostsLogger().create_logger('Utils')
+
+    def ensure_root_privileges(self):
         """
         Ensure that the application is running with root/administrator privileges. Exit if it is not.
 
@@ -41,7 +43,7 @@ class OSUtils(Utils):
             root: bool = ctypes.windll.shell32.IsUserAnAdmin() != 0
 
         if not root:
-            logger.info('Not running as root. Exiting.')
+            self.logger.info('Not running as root. Exiting.')
             exit('Please run the application as a '
                  'root/administrator to continue.')
 
@@ -59,19 +61,6 @@ class OSUtils(Utils):
         project_root: pathlib.Path = Path(__file__).resolve().parents[2]
         return project_root
 
-    def get_logs_dir(self) -> Path:
-        """
-        Return the path to the directory where the log files will be stored.
-
-        Returns:
-            Path: The path to the logs directory.
-        """
-        logs_dir = self.get_logs_dir() / 'logs'
-
-        if not logs_dir.exists():
-            logs_dir.mkdir()
-        return logs_dir
-
     @staticmethod
     def mk_tmp_hex_file() -> str:
         """Create a temporary file path using a random hexadecimal UUID.
@@ -82,8 +71,7 @@ class OSUtils(Utils):
         tmp: str = join(gettempdir(), uuid4().hex)
         return tmp
 
-    @staticmethod
-    def path_to_hosts() -> Path:
+    def path_to_hosts(self) -> Path:
         """Return the path to the hosts file on the current system.
 
         Returns:
@@ -99,5 +87,5 @@ class OSUtils(Utils):
             hosts_path: Path = Path(root_drive + r'Windows\System32\drivers\etc\hosts')
         else:
             exit('This operating system is not supported.')
-        logger.debug(f'path to the hosts file is {hosts_path}')
+        self.logger.info(f'path to the hosts file is {hosts_path}')
         return hosts_path

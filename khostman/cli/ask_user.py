@@ -1,8 +1,9 @@
 from tkinter.filedialog import askdirectory
 from os.path import isfile
+from logging import Logger
 
 from khostman.utils.logging_utils import LoggingUtils
-from khostman.logger.logger import logger
+from khostman.logger.logger import HostsLogger
 
 
 class AskUser:
@@ -13,15 +14,19 @@ class AskUser:
         ask_autorun_frequency() -> str
         ask_if_backup_needed() -> bool
     """
-    @staticmethod
+
+    def __init__(self):
+        self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
+
     @LoggingUtils.func_and_args_logging
-    def ask_backup_directory() -> str:
+    def ask_backup_directory(self) -> str:
         """Prompt the user to select a backup directory and returns the path.
 
         Returns:
             str: The selected backup directory path.
         """
         backup_path = askdirectory(title='Select Backup Directory')  # shows dialog box and returns the path
+        self.logger.info(f'Backup directory: {backup_path}')
         return backup_path
 
     @staticmethod
@@ -48,9 +53,8 @@ class AskUser:
             else:
                 print(wrong_input)
 
-    @staticmethod
-    def ask_if_backup_needed() -> bool:
-        """Prompts the user to select whether or not to backup the original Hosts file.
+    def ask_if_backup_needed(self) -> bool:
+        """Prompts the user to select whether to backup the original Hosts file.
 
         Returns:
             bool: True if the user chooses to backup, False otherwise.
@@ -60,15 +64,15 @@ class AskUser:
         while True:
             if not isfile('hosts'):
                 print('No Hosts file has been found in /etc/hosts')
-                logger.info('No Hosts file has been found in /etc/hosts')
+                self.logger.info('No Hosts file has been found in /etc/hosts')
                 return False
             elif need_backup == 'y':
                 return True
             elif need_backup == 'n':
-                logger.info('The user refused to backup the original file')
+                self.logger.info('The user refused to backup the original file')
                 return False
             else:
-                logger.info('Unrecognizable user input')
+                self.logger.info('Unrecognizable user input')
                 need_backup = input('Your answer is not recognised.'
                                     ' Please enter "y" or "n" '
                                     'to confirm your choice: ')

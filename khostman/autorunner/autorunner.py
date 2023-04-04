@@ -1,10 +1,11 @@
 import subprocess
 import sys
 from pathlib import Path
+from logging import Logger
 
 from khostman.cli.ask_user import AskUser
 from khostman.utils.data_utils import OSUtils
-from khostman.logger.logger import logger
+from khostman.logger.logger import HostsLogger
 
 
 class Autorunner:
@@ -22,6 +23,7 @@ class Autorunner:
 
     def __init__(self):
         self.ensure_os_compatibility()
+        self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     @staticmethod
     def ensure_os_compatibility():
@@ -38,8 +40,7 @@ class Autorunner:
         if platform not in allowed_platforms:
             sys.exit('This feature in not supported for your operating system.')
 
-    @staticmethod
-    def check_anacron_dependency() -> None:
+    def check_anacron_dependency(self) -> None:
         """
         Verify whether anacron package is installed on the system, exit if not.
         """
@@ -50,7 +51,7 @@ class Autorunner:
             )
         except subprocess.SubprocessError as e:
             print('Operation failed.')
-            logger.error(f'Operation failed: {e}')
+            self.logger.logger.error(f'Operation failed: {e}')
 
         if not anacron.stdout:
             exit("Please install 'anacron' dependency and try again.")
@@ -64,10 +65,10 @@ class Autorunner:
                  self.job_setter_sh
                  ]
             )
-            logger.debug(f'executable permissions added to {self.job_setter_sh}')
+            self.logger.debug(f'executable permissions added to {self.job_setter_sh}')
         except subprocess.SubprocessError as e:
             print('Operation failed.')
-            logger.error(f'Operation failed: {e}')
+            self.logger.error(f'Operation failed: {e}')
 
     def set_anacron_job(self):
         """Run the anacron_job_setter.sh script."""
@@ -83,4 +84,4 @@ class Autorunner:
                             ])
         except subprocess.SubprocessError as e:
             print('Operation failed.')
-            logger.error(f'Operation failed: {e}')
+            self.logger.error(f'Operation failed: {e}')

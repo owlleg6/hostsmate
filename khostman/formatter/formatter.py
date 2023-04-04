@@ -1,11 +1,12 @@
 from requests import get, RequestException
 from urllib.parse import urlparse
 from io import StringIO
+from logging import Logger
 import re
 
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.utils.data_utils import DataUtils
-from khostman.logger.logger import logger
+from khostman.logger.logger import HostsLogger
 from khostman.unique_domains.unique_domains import UniqueDomains
 
 
@@ -37,6 +38,7 @@ class Formatter:
 
     def __init__(self):
         self.whitelist: set = self.get_whitelist()
+        self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     def get_whitelist(self) -> set:
         """Fetches and returns a set of domains from the whitelist sources.
@@ -53,7 +55,7 @@ class Formatter:
                 buffer: StringIO = StringIO(resp)
                 whitelist.update(buffer.readlines())
             except RequestException as e:
-                logger.error(f'Error fetching whitelist domains from {whitelist_source}: {e}')
+                self.logger.error(f'Error fetching whitelist domains from {whitelist_source}: {e}')
                 print(f'Could not fetch whitelist domains from {whitelist_source}')
         return whitelist
 
@@ -79,7 +81,7 @@ class Formatter:
                 if match:
                     return match.group() + '\n'
         except IndexError as e:
-            logger.error(f'Error while formatting the line {line}: {e}')
+            self.logger.error(f'Error while formatting the line {line}: {e}')
 
     def remove_duplicates(self, domain: str | None) -> None:
         """Remove duplicates by adding a domain to the unique_domains set.

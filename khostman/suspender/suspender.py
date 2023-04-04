@@ -1,6 +1,7 @@
 from pathlib import Path
+from logging import Logger
 
-from khostman.logger.logger import logger
+from khostman.logger.logger import HostsLogger
 from khostman.utils.os_utils import OSUtils
 
 
@@ -14,8 +15,10 @@ class Suspender:
     """
 
     org_hosts_name: Path = OSUtils().path_to_hosts()
-
     renamed_hosts: Path = org_hosts_name.with_name(org_hosts_name.name + '~')
+
+    def __init__(self):
+        self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     def suspend(self) -> None:
         """
@@ -25,9 +28,9 @@ class Suspender:
             self.org_hosts_name.rename(
                 self.renamed_hosts)
             print("Adblocking is being suspended. Don't forget to enable it back!")
-            logger.info(f'Adblocking has been suspended. "{self.org_hosts_name}" renamed to "{self.renamed_hosts}"')
+            self.logger.info(f'Adblocking has been suspended. "{self.org_hosts_name}" renamed to "{self.renamed_hosts}"')
         except FileNotFoundError:
-            logger.info(f'Hosts file {self.org_hosts_name} was not found. Exiting')
+            self.logger.info(f'Hosts file {self.org_hosts_name} was not found. Exiting')
             exit(f'Hosts file {self.org_hosts_name} was not found.')
 
     def resume(self) -> None:
@@ -37,7 +40,7 @@ class Suspender:
         try:
             self.renamed_hosts.rename(self.org_hosts_name)
             print('Adblocker has been resumed')
-            logger.info('Adblocker has been resumed')
+            self.logger.info('Adblocker has been resumed')
         except FileNotFoundError:
-            logger.info(f'No {self.renamed_hosts} file was found')
+            self.logger.info(f'No {self.renamed_hosts} file was found')
             exit('Seems that the adblocker is running already.')
