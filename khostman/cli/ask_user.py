@@ -30,20 +30,19 @@ class AskUser:
         Raises:
             SystemExit: if specified directory is not exists.
         """
-        while True:
-            backup_dir: str = input('Please enter a path to the directory where '
-                                    'to backup the original Hosts file: \n')
-            if not backup_dir:
-                print(self.wrong_input)
-                self.ask_backup_directory()
+        backup_dir: str = input('Please enter a path to the directory where '
+                                'to backup the original Hosts file: \n')
+        if not backup_dir:
+            print(self.wrong_input)
+            self.ask_backup_directory()
 
-            backup_dir: Path = Path(backup_dir).resolve()
-            if not backup_dir.is_dir():
-                self.logger.error(f'No such directory:\n{backup_dir}')
-                raise SystemExit(f'No such directory:\n{backup_dir}'
-                                 '\nVerify the path and try again.')
-            self.logger.info(f'Backup dir: {backup_dir}')
-            return backup_dir
+        backup_dir: Path = Path(backup_dir).resolve()
+        if not backup_dir.is_dir():
+            self.logger.error(f'No such directory:\n{backup_dir}')
+            raise SystemExit(f'No such directory:\n{backup_dir}'
+                             '\nVerify the path and try again.')
+        self.logger.info(f'Backup dir: {backup_dir}')
+        return backup_dir
 
     def ask_autorun_frequency(self) -> str:
         """Prompts the user to select the frequency of autorun for Khostman.
