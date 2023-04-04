@@ -1,8 +1,8 @@
-from khostman.formatter.formatter import Formatter
-from khostman.raw_hosts_collector.raw_hosts_collector import RawHostsCollector
-from khostman.unique_domains.unique_domains import UniqueDomains
-from khostman.utils.os_utils import OSUtils
-from khostman.writer.writer import Writer
+from hostsmate.formatter.formatter import Formatter
+from hostsmate.raw_hosts_collector.raw_hosts_collector import RawHostsCollector
+from hostsmate.unique_domains.unique_domains import UniqueDomains
+from hostsmate.utils.os_utils import OSUtils
+from hostsmate.writer.writer import Writer
 
 
 class HostsFileUpdater:
@@ -15,7 +15,7 @@ class HostsFileUpdater:
         temp_file (str) path to temporary file for RawHostsCollector and
         Formatter classes usage.
     """
-    temp_file: str = OSUtils.mk_tmp_hex_file()
+    temp_file: str = OSUtils().mk_tmp_hex_file()
 
     def run(self) -> None:
         """

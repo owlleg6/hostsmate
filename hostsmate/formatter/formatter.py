@@ -4,10 +4,10 @@ from io import StringIO
 from logging import Logger
 import re
 
-from khostman.utils.logging_utils import LoggingUtils
-from khostman.utils.data_utils import DataUtils
-from khostman.logger.logger import HostsLogger
-from khostman.unique_domains.unique_domains import UniqueDomains
+from hostsmate.utils.logging_utils import LoggingUtils
+from hostsmate.utils.data_utils import DataUtils
+from hostsmate.logger.logger import HostsLogger
+from hostsmate.unique_domains.unique_domains import UniqueDomains
 
 
 class Formatter:
@@ -33,7 +33,7 @@ class Formatter:
     localhost: str = '127.0.0.1'
     void_id: str = '0.0.0.0'
     domain_regex: re.Pattern = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
-    whitelist_sources: list[str] = DataUtils.extract_sources_from_json(whitelist=True)
+    whitelist_sources: list[str] = DataUtils().extract_sources_from_json(whitelist=True)
     unique_domains = UniqueDomains()
 
     def __init__(self):

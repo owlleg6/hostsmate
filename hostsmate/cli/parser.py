@@ -1,12 +1,12 @@
 import argparse
 import sys
 
-from khostman.writer.writer import Writer
-from khostman.suspender.suspender import Suspender
-from khostman.utils.os_utils import OSUtils
-from khostman.utils.logging_utils import LoggingUtils
-from khostman.autorunner.autorunner import Autorunner
-from khostman.hosts_file_updater.hosts_file_updater import HostsFileUpdater
+from hostsmate.writer.writer import Writer
+from hostsmate.suspender.suspender import Suspender
+from hostsmate.utils.os_utils import OSUtils
+from hostsmate.utils.logging_utils import LoggingUtils
+from hostsmate.autorunner.autorunner import Autorunner
+from hostsmate.hosts_file_updater.hosts_file_updater import HostsFileUpdater
 
 
 class Parser:

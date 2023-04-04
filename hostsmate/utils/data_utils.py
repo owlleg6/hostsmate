@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 from logging import Logger
 
-from khostman.utils.utils import Utils
-from khostman.utils.os_utils import OSUtils
-from khostman.logger.logger import HostsLogger
+from hostsmate.utils.utils import Utils
+from hostsmate.utils.os_utils import OSUtils
+from hostsmate.logger.logger import HostsLogger
 
 
 class DataUtils(Utils):
@@ -27,7 +27,7 @@ class DataUtils(Utils):
         Returns:
             list[str]: A list of sources extracted from the JSON file.
         """
-        resources_dir: Path = OSUtils.get_project_root() / 'khostman' / 'resources'
+        resources_dir: Path = OSUtils.get_project_root() / 'hostsmate' / 'resources'
 
         if whitelist:
             source_json: Path = resources_dir / 'whitelist_sources.json'

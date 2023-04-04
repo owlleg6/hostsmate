@@ -7,8 +7,8 @@ from pathlib import Path
 from tempfile import gettempdir
 from uuid import uuid4
 
-from khostman.utils.utils import Utils
-import khostman.logger.logger as l
+from hostsmate.utils.utils import Utils
+import hostsmate.logger.logger as l
 
 
 class OSUtils(Utils):
@@ -61,14 +61,15 @@ class OSUtils(Utils):
         project_root: pathlib.Path = Path(__file__).resolve().parents[2]
         return project_root
 
-    @staticmethod
-    def mk_tmp_hex_file() -> str:
+
+    def mk_tmp_hex_file(self) -> str:
         """Create a temporary file path using a random hexadecimal UUID.
 
         Returns:
             str: The absolute path of the temporary file.
         """
         tmp: str = join(gettempdir(), uuid4().hex)
+        self.logger.info(f'Temporary file: path: {tmp}')
         return tmp
 
     def path_to_hosts(self) -> Path:

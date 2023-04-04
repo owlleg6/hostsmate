@@ -1,8 +1,8 @@
 from logging import Logger
 from pathlib import Path
 
-from khostman.utils.os_utils import OSUtils
-from khostman.logger.logger import HostsLogger
+from hostsmate.utils.os_utils import OSUtils
+from hostsmate.logger.logger import HostsLogger
 
 
 class AskUser:

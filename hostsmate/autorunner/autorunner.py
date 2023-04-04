@@ -3,9 +3,9 @@ import sys
 from pathlib import Path
 from logging import Logger
 
-from khostman.cli.ask_user import AskUser
-from khostman.utils.data_utils import OSUtils
-from khostman.logger.logger import HostsLogger
+from hostsmate.cli.ask_user import AskUser
+from hostsmate.utils.data_utils import OSUtils
+from hostsmate.logger.logger import HostsLogger
 
 
 class Autorunner:

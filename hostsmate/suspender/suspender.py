@@ -1,8 +1,8 @@
 from pathlib import Path
 from logging import Logger
 
-from khostman.logger.logger import HostsLogger
-from khostman.utils.os_utils import OSUtils
+from hostsmate.logger.logger import HostsLogger
+from hostsmate.utils.os_utils import OSUtils
 
 
 class Suspender:

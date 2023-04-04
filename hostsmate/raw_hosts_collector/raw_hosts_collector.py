@@ -3,9 +3,9 @@ from logging import Logger
 
 from requests import get, RequestException, Response
 
-from khostman.logger.logger import HostsLogger
-from khostman.utils.data_utils import DataUtils
-from khostman.utils.logging_utils import LoggingUtils
+from hostsmate.logger.logger import HostsLogger
+from hostsmate.utils.data_utils import DataUtils
+from hostsmate.utils.logging_utils import LoggingUtils
 
 
 class RawHostsCollector:
@@ -21,12 +21,11 @@ class RawHostsCollector:
         process_sources_concurrently(tmp: str) -> None
 
     """
-    blacklist_sources: list[str] = DataUtils.extract_sources_from_json(blacklist=True)
+    blacklist_sources: list[str] = DataUtils().extract_sources_from_json(blacklist=True)
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
-    @LoggingUtils.func_and_args_logging
     def fetch_source_contents(self, url: str) -> str | None:
         """Fetch source contents and return it as a string.
 
@@ -58,6 +57,7 @@ class RawHostsCollector:
              url (str): the URL containing list of blacklisted domains.
              temp_file (str): path to the temporary file
         """
+
         contents: str | None = self.fetch_source_contents(url)
 
         if contents is not None:
