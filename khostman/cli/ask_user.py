@@ -1,7 +1,8 @@
 from tkinter.filedialog import askdirectory
-from os.path import isfile
 from logging import Logger
+from pathlib import Path
 
+from khostman.utils.os_utils import OSUtils
 from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import HostsLogger
 
@@ -14,6 +15,7 @@ class AskUser:
         ask_autorun_frequency() -> str
         ask_if_backup_needed() -> bool
     """
+    hosts_path: Path = OSUtils().path_to_hosts()
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
@@ -25,12 +27,11 @@ class AskUser:
         Returns:
             str: The selected backup directory path.
         """
-        backup_path = askdirectory(title='Select Backup Directory')  # shows dialog box and returns the path
+        backup_path: str = askdirectory(title='Select Backup Directory')
         self.logger.info(f'Backup directory: {backup_path}')
         return backup_path
 
-    @staticmethod
-    def ask_autorun_frequency() -> str:
+    def ask_autorun_frequency(self) -> str:
         """Prompts the user to select the frequency of autorun for Khostman.
 
         Returns:
@@ -38,8 +39,9 @@ class AskUser:
         """
         wrong_input = 'Unrecognized input. Try again.\n'
         while True:
-            frequency = input(
-                'How often do you want to autorun Khostman to update your Hosts file?\n'
+            frequency: str = input(
+                'How often do you want to autorun Khostman to update your '
+                'Hosts file?\n'
                 '(enter 1, 2 or 3)\n'
                 '1. Daily\n'
                 '2. Weekly\n'
@@ -49,6 +51,7 @@ class AskUser:
             if frequency.lower() == 'q':
                 exit()
             if frequency in ['1', '2', '3']:
+                self.logger.info(f'Chosen autorun frequency: {frequency}')
                 return frequency
             else:
                 print(wrong_input)
@@ -59,12 +62,14 @@ class AskUser:
         Returns:
             bool: True if the user chooses to backup, False otherwise.
         """
-        need_backup = input('Do you want to backup your original Hosts file? '
-                            '(y or n)').lower()
+        need_backup: str = input('Do you want to backup your original '
+                                 'Hosts file? (y or n)').lower()
         while True:
-            if not isfile('hosts'):
-                print('No Hosts file has been found in /etc/hosts')
-                self.logger.info('No Hosts file has been found in /etc/hosts')
+            if not self.hosts_path.exists():
+                print(f'No Hosts file has been found in '
+                      f'{self.hosts_path.parent}')
+                self.logger.info(f'No Hosts file in '
+                                 f'{self.hosts_path.parent}')
                 return False
             elif need_backup == 'y':
                 return True
