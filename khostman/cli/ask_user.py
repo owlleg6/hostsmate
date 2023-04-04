@@ -1,9 +1,7 @@
-from tkinter.filedialog import askdirectory
 from logging import Logger
 from pathlib import Path
 
 from khostman.utils.os_utils import OSUtils
-from khostman.utils.logging_utils import LoggingUtils
 from khostman.logger.logger import HostsLogger
 
 
@@ -20,6 +18,19 @@ class AskUser:
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
+
+    def check_hosts_existence(self) -> None:
+        """Helper method to verify whether the hosts file exists.
+
+        Raises:
+            SystemExit: if the hosts file is not exists.
+        """
+        if not self.hosts_path.exists():
+            print(f'No Hosts file has been found in '
+                  f'{self.hosts_path.parent}')
+            self.logger.info(f'No Hosts file in '
+                             f'{self.hosts_path.parent}')
+            raise SystemExit
 
     def ask_backup_directory(self) -> Path:
         """Prompt the user to select a backup directory and return the path.
@@ -45,11 +56,19 @@ class AskUser:
         return backup_dir
 
     def ask_autorun_frequency(self) -> str:
-        """Prompts the user to select the frequency of autorun for Khostman.
+        """Prompt the user to select the frequency of autorun for Khostman.
 
         Returns:
             str: The selected autorun frequency ('1', '2', or '3').
+
+        Raises:
+            SystemExit: if the user entered "q"
         """
+        freq_map: dict = {
+            '1': 'daily',
+            '2': 'weekly',
+            '3': 'monthly'
+        }
 
         while True:
             frequency: str = input(
@@ -62,9 +81,10 @@ class AskUser:
                 'Enter "q" to quit.\n'
             )
             if frequency.lower() == 'q':
-                exit()
+                raise SystemExit
             if frequency in ['1', '2', '3']:
-                self.logger.info(f'Chosen autorun frequency: {frequency}')
+                self.logger.info(f'Chosen autorun frequency: '
+                                 f'{freq_map[frequency]}')
                 return frequency
             else:
                 print(self.wrong_input)
@@ -75,22 +95,19 @@ class AskUser:
         Returns:
             bool: True if the user chooses to backup, False otherwise.
         """
-        need_backup: str = input('Do you want to backup your original '
-                                 'Hosts file? (y or n)').lower()
-        while True:
-            if not self.hosts_path.exists():
-                print(f'No Hosts file has been found in '
-                      f'{self.hosts_path.parent}')
-                self.logger.info(f'No Hosts file in '
-                                 f'{self.hosts_path.parent}')
-                return False
-            elif need_backup == 'y':
-                return True
-            elif need_backup == 'n':
-                self.logger.info('The user refused to backup the original file')
-                return False
-            else:
-                self.logger.info('Unrecognizable user input')
-                need_backup = input('Your answer is not recognised.'
-                                    ' Please enter "y" or "n" '
-                                    'to confirm your choice: ')
+        self.check_hosts_existence()
+
+        answers: dict = {
+            'y': True,
+            'n': False
+        }
+        choice: str = input('Do you want to backup your original '
+                            'Hosts file? (y or n): ').lower()
+
+        if choice not in answers.keys():
+            print(self.wrong_input)
+            return self.ask_if_backup_needed()
+
+        answer: bool = answers[choice]
+        self.logger.info(f"User's choice on backup: {answer}")
+        return answer
