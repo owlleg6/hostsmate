@@ -19,18 +19,33 @@ class HostsLogger:
         Returns:
             logging.Logger: The logger object.
         """
+
         logs_dir: Path = self.get_logs_dir()
 
         logger: logging.Logger = logging.getLogger(name)
         logger.setLevel(logging.DEBUG)
 
-        formatter = logging.Formatter('%(asctime)s [%(levelname)s] '
-                                      '[%(name)s.%(funcName)s] - %(message)s')
-
-        file_handler = logging.FileHandler(f'{logs_dir}/hosts.log')
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+        if not self.has_file_handler(logger):
+            formatter = logging.Formatter(
+                '%(asctime)s [%(levelname)s] '
+                '[%(name)s.%(funcName)s] - %(message)s')
+            file_handler = logging.FileHandler(f'{logs_dir}/hosts.log')
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
         return logger
+
+    @staticmethod
+    def has_file_handler(logger: logging.Logger) -> bool:
+        """
+        Check whether a logger has a file handler already added.
+
+        Args:
+            logger (logging.Logger): The logger object.
+
+        Returns:
+            bool: True if a file handler has already been added, False otherwise.
+        """
+        return any(isinstance(handler, logging.FileHandler) for handler in logger.handlers)
 
     @staticmethod
     def get_logs_dir() -> Path:
