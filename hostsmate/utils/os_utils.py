@@ -28,9 +28,11 @@ class OSUtils(Utils):
     """
 
     def __init__(self):
+        self.ensure_root_privileges()
         self.logger = l.HostsLogger().create_logger('Utils')
 
-    def ensure_root_privileges(self):
+    @staticmethod
+    def ensure_root_privileges():
         """
         Ensure that the application is running with root/administrator privileges. Exit if it is not.
 
@@ -43,7 +45,6 @@ class OSUtils(Utils):
             root: bool = ctypes.windll.shell32.IsUserAnAdmin() != 0
 
         if not root:
-            self.logger.info('Not running as root. Exiting.')
             exit('Please run the application as a '
                  'root/administrator to continue.')
 
@@ -60,7 +61,6 @@ class OSUtils(Utils):
         """
         project_root: pathlib.Path = Path(__file__).resolve().parents[2]
         return project_root
-
 
     def mk_tmp_hex_file(self) -> str:
         """Create a temporary file path using a random hexadecimal UUID.
