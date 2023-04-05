@@ -9,11 +9,12 @@ from hostsmate.utils.logging_utils import LoggingUtils
 
 
 class RawHostsCollector:
-    """A class for extracting raw contents from blacklist sources and storing them in a temporary file.
-       This needed for further cleaning and formatting data to extract unique domains.
+    """A class for extracting raw contents from blacklist sources and storing
+    them in a temporary file. This needed for further cleaning and formatting
+    data to extract unique domains.
 
     Attributes:
-        blacklist_sources (list): A list of URLs containing blacklisted domains.
+        logger (logging.Logger): a logger instance for the class.
 
     Methods:
         fetch_source_contents(url: str) -> Optional[str]
@@ -21,7 +22,6 @@ class RawHostsCollector:
         process_sources_concurrently(tmp: str) -> None
 
     """
-    blacklist_sources: list[str] = DataUtils().extract_sources_from_json(blacklist=True)
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
@@ -38,8 +38,9 @@ class RawHostsCollector:
         """
         try:
             print(f'Fetching blacklisted domains from {url}')
-            response: Response = get(url)
+            response: Response = get(url, timeout=5)
             response.raise_for_status()
+
             contents: str = response.text
             self.logger.info(f'Fetched contents of {url}')
             return contents
@@ -66,18 +67,24 @@ class RawHostsCollector:
                     f.write(f'{contents}\n')
                     self.logger.info(f'Wrote contents of {url} to temp file')
             except OSError as e:
-                self.logger.error(f'Failed to write contents of {url} to temp file: {e}')
+                self.logger.error(f'Failed to write contents of {url} '
+                                  f'to temp file: {e}')
 
     @LoggingUtils.func_and_args_logging
     def process_sources_concurrently(self, tmp: str) -> None:
-        """Extract raw contents from all blacklist sources and write them to a temporary file.
+        """Extract raw contents from all blacklist sources and write them to
+        a temporary file.
 
-        This method uses a process pool executor to fetch and write the contents of each blacklist source
-        to the same temporary file in parallel.
+        This method uses a process pool executor to fetch and write the
+        contents of each blacklist source to the same temporary file in parallel.
 
         Args:
-            tmp (str): The path to the temporary file where the extracted contents will be written.
+            tmp (str): The path to the temporary file where the extracted
+            contents will be written.
         """
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            for source in self.blacklist_sources:
+            blacklist_sources: list[str] = \
+                DataUtils().extract_sources_from_json(blacklist=True)
+
+            for source in blacklist_sources:
                 executor.submit(self.write_source_to_tmp, source, tmp)
