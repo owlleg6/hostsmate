@@ -11,9 +11,6 @@ class HostsFileUpdater:
     sources of domain entries, formatting them, removing duplicates, and
     writing the resulting entries, along with the header, to the hosts file.
 
-    Attributes:
-        temp_file (str) path to temporary file for RawHostsCollector and
-        Formatter classes usage.
     """
 
     @staticmethod
@@ -26,5 +23,4 @@ class HostsFileUpdater:
 
         RawHostsCollector().process_sources_concurrently(temp_file)
         Formatter().format_raw_lines(temp_file)
-        UniqueDomains().get_unique_domains()
         Writer().build_hosts_file()
