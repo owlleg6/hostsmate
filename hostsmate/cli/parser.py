@@ -25,7 +25,7 @@ class Parser:
     """
 
     flag_map: dict[str, callable] = {
-        'go': HostsFileUpdater().run,
+        'go': HostsFileUpdater.run,
         'autorun': Autorunner().set_anacron_job,
         'backup': Writer().create_backup,
         'suspend': Suspender().suspend,

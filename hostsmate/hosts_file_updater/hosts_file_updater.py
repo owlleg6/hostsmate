@@ -15,14 +15,16 @@ class HostsFileUpdater:
         temp_file (str) path to temporary file for RawHostsCollector and
         Formatter classes usage.
     """
-    temp_file: str = OSUtils().mk_tmp_hex_file()
 
-    def run(self) -> None:
+    @staticmethod
+    def run() -> None:
         """
         Collects domain entries from raw sources, formats them, removes
         duplicates, and writes the resulting entries to the hosts file.
         """
-        RawHostsCollector().process_sources_concurrently(self.temp_file)
-        Formatter().format_raw_lines(self.temp_file)
+        temp_file: str = OSUtils().mk_tmp_hex_file()
+
+        RawHostsCollector().process_sources_concurrently(temp_file)
+        Formatter().format_raw_lines(temp_file)
         UniqueDomains().get_unique_domains()
         Writer().build_hosts_file()
