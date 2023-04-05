@@ -19,7 +19,6 @@ class Formatter:
         localhost (str): localhost ip address.
         void_id (str): non-routable ip address.
         domain_regex (Pattern): regular expression for domain name.
-        whitelist_sources (list): a list containing URLs with whitelist sources.
         whitelist (set): a set of whitelisted domain names.
         unique_domains (UniqueDomains): an instance that contains a set of unique blacklisted domain names.
 
@@ -33,12 +32,11 @@ class Formatter:
     localhost: str = '127.0.0.1'
     void_id: str = '0.0.0.0'
     domain_regex: re.Pattern = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
-    whitelist_sources: list[str] = DataUtils().extract_sources_from_json(whitelist=True)
-    unique_domains = UniqueDomains()
 
     def __init__(self):
         self.whitelist: set = self.get_whitelist()
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
+        self.unique_domains = UniqueDomains()
 
     def get_whitelist(self) -> set:
         """Fetches and returns a set of domains from the whitelist sources.
@@ -47,8 +45,10 @@ class Formatter:
             A set of whitelisted domain names.
         """
         whitelist = set()
+        whitelist_sources: list[str] = \
+            DataUtils().extract_sources_from_json(whitelist=True)
 
-        for whitelist_source in self.whitelist_sources:
+        for whitelist_source in whitelist_sources:
             try:
                 print(f'Fetching whitelisted domains from {whitelist_source}')
                 resp: str = get(whitelist_source).text
