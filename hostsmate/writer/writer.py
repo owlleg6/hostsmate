@@ -17,7 +17,6 @@ class Writer:
     Attributes:
         hosts_path (pathlib.Path): a path to the system's hosts file
         hosts_new_path (pathlib.Path): a path to the new hosts file to be written with updated data
-        domains_total_num (int): total number of unique blacklisted domains
 
     Methods:
         header() -> str
@@ -28,12 +27,12 @@ class Writer:
     """
     hosts_path: Path = OSUtils().path_to_hosts()
     hosts_new_path: Path = hosts_path.with_suffix('.temp')
-    domains_total_num: int = UniqueDomains().count_domains()
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
-    def header(self) -> str:
+    @staticmethod
+    def header() -> str:
         """Return the common header for the Hosts file.
 
         This method uses the `UniqueDomains` class to count the number of domains,
@@ -42,7 +41,7 @@ class Writer:
         Returns:
             A string containing header for the Hosts file.
         """
-        formatted_domains: str = '{:,}'.format(self.domains_total_num)
+        formatted_domains: str = '{:,}'.format(UniqueDomains().count_domains())
         current_date: str = datetime.now().strftime("%d-%b-%Y")
         return \
             f"""
@@ -55,7 +54,7 @@ class Writer:
 # #                                                                   # #
 # #   Total number of unique entries: {formatted_domains.ljust(32)}# #
 # #                                                                   # #
-# #   Github repository: https://github.com/kravchenkoda/khostman     # #
+# #   Github repository: https://github.com/kravchenkoda/hostsmate    # #
 # #                                                                   # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -65,7 +64,7 @@ class Writer:
 127.0.0.1 local
 255.255.255.255 broadcasthost
 ::1 localhost
-::1 ip6-localhost
+::1 ip6-localhost 
 ::1 ip6-loopback
 fe80::1%lo0 localhost
 ff00::0 ip6-localnet
@@ -87,6 +86,7 @@ ff02::3 ip6-allhosts\n\n
         of the `Writer` class.
         """
         blacklist_domains: set[str] = UniqueDomains().get_unique_domains()
+        domains_total_num: int = UniqueDomains().count_domains()
 
         try:
             print(f'Writing to {self.hosts_path}...')
@@ -99,8 +99,8 @@ ff02::3 ip6-allhosts\n\n
             self.logger.error(f'Writing to {self.hosts_path} failed: {e}')
             return
         self.logger.info(f'Hosts file at {self.hosts_path} was created/updated. '
-                    f'Blacklisted {self.domains_total_num} unique domains.')
-        print(f'Done. Blacklisted {self.domains_total_num} unique domains.\n'
+                         f'Added {domains_total_num} entries.')
+        print(f'Done. Blacklisted {domains_total_num} unique domains.\n'
               f'Enjoy the browsing!')
 
     def block_domain(self, blacklisted_domain: str) -> None:
@@ -157,7 +157,7 @@ ff02::3 ip6-allhosts\n\n
             print(f"No occurrence of '{whitelisted_domain}'"
                   f" found in file '{self.hosts_path}'")
             self.logger.info(f"No occurrence of '{whitelisted_domain}'"
-                        f" found in file '{self.hosts_path}'")
+                             f" found in '{self.hosts_path}'")
         else:
             self.logger.info(f'"{whitelisted_domain}" has been whitelisted')
 
@@ -170,17 +170,13 @@ ff02::3 ip6-allhosts\n\n
 
         Backup path is obtained by calling ask_backup_directory method of the AskUser class.
         """
-        backup_path: str = AskUser().ask_backup_directory()
-        if not backup_path:
-            return
-        backup_hosts: Path = Path(backup_path) / 'hosts_backup'
+        backup_path: Path = AskUser().ask_backup_directory() / 'hosts_backup'
 
         try:
-            with self.hosts_path.open('rb') as src, backup_hosts.open('wb') as dst:
+            with self.hosts_path.open('rb') as src, backup_path.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
-            print(f'Backup file was created here: {backup_path}')
-            self.logger.info('Backup of the original Hosts'
-                        f' file was created at: {backup_path}')
+            print(f'Backup file is: {backup_path}')
+            self.logger.info(f'Backup file is {backup_path}')
         except OSError as e:
-            self.logger.error(f'Error creating backup: {e}')
-            print(f'Error creating backup: {e}')
+            self.logger.error(e)
+            print(f'Error creating backup.')
