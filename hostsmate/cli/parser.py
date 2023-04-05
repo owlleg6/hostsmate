@@ -38,7 +38,7 @@ class Parser:
         arguments, and parsing the command-line arguments. Print help
         message if no arguments were provided.
         """
-        OSUtils.ensure_root_privileges()
+        OSUtils().ensure_root_privileges()
         self.parser: argparse.ArgumentParser = self.create_parser()
         self.help_if_no_args()
         self.args_: dict[str, [str | bool]] = vars(self.parser.parse_args())
@@ -57,11 +57,11 @@ class Parser:
             predefined arguments.
         """
         parser = argparse.ArgumentParser(
-            description='Welcome to Khostman! A system-wide ad blocker by Kravchenkoda. '
+            description='Welcome to HostsMate! A system-wide ad blocker by Kravchenkoda. '
                         'Protect yourself from malware, tracking, ads and spam.\n'
-                        'Khostman blacklists 1.4 million+ domains from 44 sources '
-                        'that update regularly to keep your system safer.\n\n'
-                        'GitHub repository: https://github.com/kravchenkoda/khostman',
+                        'HostsMate blacklists 1.4 million+ domains from 44 sources '
+                        'that update regularly to keep your system safe.\n\n'
+                        'GitHub repository: https://github.com/kravchenkoda/hostsmate',
             formatter_class=argparse.RawDescriptionHelpFormatter
         )
         group = parser.add_mutually_exclusive_group()
@@ -70,7 +70,7 @@ class Parser:
             '-g',
             '--go',
             action='store_true',
-            help='Parse domains from blacklist sources and start the adblocker.'
+            help='Parse domains from blacklist sources and start the HostsMate.'
         )
         group.add_argument(
             '-a',
@@ -82,12 +82,12 @@ class Parser:
             '-s',
             '--suspend',
             action='store_true',
-            help="Suspend the adblocker. Don't forget to turn it back!")
+            help="Suspend HostsMate. Don't forget to turn it back!")
         group.add_argument(
             '-r',
             '--resume',
             action='store_true',
-            help='Resume the adblocker after suspension.'
+            help='Resume HostsMate after suspension.'
         )
         group.add_argument(
             '-b',
