@@ -1,6 +1,8 @@
 import argparse
 import sys
+from logging import Logger
 
+from hostsmate.logger.logger import HostsLogger
 from hostsmate.writer.writer import Writer
 from hostsmate.suspender.suspender import Suspender
 from hostsmate.utils.os_utils import OSUtils
@@ -39,12 +41,13 @@ class Parser:
         message if no arguments were provided.
         """
         OSUtils().ensure_root_privileges()
+        self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
         self.parser: argparse.ArgumentParser = self.create_parser()
         self.help_if_no_args()
         self.args_: dict[str, [str | bool]] = vars(self.parser.parse_args())
 
-    @staticmethod
-    def create_parser() -> argparse.ArgumentParser:
+
+    def create_parser(self) -> argparse.ArgumentParser:
         """
         Creates an ArgumentParser object with predefined arguments for the
         command-line user interface. The predefined arguments include options
@@ -56,69 +59,78 @@ class Parser:
             argparse.ArgumentParser: An ArgumentParser object with the
             predefined arguments.
         """
-        parser = argparse.ArgumentParser(
-            description='Welcome to HostsMate! A system-wide ad blocker by Kravchenkoda. '
-                        'Protect yourself from malware, tracking, ads and spam.\n'
-                        'HostsMate blacklists 1.4 million+ domains from 44 sources '
-                        'that update regularly to keep your system safe.\n\n'
-                        'GitHub repository: https://github.com/kravchenkoda/hostsmate',
-            formatter_class=argparse.RawDescriptionHelpFormatter
-        )
-        group = parser.add_mutually_exclusive_group()
+        try:
+            parser = argparse.ArgumentParser(
+                description='Welcome to HostsMate! A system-wide ad blocker by Kravchenkoda. '
+                            'Protect yourself from malware, tracking, ads and spam.\n'
+                            'HostsMate blacklists 1.4 million+ domains from 44 sources '
+                            'that update regularly to keep your system safe.\n\n'
+                            'GitHub repository: https://github.com/kravchenkoda/hostsmate',
+                formatter_class=argparse.RawDescriptionHelpFormatter
+            )
+            group = parser.add_mutually_exclusive_group()
 
-        group.add_argument(
-            '-g',
-            '--go',
-            action='store_true',
-            help='Parse domains from blacklist sources and start the HostsMate.'
-        )
-        group.add_argument(
-            '-a',
-            '--autorun',
-            action='store_true',
-            help='Setup automatic update of your Hosts file (Linux only)'
-        )
-        group.add_argument(
-            '-s',
-            '--suspend',
-            action='store_true',
-            help="Suspend HostsMate. Don't forget to turn it back!")
-        group.add_argument(
-            '-r',
-            '--resume',
-            action='store_true',
-            help='Resume HostsMate after suspension.'
-        )
-        group.add_argument(
-            '-b',
-            '--backup',
-            action='store_true',
-            help='Create a backup of the existing Hosts '
-                 'file in the specific folder.'
-        )
-        group.add_argument(
-            '-x',
-            '--blacklist_domain',
-            type=str,
-            metavar='[domain-to-block]',
-            help='Blacklist specified domain.'
-        )
-        group.add_argument(
-            '-w',
-            '--whitelist_domain',
-            metavar='[domain-to-whitelist]',
-            type=str,
-            help='Whitelist specified domain.')
+            group.add_argument(
+                '-g',
+                '--go',
+                action='store_true',
+                help='Parse domains from blacklist sources and start the HostsMate.'
+            )
+            group.add_argument(
+                '-a',
+                '--autorun',
+                action='store_true',
+                help='Setup automatic update of your Hosts file (Linux only)'
+            )
+            group.add_argument(
+                '-s',
+                '--suspend',
+                action='store_true',
+                help="Suspend HostsMate. Don't forget to turn it back!")
+            group.add_argument(
+                '-r',
+                '--resume',
+                action='store_true',
+                help='Resume HostsMate after suspension.'
+            )
+            group.add_argument(
+                '-b',
+                '--backup',
+                action='store_true',
+                help='Create a backup of the existing Hosts '
+                     'file in the specific folder.'
+            )
+            group.add_argument(
+                '-x',
+                '--blacklist_domain',
+                type=str,
+                metavar='[domain-to-block]',
+                help='Blacklist specified domain.'
+            )
+            group.add_argument(
+                '-w',
+                '--whitelist_domain',
+                metavar='[domain-to-whitelist]',
+                type=str,
+                help='Whitelist specified domain.')
 
-        return parser
+            self.logger.info('argparse.ArgumentParser instance created.')
+            return parser
+        except OSError as e:
+            print('Error occurred while creating a parser')
+            self.logger.error(f'Error while creating a parser: {e}')
 
     def help_if_no_args(self):
         """
         Prints help message and exits if ran with no arguments.
+
+        Raises:
+            SystemExit
         """
         if len(sys.argv) == 1:
             self.parser.print_help()
-            exit()
+            self.logger.info('Ran with no arguments. Printed help')
+            raise SystemExit
 
     @LoggingUtils.func_and_args_logging
     def parse_arg(self) -> tuple[str, [str | bool]]:
@@ -141,10 +153,14 @@ class Parser:
             parsed_arg (tuple): argument and its value.
         """
         arg, value = parsed_arg
+        self.logger.info(f'CLI args passed: {arg, value}')
 
         if type(value) == str:
+            self.logger.info(f'Starting method: {self.flag_map[arg]}'
+                             f'with args {value}')
             self.flag_map[arg](value)
         else:
+            self.logger.info(f'Starting method: {self.flag_map[arg]}')
             self.flag_map[arg]()
 
     def __repr__(self):
