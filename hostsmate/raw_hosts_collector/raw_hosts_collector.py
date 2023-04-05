@@ -41,10 +41,10 @@ class RawHostsCollector:
             response: Response = get(url)
             response.raise_for_status()
             contents: str = response.text
-            self.logger.info(f'Successfully fetched contents of {url}')
+            self.logger.info(f'Fetched contents of {url}')
             return contents
         except RequestException as e:
-            self.logger.error(f'Could not fetch blacklisted domains from {url}: {e}')
+            self.logger.error(f'Could not fetch contents of {url}: {e}')
             print(f'Could not fetch blacklisted domains from {url}')
             return None
 
@@ -64,9 +64,9 @@ class RawHostsCollector:
             try:
                 with open(temp_file, 'a') as f:
                     f.write(f'{contents}\n')
-                    self.logger.info(f'Successfully wrote contents of {url} to {temp_file}')
+                    self.logger.info(f'Wrote contents of {url} to temp file')
             except OSError as e:
-                self.logger.error(f'Failed to write contents of {url} to {temp_file}: {e}')
+                self.logger.error(f'Failed to write contents of {url} to temp file: {e}')
 
     @LoggingUtils.func_and_args_logging
     def process_sources_concurrently(self, tmp: str) -> None:
