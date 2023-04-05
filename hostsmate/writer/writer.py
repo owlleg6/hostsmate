@@ -15,6 +15,7 @@ class Writer:
     """A class responsible for writing operations related to the user's Hosts file.
 
     Attributes:
+        logger(logging.Logger): a Logger instance of the class
         hosts_path (pathlib.Path): a path to the system's hosts file
         hosts_new_path (pathlib.Path): a path to the new hosts file to be written with updated data
 
@@ -25,11 +26,11 @@ class Writer:
         whitelist_domain(self, str: whitelisted_domain) -> None
         create_backup(self) -> None
     """
-    hosts_path: Path = OSUtils().path_to_hosts()
-    hosts_new_path: Path = hosts_path.with_suffix('.temp')
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
+        self.hosts_path: Path = OSUtils().path_to_hosts()
+        self.hosts_new_path: Path = self.hosts_path.with_suffix('.temp')
 
     @staticmethod
     def header() -> str:
@@ -110,7 +111,7 @@ ff02::3 ip6-allhosts\n\n
         Args:
             blacklisted_domain (str): domain name to be added to the Hosts file
         """
-        blacklisted_domain = Formatter().strip_domain_prefix(blacklisted_domain)
+        blacklisted_domain = Formatter.strip_domain_prefix(blacklisted_domain)
         domain_added = False
 
         try:
@@ -123,10 +124,10 @@ ff02::3 ip6-allhosts\n\n
                             domain_added = True
                             print(f'"{blacklisted_domain}" domain name has been blacklisted')
                             self.logger.info(f'"{blacklisted_domain}" domain name has been blacklisted')
+
         except OSError as e:
             print(f'Operation failed: {e}')
             self.logger.error(f'Operation failed: {e}')
-            return
 
         self.hosts_path.unlink()
         self.hosts_new_path.rename(self.hosts_path)
