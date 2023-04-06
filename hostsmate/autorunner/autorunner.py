@@ -13,12 +13,12 @@ class Autorunner:
      Hosts file.
 
     Attributes:
-        khostman_app (Path) = path to the khostman.py file.
+        hostsmate_app (Path) = path to the hostsmate.py file.
         job_setter_sh (Path) = path to the anacron_job_setter.sh which sets up
         an anacron job for Linux (bash only).
 
     """
-    khostman_app: Path = OSUtils.get_project_root() / 'app.py'
+    hostsmate_app: Path = OSUtils.get_project_root() / 'app.py'
     job_setter_sh: Path = OSUtils.get_project_root() / 'anacron_job_setter.sh'
 
     def __init__(self):
@@ -26,7 +26,7 @@ class Autorunner:
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     @staticmethod
-    def ensure_os_compatibility():
+    def ensure_os_compatibility() -> None:
         """Ensure that the current operating system is compatible with the
         autorunner feature (Linux and FreeBSD), exit if it is not.
 
@@ -38,7 +38,8 @@ class Autorunner:
         allowed_platforms: list[str] = ['linux', 'freebsd']
 
         if platform not in allowed_platforms:
-            sys.exit('This feature in not supported for your operating system.')
+            raise SystemExit('This feature in not supported for your '
+                             'operating system.')
 
     def check_anacron_dependency(self) -> None:
         """
@@ -51,12 +52,12 @@ class Autorunner:
             )
         except subprocess.SubprocessError as e:
             print('Operation failed.')
-            self.logger.logger.error(f'Operation failed: {e}')
+            self.logger.error(f'Operation failed: {e}')
 
         if not anacron.stdout:
             exit("Please install 'anacron' dependency and try again.")
 
-    def add_exec_permissions(self):
+    def add_exec_permissions(self) -> None:
         """Add executable permissions to the anacron job setter bash script."""
         try:
             subprocess.run(
@@ -65,22 +66,23 @@ class Autorunner:
                  self.job_setter_sh
                  ]
             )
-            self.logger.debug(f'executable permissions added to {self.job_setter_sh}')
+            self.logger.debug(f'executable permissions added to '
+                              f'{self.job_setter_sh}')
         except subprocess.SubprocessError as e:
             print('Operation failed.')
             self.logger.error(f'Operation failed: {e}')
 
-    def set_anacron_job(self):
+    def set_anacron_job(self) -> None:
         """Run the anacron_job_setter.sh script."""
 
         self.check_anacron_dependency()
-        autorun_frequency: str = AskUser.ask_autorun_frequency()
+        autorun_frequency: str = AskUser().ask_autorun_frequency()
         self.add_exec_permissions()
         try:
             subprocess.run(['bash',
                             self.job_setter_sh,
                             autorun_frequency,
-                            f'python3 {self.khostman_app} --go'
+                            f'python3 {self.hostsmate_app} --go'
                             ])
         except subprocess.SubprocessError as e:
             print('Operation failed.')
