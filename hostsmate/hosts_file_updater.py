@@ -1,8 +1,7 @@
-from hostsmate.formatter.formatter import Formatter
-from hostsmate.raw_hosts_collector.raw_hosts_collector import RawHostsCollector
-from hostsmate.unique_domains.unique_domains import UniqueDomains
+from hostsmate.formatter import Formatter
+from hostsmate.raw_hosts_collector import RawHostsCollector
 from hostsmate.utils.os_utils import OSUtils
-from hostsmate.writer.writer import Writer
+from hostsmate.writer import Writer
 
 
 class HostsFileUpdater:

@@ -4,7 +4,7 @@ from logging import Logger
 
 from hostsmate.utils.utils import Utils
 from hostsmate.utils.os_utils import OSUtils
-from hostsmate.logger.logger import HostsLogger
+from hostsmate.logger import HostsLogger
 
 
 class DataUtils(Utils):

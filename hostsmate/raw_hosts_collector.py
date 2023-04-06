@@ -3,7 +3,7 @@ from logging import Logger
 
 from requests import get, RequestException, Response
 
-from hostsmate.logger.logger import HostsLogger
+from hostsmate.logger import HostsLogger
 from hostsmate.utils.data_utils import DataUtils
 from hostsmate.utils.logging_utils import LoggingUtils
 

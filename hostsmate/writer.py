@@ -3,12 +3,12 @@ from pathlib import Path
 from datetime import datetime
 from logging import Logger
 
-from hostsmate.formatter.formatter import Formatter
+from hostsmate.formatter import Formatter
 from hostsmate.utils.os_utils import OSUtils
 from hostsmate.utils.logging_utils import LoggingUtils
-from hostsmate.logger.logger import HostsLogger
+from hostsmate.logger import HostsLogger
 from hostsmate.cli.ask_user import AskUser
-from hostsmate.unique_domains.unique_domains import UniqueDomains
+from hostsmate.unique_domains import UniqueDomains
 
 
 class Writer:

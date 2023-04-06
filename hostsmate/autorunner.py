@@ -5,7 +5,7 @@ from logging import Logger
 
 from hostsmate.cli.ask_user import AskUser
 from hostsmate.utils.data_utils import OSUtils
-from hostsmate.logger.logger import HostsLogger
+from hostsmate.logger import HostsLogger
 
 
 class Autorunner:
@@ -18,7 +18,7 @@ class Autorunner:
         an anacron job for Linux (bash only).
 
     """
-    hostsmate_app: Path = OSUtils.get_project_root() / 'app.py'
+    hostsmate_app: Path = OSUtils.get_project_root() / 'hostsmate.py'
     job_setter_sh: Path = OSUtils.get_project_root() / 'anacron_job_setter.sh'
 
     def __init__(self):

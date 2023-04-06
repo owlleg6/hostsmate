@@ -8,7 +8,7 @@ from tempfile import gettempdir
 from uuid import uuid4
 
 from hostsmate.utils.utils import Utils
-import hostsmate.logger.logger as l
+import hostsmate.logger as l
 
 
 class OSUtils(Utils):

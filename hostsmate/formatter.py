@@ -6,8 +6,8 @@ import re
 
 from hostsmate.utils.logging_utils import LoggingUtils
 from hostsmate.utils.data_utils import DataUtils
-from hostsmate.logger.logger import HostsLogger
-from hostsmate.unique_domains.unique_domains import UniqueDomains
+from hostsmate.logger import HostsLogger
+from hostsmate.unique_domains import UniqueDomains
 
 
 class Formatter:

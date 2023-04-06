@@ -2,7 +2,7 @@ from logging import Logger
 from pathlib import Path
 
 from hostsmate.utils.os_utils import OSUtils
-from hostsmate.logger.logger import HostsLogger
+from hostsmate.logger import HostsLogger
 
 
 class AskUser:

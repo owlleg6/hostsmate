@@ -1,14 +1,14 @@
 import argparse
 import sys
 from logging import Logger
+from typing import Callable
 
-from hostsmate.logger.logger import HostsLogger
-from hostsmate.writer.writer import Writer
-from hostsmate.suspender.suspender import Suspender
-from hostsmate.utils.os_utils import OSUtils
+from hostsmate.logger import HostsLogger
+from hostsmate.writer import Writer
+from hostsmate.suspender import Suspender
 from hostsmate.utils.logging_utils import LoggingUtils
-from hostsmate.autorunner.autorunner import Autorunner
-from hostsmate.hosts_file_updater.hosts_file_updater import HostsFileUpdater
+from hostsmate.autorunner import Autorunner
+from hostsmate.hosts_file_updater import HostsFileUpdater
 
 
 class Parser:
@@ -24,7 +24,7 @@ class Parser:
         or Suspender class.
     """
 
-    flag_map: dict[str, callable] = {
+    flag_map: dict[str, Callable] = {
         'go': HostsFileUpdater.run,
         'autorun': Autorunner().set_anacron_job,
         'backup': Writer().create_backup,
@@ -43,7 +43,7 @@ class Parser:
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
         self.parser: argparse.ArgumentParser = self.create_parser()
         self.help_if_no_args()
-        self.args_: dict[str, [str | bool]] = vars(self.parser.parse_args())
+        self.args_: dict[str, str | bool] = vars(self.parser.parse_args())
 
     def create_parser(self) -> argparse.ArgumentParser:
         """
@@ -127,7 +127,7 @@ class Parser:
             raise SystemExit
 
     @LoggingUtils.func_and_args_logging
-    def parse_arg(self) -> tuple[str, [str | bool]]:
+    def parse_arg(self) -> tuple[str, str | bool]:
         """
         Parse the argument and its value.
 
@@ -139,7 +139,7 @@ class Parser:
                 return arg, value
 
     @LoggingUtils.func_and_args_logging
-    def run_method(self, parsed_arg: tuple[str, [str | bool]]) -> None:
+    def run_method(self, parsed_arg: tuple[str, str | bool]) -> None:
         """
         Run the method based on the parsed argument.
 
