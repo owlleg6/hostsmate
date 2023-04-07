@@ -4,7 +4,6 @@ from logging import Logger
 from requests import get, RequestException, Response
 
 from hostsmate.logger import HostsLogger
-from hostsmate.utils.data_utils import DataUtils
 from hostsmate.utils.logging_utils import LoggingUtils
 
 
@@ -71,7 +70,10 @@ class RawHostsCollector:
                                   f'to temp file: {e}')
 
     @LoggingUtils.func_and_args_logging
-    def process_sources_concurrently(self, tmp: str) -> None:
+    def process_sources_concurrently(
+            self, tmp: str,
+            blacklist_sources: list[str]
+    ) -> int:
         """Extract raw contents from all blacklist sources and write them to
         a temporary file.
 
@@ -81,10 +83,15 @@ class RawHostsCollector:
         Args:
             tmp (str): The path to the temporary file where the extracted
             contents will be written.
+            blacklist_sources (list[str]): list of URLs containing
+            blacklisted domains.
         """
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            blacklist_sources: list[str] = \
-                DataUtils().extract_sources_from_json(blacklist=True)
+            futures_completed = 0
 
-            for source in blacklist_sources:
-                executor.submit(self.write_source_to_tmp, source, tmp)
+            futures = [executor.submit(self.write_source_to_tmp, source, tmp) for source in blacklist_sources]
+
+            for _ in concurrent.futures.as_completed(futures):
+                futures_completed += 1
+
+        return futures_completed

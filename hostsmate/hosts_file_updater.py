@@ -1,6 +1,7 @@
 from hostsmate.formatter import Formatter
 from hostsmate.raw_hosts_collector import RawHostsCollector
 from hostsmate.utils.os_utils import OSUtils
+from hostsmate.utils.data_utils import DataUtils
 from hostsmate.writer import Writer
 
 
@@ -19,7 +20,11 @@ class HostsFileUpdater:
         duplicates, and writes the resulting entries to the hosts file.
         """
         temp_file: str = OSUtils().mk_tmp_hex_file()
+        blacklist_sources = DataUtils().extract_sources_from_json(blacklist=True)
 
-        RawHostsCollector().process_sources_concurrently(temp_file)
+        RawHostsCollector().process_sources_concurrently(
+            temp_file,
+            blacklist_sources
+        )
         Formatter().format_raw_lines(temp_file)
         Writer().build_hosts_file()
