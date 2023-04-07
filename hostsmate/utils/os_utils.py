@@ -90,3 +90,21 @@ class OSUtils(Utils):
             exit('This operating system is not supported.')
         self.logger.info(f'path to the hosts file is {hosts_path}')
         return hosts_path
+
+    @staticmethod
+    def ensure_linux_or_bsd() -> bool | None:
+        """Ensure that the current operating system is compatible with the
+        feature (Linux and FreeBSD), exit if it is not.
+
+        Raises:
+            SystemExit: If the current operating system is not in the list of
+            allowed platforms.
+        """
+        platform: str = sys.platform
+        allowed_platforms: list[str] = ['linux', 'freebsd']
+
+        if platform not in allowed_platforms:
+            raise SystemExit('This feature in not supported for your '
+                             'operating system.')
+        else:
+            return True
