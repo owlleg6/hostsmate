@@ -1,5 +1,4 @@
 import subprocess
-import sys
 from pathlib import Path
 from logging import Logger
 
@@ -14,66 +13,32 @@ class Autorunner:
 
     Attributes:
         hostsmate_app (Path) = path to the hostsmate.py file.
-        job_setter_sh (Path) = path to the anacron_job_setter.sh which sets up
-        an anacron job for Linux (bash only).
+        job_setter_sh_script (Path) = path to the anacron_job_setter.sh which sets up
+        an anacron job (bash only).
 
     """
     hostsmate_app: Path = OSUtils.get_project_root() / 'hostsmate.py'
-    job_setter_sh: Path = OSUtils.get_project_root() / 'anacron_job_setter.sh'
+    job_setter_sh_script: Path = OSUtils.get_project_root() / 'anacron_job_setter.sh'
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
-    def check_anacron_dependency(self) -> None:
-        """
-        Verify whether anacron package is installed on the system, exit if not.
-        """
-        try:
-            anacron: subprocess.CompletedProcess = subprocess.run(
-                ['which', 'anacron'],
-                capture_output=True
-            )
-        except subprocess.SubprocessError as e:
-            print('Operation failed.')
-            self.logger.error(f'Operation failed: {e}')
-
-        if not anacron.stdout:
-            exit("Please install 'anacron' dependency and try again.")
-
-    def add_exec_permissions(self) -> None:
-        """Add executable permissions to the anacron job setter bash script."""
-        try:
-            subprocess.run(
-                ['chmod',
-                 '+x',
-                 self.job_setter_sh
-                 ]
-            )
-            self.logger.debug(f'executable permissions added to '
-                              f'{self.job_setter_sh}')
-        except subprocess.SubprocessError as e:
-            print('Operation failed.')
-            self.logger.error(f'Operation failed: {e}')
-
     def set_anacron_job(self) -> bool:
         """Run the anacron_job_setter.sh script.
+
         Returns bool:
                     True if the anacron job set.
                     False otherwise.
         """
-        if OSUtils.ensure_linux_or_bsd():
-            self.check_anacron_dependency()
+        if OSUtils.ensure_linux_or_bsd() and \
+                OSUtils().is_shell_dependency_installed('anacron'):
+
             autorun_frequency: str = AskUser().ask_autorun_frequency()
-            self.add_exec_permissions()
-            try:
-                subprocess.run(['bash',
-                                self.job_setter_sh,
-                                autorun_frequency,
-                                f'python3 {self.hostsmate_app} --go'
-                                ])
-                return True
-            except subprocess.SubprocessError as e:
-                print('Operation failed.')
-                self.logger.error(f'Operation failed: {e}')
-                return False
+            OSUtils().add_exec_permissions(self.job_setter_sh_script)
+
+            command = [autorun_frequency, f'python3 {self.hostsmate_app} --go']
+
+            OSUtils().execute_sh_command_as_root(
+                self.job_setter_sh_script, command)
+
         return False
