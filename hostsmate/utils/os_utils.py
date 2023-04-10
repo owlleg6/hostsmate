@@ -93,46 +93,41 @@ class OSUtils(Utils):
         return hosts_path
 
     @staticmethod
-    def ensure_linux_or_bsd() -> bool:
+    def ensure_linux_or_bsd(paltform) -> bool:
         """Ensure that the current operating system is compatible with the
         feature (Linux and FreeBSD), exit if it is not.
 
         Returns:
-            bool: True if
-
-        Raises:
-            SystemExit: If the current operating system is not in the list of
-            allowed platforms.
+            bool: True if platform is linux or freebsd, False otherwise.
         """
-        platform: str = sys.platform
         allowed_platforms: list[str] = ['linux', 'freebsd']
 
-        if platform not in allowed_platforms:
-            raise SystemExit('This feature in not supported for your '
-                             'operating system.')
-        else:
-            return True
+        return paltform in allowed_platforms
 
     def add_exec_permissions(self, program_name) -> bool:
-        """Add executable permissions to the anacron job setter bash script."""
+        """Add executable permissions to the anacron job setter bash script.
+
+        Raises:
+            SystemExit: if there is the error while executing command.
+        """
         try:
             command = subprocess.run(
-                ['chmod',
-                 '+x',
-                 program_name
-                 ]
+                ['chmod', '+x', program_name]
             )
             self.logger.debug(f'executable permissions added to '
                               f'{program_name}')
         except subprocess.SubprocessError as e:
             self.logger.error(f'Operation failed: {e}')
             raise SystemExit('Operation failed.')
+
+        return_code = command.returncode
+        self.logger.info(f'return code: {return_code}')
         return command.returncode == 0
 
     def execute_sh_command_as_root(
             self,
             program: str | Path,
-            cli_args: list
+            cli_args: list[int | float | str]
     ) -> bool:
         """
         Execute a shell command as root user using sudo.
@@ -148,13 +143,16 @@ class OSUtils(Utils):
         Raises:
             SystemExit: if there is the error while executing command.
         """
-        command = ['sudo', program]
+        command: list[str, str | Path] = ['sudo', program]
         command.extend(cli_args)
+
         try:
             process: subprocess.CompletedProcess = subprocess.run(command)
         except subprocess.SubprocessError as e:
             self.logger.error(f'Operation failed: {e}')
             raise SystemExit('Operation failed.')
+        return_code = process.returncode
+        self.logger.info(f'return code: {return_code}')
         return process.returncode == 0
 
     def is_shell_dependency_installed(self, dependency: str) -> bool:
@@ -166,13 +164,18 @@ class OSUtils(Utils):
         Returns:
             bool: True if the command was executed with 0 return code;
             False otherwise.
+
+        Raises:
+            SystemExit: if there is the error while executing command.
         """
         try:
             command: subprocess.CompletedProcess = subprocess.run(
                 ['which', dependency],
-                capture_output=True
+                stdout=subprocess.DEVNULL
             )
         except subprocess.SubprocessError as e:
             self.logger.error(f'Operation failed: {e}')
             raise SystemExit('Operation failed.')
+        return_code = command.returncode
+        self.logger.info(f'return code: {return_code}')
         return command.returncode == 0

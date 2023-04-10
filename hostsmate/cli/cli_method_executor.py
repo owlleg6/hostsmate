@@ -1,9 +1,12 @@
+import sys
 from typing import Callable
 from logging import Logger
 
 from hostsmate.autorunner import Autorunner
+from hostsmate.cli.ask_user import AskUser
 from hostsmate.hosts_file_updater import HostsFileUpdater
 from hostsmate.suspender import Suspender
+from hostsmate.utils.os_utils import OSUtils
 from hostsmate.writer import Writer
 from hostsmate.logger import HostsLogger
 
@@ -21,7 +24,7 @@ class CLIMethodExecutor:
 
     flag_method_map: dict[str, Callable] = {
         'go': HostsFileUpdater.run,
-        'autorun': Autorunner().set_anacron_job,
+        'autorun': Autorunner().set_up_anacron_job,
         'backup': Writer().create_backup,
         'suspend': Suspender().suspend,
         'resume': Suspender().resume,
