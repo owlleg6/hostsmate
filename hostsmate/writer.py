@@ -4,7 +4,7 @@ from datetime import datetime
 from logging import Logger
 
 from hostsmate.formatter import Formatter
-from hostsmate.utils.os_utils import OSUtils
+from hostsmate.sys_hosts_file import SysHostsFile
 from hostsmate.utils.logging_utils import LoggingUtils
 from hostsmate.logger import HostsLogger
 from hostsmate.cli.ask_user import AskUser
@@ -26,11 +26,11 @@ class Writer:
         whitelist_domain(self, str: whitelisted_domain) -> None
         create_backup(self) -> None
     """
+    hosts_path: Path = SysHostsFile.org_path
+    hosts_new_path: Path = SysHostsFile.renamed_path
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
-        self.hosts_path: Path = OSUtils().path_to_hosts()
-        self.hosts_new_path: Path = self.hosts_path.with_suffix('.temp')
 
     @staticmethod
     def header() -> str:

@@ -1,7 +1,8 @@
+import logging
 from logging import Logger
 from pathlib import Path
 
-from hostsmate.utils.os_utils import OSUtils
+from hostsmate.sys_hosts_file import SysHostsFile
 from hostsmate.logger import HostsLogger
 
 
@@ -13,24 +14,11 @@ class AskUser:
         ask_autorun_frequency() -> str
         ask_if_backup_needed() -> bool
     """
-    hosts_path: Path = OSUtils().path_to_hosts()
+    hosts_path: Path = SysHostsFile.org_path
     wrong_input = 'Unrecognized input. Try again.\n'
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
-
-    def check_hosts_existence(self) -> None:
-        """Helper method to verify whether the hosts file exists.
-
-        Raises:
-            SystemExit: if the hosts file is not exists.
-        """
-        if not self.hosts_path.exists():
-            print(f'No Hosts file has been found in '
-                  f'{self.hosts_path.parent}')
-            self.logger.info(f'No Hosts file in '
-                             f'{self.hosts_path.parent}')
-            raise SystemExit
 
     def ask_backup_directory(self) -> Path:
         """Prompt the user to select a backup directory and return the path.
@@ -95,19 +83,21 @@ class AskUser:
         Returns:
             bool: True if the user chooses to backup, False otherwise.
         """
-        self.check_hosts_existence()
+        if SysHostsFile().check_hosts_existence():
+            answers: dict = {
+                'y': True,
+                'n': False
+            }
+            choice: str = input('Do you want to backup your original '
+                                'Hosts file? (y or n): ').lower()
 
-        answers: dict = {
-            'y': True,
-            'n': False
-        }
-        choice: str = input('Do you want to backup your original '
-                            'Hosts file? (y or n): ').lower()
+            if choice not in answers.keys():
+                print(self.wrong_input)
+                return self.ask_if_backup_needed()
 
-        if choice not in answers.keys():
-            print(self.wrong_input)
-            return self.ask_if_backup_needed()
-
-        answer: bool = answers[choice]
-        self.logger.info(f"User's choice on backup: {answer}")
-        return answer
+            answer: bool = answers[choice]
+            self.logger.info(f"User's choice on backup: {answer}")
+            return answer
+        else:
+            logging.error(f'No host file has been found: {self.hosts_path}')
+            raise SystemExit(f'No hosts file has been found. Nothing to backup.')

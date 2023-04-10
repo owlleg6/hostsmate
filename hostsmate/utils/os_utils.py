@@ -1,7 +1,6 @@
 import ctypes
 import pathlib
 import subprocess
-import sys
 from os import getuid
 from os.path import join
 from pathlib import Path
@@ -24,9 +23,7 @@ class OSUtils(Utils):
 
         mk_tmp_hex_file(): Create a temporary file path using a random
         hexadecimal UUID.
-
-        path_to_hosts(): Return the path to the hosts file on the current system.
-    """
+   """
 
     def __init__(self):
         self.ensure_root_privileges()
@@ -72,25 +69,6 @@ class OSUtils(Utils):
         tmp: str = join(gettempdir(), uuid4().hex)
         self.logger.info(f'Temporary file: path: {tmp}')
         return tmp
-
-    def path_to_hosts(self) -> Path:
-        """Return the path to the hosts file on the current system.
-
-        Returns:
-            Path: The path to the hosts file.
-        """
-        platform: str = sys.platform
-
-        if platform.startswith(('linux', 'freebsd', 'darwin')):
-            hosts_path: Path = Path('/etc/hosts')
-            return hosts_path
-        elif platform.startswith('win'):
-            root_drive: str = Path(sys.executable).anchor
-            hosts_path: Path = Path(root_drive + r'Windows\System32\drivers\etc\hosts')
-        else:
-            exit('This operating system is not supported.')
-        self.logger.info(f'path to the hosts file is {hosts_path}')
-        return hosts_path
 
     @staticmethod
     def ensure_linux_or_bsd(paltform) -> bool:
