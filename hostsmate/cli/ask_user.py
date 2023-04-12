@@ -2,7 +2,7 @@ import logging
 from logging import Logger
 from pathlib import Path
 
-from hostsmate.sys_hosts_file import SysHostsFile
+from hostsmate.system_hosts_file import SystemHostsFile
 from hostsmate.logger import HostsLogger
 
 
@@ -14,7 +14,7 @@ class AskUser:
         ask_autorun_frequency() -> str
         ask_if_backup_needed() -> bool
     """
-    hosts_path: Path = SysHostsFile.org_path
+    hosts_path: Path = SystemHostsFile.original_path
     wrong_input = 'Unrecognized input. Try again.\n'
 
     def __init__(self):
@@ -83,7 +83,7 @@ class AskUser:
         Returns:
             bool: True if the user chooses to backup, False otherwise.
         """
-        if SysHostsFile().check_hosts_existence():
+        if SystemHostsFile().original_path.exists():
             answers: dict = {
                 'y': True,
                 'n': False

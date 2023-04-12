@@ -2,8 +2,7 @@ from pathlib import Path
 from logging import Logger
 
 from hostsmate.logger import HostsLogger
-from hostsmate.utils.os_utils import OSUtils
-from hostsmate.sys_hosts_file import SysHostsFile
+from hostsmate.system_hosts_file import SystemHostsFile
 
 
 class Suspender:
@@ -15,8 +14,8 @@ class Suspender:
         renamed_hosts (Path): a path the renamed system's Hosts file (with tilda).
     """
 
-    org_hosts_name: Path = SysHostsFile.org_path
-    renamed_hosts: Path = SysHostsFile.renamed_path
+    org_hosts_name: Path = SystemHostsFile.original_path
+    renamed_hosts: Path = SystemHostsFile.renamed_path
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)

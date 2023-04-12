@@ -2,7 +2,7 @@ from hostsmate.formatter import Formatter
 from hostsmate.raw_hosts_collector import RawHostsCollector
 from hostsmate.utils.os_utils import OSUtils
 from hostsmate.utils.data_utils import DataUtils
-from hostsmate.writer import Writer
+from hostsmate.system_hosts_file import SystemHostsFile
 
 
 class HostsFileUpdater:
@@ -27,4 +27,4 @@ class HostsFileUpdater:
             blacklist_sources
         )
         Formatter().format_raw_lines(temp_file)
-        Writer().build_hosts_file()
+        SystemHostsFile().build()
