@@ -13,21 +13,27 @@ from hostsmate.utils.os_utils import OSUtils
 
 class SystemHostsFile:
     """
-        A class representing the system's hosts file.
+    The SystemHostsFile class represents the system's hosts file.
 
     Methods:
-        check_hosts_existence(): Verifies whether the hosts file exists on the system.
+        __get_header() -> str
+        __get_user_custom_domains -> set[str]
+        add_blacklisted_domain(domain: str) -> None
+        remove_domain(domain: str) -> None
+        create_backup(backup_path: str) -> None
+        build() -> None
 
-    Attributes:
-        org_path (Path): The path to the hosts file on the current system.
+    Properties:
+        original_path (Path): The path to the hosts file on the current system.
         renamed_path (Path): The path to the temporary renamed hosts file.
+        __header_path (Path): The path to the hosts file static header file.
     """
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     @property
-    def __header_path(self):
+    def __header_path(self) -> Path:
         project_root = OSUtils().get_project_root()
         return project_root / 'hostsmate' / 'resources' / 'hosts_header'
 
@@ -92,8 +98,8 @@ class SystemHostsFile:
         Args:
             domain (str): domain name to be added to the Hosts file
         """
-        domain = Formatter.strip_domain_prefix(domain)
-        domain_added = False
+        domain: str = Formatter.strip_domain_prefix(domain)
+        domain_added: bool = False
 
         try:
             with open(self.original_path, 'r') as hosts_old:
@@ -111,7 +117,8 @@ class SystemHostsFile:
             self.logger.error(f'Operation failed: {e}')
 
     def remove_domain(self, domain: str) -> None:
-        """Remove the given domain name from the blacklisted domains in the system's Hosts file if it is present.
+        """Remove the given domain name from the blacklisted domains in
+        the system's Hosts file if it is present.
 
         Args:
             domain (str): The domain to be whitelisted.
@@ -119,8 +126,8 @@ class SystemHostsFile:
         try:
             with open(self.original_path, 'w') as hosts_new:
                 with open(self.renamed_path, 'r') as hosts_old:
-                    domain = Formatter().strip_domain_prefix(domain)
-                    found = False
+                    domain: str = Formatter().strip_domain_prefix(domain)
+                    found: bool = False
                     for line in hosts_old:
                         if not found and domain in line:
                             found = True
@@ -129,17 +136,14 @@ class SystemHostsFile:
         except OSError as e:
             print(f'Operation failed: {e}')
             self.logger.error(f'Operation failed: {e}')
-            return
 
     def create_backup(self, backup_path: str) -> None:
-        """Create the backup of the user's original Hosts file in the specified directory.
+        """Create the backup of the user's original Hosts file in the specified
+        directory.
 
         Args:
-            backup_path:
-
-        Backup path is obtained by calling ask_backup_directory method of the AskUser class.
+            backup_path (str): Path to the backup directory
         """
-
         try:
             with self.original_path.open('rb') as src, backup_path.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
@@ -149,7 +153,7 @@ class SystemHostsFile:
             self.logger.error(f'Error creating backup: {e}')
             print(f'Error creating backup.')
 
-    def __add_header(self):
+    def __get_header(self) -> str:
         """Adds a header to the hosts file using the template file located at
         self.__header_path.
 
@@ -157,13 +161,13 @@ class SystemHostsFile:
             A string containing the header content.
         """
         with open(self.__header_path, 'r') as f:
-            template = f.read()
+            template: str = f.read()
 
-        formatted_domains = '{:,}'.format(UniqueDomains().count_domains())
-        current_date = datetime.now().strftime("%d-%b-%Y")
-        custom_domains = '\n'.join(self.__get_user_custom_domains())
+        formatted_domains: str = '{:,}'.format(UniqueDomains().count_domains())
+        current_date: str = datetime.now().strftime("%d-%b-%Y")
+        custom_domains: str = '\n'.join(self.__get_user_custom_domains())
 
-        output = template.format(
+        output: str = template.format(
             date=current_date,
             num_entries=formatted_domains,
             custom_domains=custom_domains
@@ -183,7 +187,7 @@ class SystemHostsFile:
         try:
             print(f'Building new Hosts file...')
             with open(self.original_path, 'w') as hosts:
-                hosts.write(self.__add_header())
+                hosts.write(self.__get_header())
                 for line in blacklist_domains:
                     hosts.write(line)
         except OSError as e:
@@ -191,7 +195,8 @@ class SystemHostsFile:
             self.logger.error(f'Writing to {self.original_path} failed: {e}')
             return
 
-        self.logger.info(f'Hosts file at {self.original_path} was created/updated. '
+        self.logger.info(f'Hosts file at {self.original_path} '
+                         f'was created/updated. '
                          f'Added {domains_total_num} entries.')
 
         print(f'Done. Blacklisted {domains_total_num} unique domains.\n'
