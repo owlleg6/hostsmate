@@ -79,17 +79,45 @@ class Parser:
         )
         group.add_argument(
             '-x',
-            '--blacklist_domain',
+            '--blacklist-domain',
             type=str,
-            metavar='[domain-to-block]',
+            metavar='[domain]',
             help='Blacklist specified domain.'
         )
         group.add_argument(
             '-w',
-            '--whitelist_domain',
-            metavar='[domain-to-whitelist]',
+            '--whitelist-domain',
+            metavar='[domain]',
             type=str,
             help='Whitelist specified domain.')
+
+        group.add_argument(
+            '-y',
+            '--add-whitelist-source',
+            metavar='[domain]',
+            type=str,
+            help='Add URL with whitelisted domains to whitelist sources.')
+
+        group.add_argument(
+            '-u',
+            '--add-blacklist-source',
+            metavar='[domain]',
+            type=str,
+            help='Add URL with blacklisted domains to blakclist sources.')
+
+        group.add_argument(
+            '-i',
+            '--remove-whitelist-source',
+            metavar='[domain]',
+            type=str,
+            help='Remove URL with whitelisted domains from whitelist sources.')
+
+        group.add_argument(
+            '-o',
+            '--remove-blacklist-source',
+            metavar='[domain]',
+            type=str,
+            help='Remove URL with blacklisted domains from blacklist sources.')
 
         self.logger.info('argparse.ArgumentParser instance created.')
         return parser
