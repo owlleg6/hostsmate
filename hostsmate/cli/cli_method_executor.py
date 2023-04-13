@@ -6,6 +6,8 @@ from hostsmate.hosts_file_updater import HostsFileUpdater
 from hostsmate.suspender import Suspender
 from hostsmate.logger import HostsLogger
 from hostsmate.system_hosts_file import SystemHostsFile
+from hostsmate.sources.whitelist_sources import WhitelistSources
+from hostsmate.sources.blacklist_sources import BlacklistSources
 
 
 class CLIMethodExecutor:
@@ -27,6 +29,10 @@ class CLIMethodExecutor:
         'resume': Suspender().resume,
         'blacklist_domain': SystemHostsFile().add_blacklisted_domain,
         'whitelist_domain': SystemHostsFile().remove_domain,
+        'add_whitelist_source': WhitelistSources().add_url_to_sources,
+        'add_blacklist_source': BlacklistSources().add_url_to_sources,
+        'remove_whitelist_source': WhitelistSources().remove_url_from_sources,
+        'remove_blacklist_source': BlacklistSources().remove_url_from_sources
     }
 
     def execute(
