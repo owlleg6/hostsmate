@@ -4,8 +4,6 @@ from logging import Logger
 from pathlib import Path
 from datetime import datetime
 
-# from hostsmate.cli.ask_user import AskUser
-from hostsmate.formatter import Formatter
 from hostsmate.logger import HostsLogger
 from hostsmate.unique_domains import UniqueDomains
 from hostsmate.utils.os_utils import OSUtils

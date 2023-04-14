@@ -1,4 +1,4 @@
-from hostsmate.formatter import Formatter
+from hostsmate.domains_extractor import DomainsExtractor
 from hostsmate.sources.blacklist_sources import BlacklistSources
 from hostsmate.utils.os_utils import OSUtils
 from hostsmate.system_hosts_file import SystemHostsFile
@@ -9,7 +9,6 @@ class HostsFileUpdater:
     Managing class that updates the system Hosts file by downloading raw
     sources of domain entries, formatting them, removing duplicates, and
     writing the resulting entries, along with the header, to the hosts file.
-
     """
 
     @staticmethod
@@ -23,5 +22,5 @@ class HostsFileUpdater:
         BlacklistSources().append_sources_contents_to_file_concurrently(
             temp_file
         )
-        Formatter().format_raw_lines(temp_file)
+        DomainsExtractor(temp_file).extract_domain_to_unique_domains_set()
         SystemHostsFile().build()
