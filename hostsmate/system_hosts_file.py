@@ -7,6 +7,7 @@ from datetime import datetime
 from hostsmate.logger import HostsLogger
 from hostsmate.unique_domains import UniqueDomains
 from hostsmate.utils.os_utils import OSUtils
+from hostsmate.utils.str_utils import StringUtils
 
 
 class SystemHostsFile:
@@ -96,7 +97,7 @@ class SystemHostsFile:
         Args:
             domain (str): domain name to be added to the Hosts file
         """
-        domain: str = Formatter.strip_domain_prefix(domain)
+        domain: str = StringUtils.strip_domain_prefix(domain)
         domain_added: bool = False
 
         try:
@@ -124,7 +125,7 @@ class SystemHostsFile:
         try:
             with open(self.original_path, 'w') as hosts_new:
                 with open(self.renamed_path, 'r') as hosts_old:
-                    domain: str = Formatter().strip_domain_prefix(domain)
+                    domain: str = StringUtils.strip_domain_prefix(domain)
                     found: bool = False
                     for line in hosts_old:
                         if not found and domain in line:
@@ -161,7 +162,9 @@ class SystemHostsFile:
         with open(self.__header_path, 'r') as f:
             template: str = f.read()
 
-        formatted_domains: str = '{:,}'.format(UniqueDomains().count_domains())
+        formatted_domains: str = StringUtils.sep_num_with_commas(
+            UniqueDomains().count_domains()
+        )
         current_date: str = datetime.now().strftime("%d-%b-%Y")
         custom_domains: str = '\n'.join(self.__get_user_custom_domains())
 
