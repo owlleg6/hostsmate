@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 
 from hostsmate.logger import HostsLogger
-from hostsmate.unique_domains import UniqueDomains
+from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 from hostsmate.utils.os_utils import OSUtils
 from hostsmate.utils.str_utils import StringUtils
 
@@ -163,7 +163,7 @@ class SystemHostsFile:
             template: str = f.read()
 
         formatted_domains: str = StringUtils.sep_num_with_commas(
-            UniqueDomains().count_domains()
+            UniqueBlacklistedDomains().amount
         )
         current_date: str = datetime.now().strftime("%d-%b-%Y")
         custom_domains: str = '\n'.join(self.__get_user_custom_domains())
@@ -182,8 +182,8 @@ class SystemHostsFile:
         Write header, user's custom blacklisted domains (if present in the
         current hosts file), populate with parsed unique blacklisted domains.
         """
-        blacklist_domains: set[str] = UniqueDomains().get_unique_domains()
-        domains_total_num: int = UniqueDomains().count_domains()
+        blacklist_domains: set[str] = UniqueBlacklistedDomains().items
+        domains_total_num: int = UniqueBlacklistedDomains().amount
 
         try:
             print(f'Building new Hosts file...')

@@ -5,7 +5,7 @@ from pathlib import Path
 from hostsmate.sources.whitelist_sources import WhitelistSources
 from hostsmate.utils.logging_utils import LoggingUtils
 from hostsmate.logger import HostsLogger
-from hostsmate.unique_domains import UniqueDomains
+from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 
 
 class DomainsExtractor:
@@ -110,7 +110,6 @@ class DomainsExtractor:
         else:
             return self.__extract_domain_with_regex(line)
 
-
     @LoggingUtils.timer
     def extract_domain_to_unique_domains_set(self) -> None:
         """
@@ -133,4 +132,4 @@ class DomainsExtractor:
                     continue
                 else:
                     domain: str = self.extract_domain_from_line(line)
-                    UniqueDomains().add_domain(domain)
+                    UniqueBlacklistedDomains().add_domain(domain)
