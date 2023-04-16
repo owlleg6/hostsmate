@@ -14,8 +14,8 @@ class Suspender:
         renamed_hosts (Path): a path the renamed system's Hosts file (with tilda).
     """
 
-    org_hosts_name: Path = SystemHostsFile.original_path
-    renamed_hosts: Path = SystemHostsFile.renamed_path
+    org_hosts_name: Path = SystemHostsFile().original_path
+    renamed_hosts: Path = SystemHostsFile().renamed_path
 
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
@@ -23,24 +23,32 @@ class Suspender:
     def suspend(self) -> None:
         """
         Suspend the adblocking by renaming the Hosts file.
+
+        Raises:
+            SystemExit: if the hosts file has not been found.
         """
         try:
             self.org_hosts_name.rename(
                 self.renamed_hosts)
-            print("Adblocking is being suspended. Don't forget to enable it back!")
-            self.logger.info(f'Adblocking has been suspended. "{self.org_hosts_name}" renamed to "{self.renamed_hosts}"')
+            print("HostsMate is being suspended. Don't forget to enable it back!")
+            self.logger.info(f'HostsMate has been suspended.'
+                             f'"{self.org_hosts_name}" renamed to'
+                             f'"{self.renamed_hosts}"')
         except FileNotFoundError:
-            self.logger.info(f'Hosts file {self.org_hosts_name} was not found. Exiting')
-            exit(f'Hosts file {self.org_hosts_name} was not found.')
+            self.logger.info(f'Hosts file {self.org_hosts_name} has not been found')
+            SystemExit(f'Hosts file {self.org_hosts_name} has not been found.')
 
     def resume(self) -> None:
         """
         Resume the adblocking by renaming the Hosts file.
+
+        Raises:
+            SystemExit: if the hosts file has not been found.
         """
         try:
             self.renamed_hosts.rename(self.org_hosts_name)
             print('Adblocker has been resumed')
-            self.logger.info('Adblocker has been resumed')
+            self.logger.info('HostsMate has been resumed.')
         except FileNotFoundError:
-            self.logger.info(f'No {self.renamed_hosts} file was found')
-            exit('Seems that the adblocker is running already.')
+            self.logger.info(f'No {self.renamed_hosts} has been found')
+            raise SystemExit('HostsMate is running already.')
