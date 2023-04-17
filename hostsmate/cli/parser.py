@@ -3,7 +3,6 @@ import sys
 from logging import Logger
 
 from hostsmate.logger import HostsLogger
-from hostsmate.utils.logging_utils import LoggingUtils
 
 
 class Parser:
@@ -134,7 +133,6 @@ class Parser:
             self.logger.info('Ran with no arguments. Printed help')
             raise SystemExit
 
-    @LoggingUtils.func_and_args_logging
     def parse_single_arg(self) -> tuple[str, str | bool]:
         """
         Parse the argument and its value.

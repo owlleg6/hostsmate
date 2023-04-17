@@ -6,11 +6,15 @@ from pathlib import Path
 
 from requests import get, Response, RequestException
 
+from hostsmate.logger import HostsLogger
+
 
 class Sources(ABC):
     """
     Abstract class representing sources of blacklisted and whitelisted domains.
     """
+
+    logger = HostsLogger().create_logger('Sources')
 
     @property
     @abstractmethod
@@ -38,7 +42,11 @@ class Sources(ABC):
                 return sources_urls
         except (OSError, json.JSONDecodeError) as e:
             self.logger.error(e)
-            raise SystemExit('Error while fetching domain sources.')
+            import inspect
+            print(inspect.stack()[1].filename)
+            print(inspect.stack()[1].function)
+            print(inspect.stack()[1].lineno)
+            raise SystemExit(f'Error while fetching domain sources: {e}')
 
     def add_url_to_sources(self, new_source) -> None:
         """Add specified URL to the sources JSON file.
@@ -141,6 +149,7 @@ class Sources(ABC):
         Returns
             futures_completed (int): how many processes completed.
         """
+        self.logger.info('In the func')
         with concurrent.futures.ProcessPoolExecutor() as executor:
             futures_completed = 0
 

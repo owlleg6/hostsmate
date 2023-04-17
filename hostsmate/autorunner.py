@@ -3,7 +3,7 @@ from pathlib import Path
 from logging import Logger
 
 from hostsmate.cli.ask_user import AskUser
-from hostsmate.utils.os_utils import OSUtils
+from utils.os_utils import OSUtils
 from hostsmate.logger import HostsLogger
 
 

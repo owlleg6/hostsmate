@@ -1,6 +1,6 @@
 from hostsmate.domains_extractor import DomainsExtractor
 from hostsmate.sources.blacklist_sources import BlacklistSources
-from hostsmate.utils.os_utils import OSUtils
+from utils.os_utils import OSUtils
 from hostsmate.system_hosts_file import SystemHostsFile
 
 

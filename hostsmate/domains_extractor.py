@@ -3,7 +3,6 @@ import re
 from pathlib import Path
 
 from hostsmate.sources.whitelist_sources import WhitelistSources
-from hostsmate.utils.logging_utils import LoggingUtils
 from hostsmate.logger import HostsLogger
 from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 
@@ -108,7 +107,6 @@ class DomainsExtractor:
         else:
             return self.__extract_domain_with_regex(line)
 
-    @LoggingUtils.timer
     def extract_domain_to_unique_domains_set(self) -> None:
         """
         Extract domains from given the source file and pass them to UniqueDomains
@@ -117,7 +115,7 @@ class DomainsExtractor:
         Raises:
             SystemExit: If the source file does not exist.
         """
-        whitelist = set[str] = \
+        whitelist: set[str] = \
             WhitelistSources().get_lines_of_all_sources_contents()
 
         if not self.file_path.exists():

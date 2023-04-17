@@ -6,8 +6,8 @@ from datetime import datetime
 
 from hostsmate.logger import HostsLogger
 from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
-from hostsmate.utils.os_utils import OSUtils
-from hostsmate.utils.str_utils import StringUtils
+from utils.os_utils import OSUtils
+from utils.str_utils import StringUtils
 
 
 class SystemHostsFile:

@@ -7,7 +7,7 @@ from pathlib import Path
 from tempfile import gettempdir
 from uuid import uuid4
 
-from hostsmate.utils.utils import Utils
+from utils.utils import Utils
 import hostsmate.logger as l
 
 
@@ -57,7 +57,7 @@ class OSUtils(Utils):
         Returns:
             pathlib.Path: The root directory of the project.
         """
-        project_root: pathlib.Path = Path(__file__).resolve().parents[2]
+        project_root: pathlib.Path = Path(__file__).resolve().parents[1]
         return project_root
 
     def mk_tmp_hex_file(self) -> str:

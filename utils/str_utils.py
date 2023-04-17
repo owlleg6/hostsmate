@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-from hostsmate.utils.utils import Utils
+from utils.utils import Utils
 
 
 class StringUtils(Utils):

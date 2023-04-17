@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-import hostsmate.utils.os_utils as utils
+import utils.os_utils as utils
 
 
 class HostsLogger:
