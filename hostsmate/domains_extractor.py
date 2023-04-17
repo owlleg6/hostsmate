@@ -17,7 +17,6 @@ class DomainsExtractor:
         non_routable_ip (str): A string representing a non-routable IP address.
         domain_regex (re.Pattern): A compiled regular expression pattern used to
         match domain names.
-        whitelist (set): A set of strings containing whitelisted domains to ignore.
 
     Methods:
         extract_domain_if_starts_with_non_rout_ip(line: str) -> str
@@ -30,7 +29,6 @@ class DomainsExtractor:
     localhost_ip: str = '127.0.0.1'
     non_routable_ip: str = '0.0.0.0'
     domain_regex: re.Pattern = re.compile('([a-z0-9-]+[.]+)+[a-z0-9-]+')
-    whitelist: set[str] = WhitelistSources().get_lines_of_all_sources_contents()
 
     def __init__(self, file_path):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
@@ -119,6 +117,9 @@ class DomainsExtractor:
         Raises:
             SystemExit: If the source file does not exist.
         """
+        whitelist = set[str] = \
+            WhitelistSources().get_lines_of_all_sources_contents()
+
         if not self.file_path.exists():
             self.logger.error(f'{self.file_path} does not exist.')
             raise SystemExit('Operation failed.')
@@ -128,7 +129,7 @@ class DomainsExtractor:
             for line in raw_hosts:
                 if line.startswith(
                         ('#', '<', '\n', '::1')
-                ) or line in self.whitelist:
+                ) or line in whitelist:
                     continue
                 else:
                     domain: str = self.extract_domain_from_line(line)
