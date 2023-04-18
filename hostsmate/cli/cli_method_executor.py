@@ -22,7 +22,7 @@ class CLIMethodExecutor:
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     flag_method_map: dict[str, Callable] = {
-        'go': HostsFileUpdater.run,
+        'go': SystemHostsFile().update_with_new_domains,
         'autorun': Autorunner().set_up_anacron_job,
         'backup': SystemHostsFile().create_backup,
         'suspend': Suspender().suspend,

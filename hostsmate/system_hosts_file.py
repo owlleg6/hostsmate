@@ -1,10 +1,13 @@
 import shutil
 import sys
+import tempfile
 from logging import Logger
 from pathlib import Path
 from datetime import datetime
 
+from hostsmate.domains_extractor import DomainsExtractor
 from hostsmate.logger import HostsLogger
+from hostsmate.sources.blacklist_sources import BlacklistSources
 from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 from utils.os_utils import OSUtils
 from utils.str_utils import StringUtils
@@ -15,8 +18,8 @@ class SystemHostsFile:
     The SystemHostsFile class represents the system's hosts file.
 
     Methods:
-        __get_header() -> str
-        __get_user_custom_domains -> set[str]
+        _get_header() -> str
+        _get_user_custom_domains -> set[str]
         add_blacklisted_domain(domain: str) -> None
         remove_domain(domain: str) -> None
         create_backup(backup_path: str) -> None
@@ -32,7 +35,7 @@ class SystemHostsFile:
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     @property
-    def __header_path(self) -> Path:
+    def _header_path(self) -> Path:
         project_root = OSUtils().get_project_root()
         return project_root / 'hostsmate' / 'resources' / 'hosts_header'
 
@@ -68,7 +71,7 @@ class SystemHostsFile:
         renamed_path: Path = self.original_path.with_suffix('.tmp')
         return renamed_path
 
-    def __get_user_custom_domains(self) -> set[str]:
+    def _get_user_custom_domains(self) -> set[str]:
         """
         Extracts user's custom domains from the Hosts file.
 
@@ -152,21 +155,21 @@ class SystemHostsFile:
             self.logger.error(f'Error creating backup: {e}')
             print(f'Error creating backup.')
 
-    def __get_header(self) -> str:
+    def _get_header(self) -> str:
         """Adds a header to the hosts file using the template file located at
         self.__header_path.
 
         Returns:
             A string containing the header content.
         """
-        with open(self.__header_path, 'r') as f:
+        with open(self._header_path, 'r') as f:
             template: str = f.read()
 
         formatted_domains: str = StringUtils.sep_num_with_commas(
             UniqueBlacklistedDomains().amount
         )
         current_date: str = datetime.now().strftime("%d-%b-%Y")
-        custom_domains: str = '\n'.join(self.__get_user_custom_domains())
+        custom_domains: str = '\n'.join(self._get_user_custom_domains())
 
         output: str = template.format(
             date=current_date,
@@ -188,7 +191,7 @@ class SystemHostsFile:
         try:
             print(f'Building new Hosts file...')
             with open(self.original_path, 'w') as hosts:
-                hosts.write(self.__get_header())
+                hosts.write(self._get_header())
                 for line in blacklist_domains:
                     hosts.write(line)
         except OSError as e:
@@ -202,3 +205,15 @@ class SystemHostsFile:
 
         print(f'Done. Blacklisted {domains_total_num} unique domains.\n'
               f'Enjoy the browsing!')
+
+    def update_with_new_domains(self) -> None:
+        """
+        Collect domain entries from raw sources, format them, remove
+        duplicates, and write the resulting entries to the sytem hosts file.
+        """
+        with tempfile.NamedTemporaryFile(mode='a') as temp:
+            BlacklistSources().append_sources_contents_to_file_concurrently(
+                temp.name
+            )
+            DomainsExtractor(temp.name).extract_domain_to_unique_domains_set()
+            self.build()

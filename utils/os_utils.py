@@ -60,16 +60,6 @@ class OSUtils(Utils):
         project_root: pathlib.Path = Path(__file__).resolve().parents[1]
         return project_root
 
-    def mk_tmp_hex_file(self) -> str:
-        """Create a temporary file path using a random hexadecimal UUID.
-
-        Returns:
-            str: The absolute path of the temporary file.
-        """
-        tmp: str = join(gettempdir(), uuid4().hex)
-        self.logger.info(f'Temporary file: path: {tmp}')
-        return tmp
-
     @staticmethod
     def ensure_linux_or_bsd(paltform) -> bool:
         """Ensure that the current operating system is compatible with the
