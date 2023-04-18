@@ -7,6 +7,7 @@ import pytest
 from hostsmate.domains_extractor import DomainsExtractor
 from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 
+
 @pytest.fixture
 def temp_raw_file(tmp_path):
     temp_file: Path = tmp_path / 'test.txt'
@@ -21,6 +22,8 @@ def temp_raw_file(tmp_path):
                 '::1 example4.com\n'
                 '<a href="example4.com">hosts<a>')
     return temp_file
+
+
 @pytest.fixture
 def dom_extr_instance(temp_raw_file):
     return DomainsExtractor(temp_raw_file)
@@ -98,7 +101,6 @@ def test_extract_domain_to_unique_domains_set(dom_extr_instance):
             'hostsmate.domains_extractor.WhitelistSources.'
             'get_lines_of_all_sources_contents'
     ) as mock_whitelist:
-
         mock_whitelist.return_value = {'whitelisted.net\n', 'whitelisted.org\n'}
         dom_extr_instance.extract_domain_to_unique_domains_set()
 
