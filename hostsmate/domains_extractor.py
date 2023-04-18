@@ -34,7 +34,7 @@ class DomainsExtractor:
         self.file_path: Path = Path(file_path)
 
     @staticmethod
-    def __extract_domain_if_starts_with_non_rout_ip(line: str) -> str:
+    def _extract_domain_if_starts_with_non_rout_ip(line: str) -> str:
         """
         Extract domain if the line starts with a non-routable IP address
         (0.0.0.0) and return it.
@@ -50,7 +50,7 @@ class DomainsExtractor:
         domain = ' '.join(stripped_line.split(' ')[:2]) + '\n'
         return domain
 
-    def __extract_domain_if_starts_with_localhost_ip(self, line: str) -> str:
+    def _extract_domain_if_starts_with_localhost_ip(self, line: str) -> str:
         """
         Extract domain if the line starts with a localhost IP address (127.0.0.1)
         and return it.
@@ -70,7 +70,7 @@ class DomainsExtractor:
             self.logger.error(f'line: {line}, {e}')
             return ''
 
-    def __extract_domain_with_regex(self, line: str) -> str:
+    def _extract_domain_with_regex(self, line: str) -> str:
         """
         Extract domain using regular expression and return it.
 
@@ -99,13 +99,13 @@ class DomainsExtractor:
 
         """
         if line.startswith(self.localhost_ip):
-            return self.__extract_domain_if_starts_with_localhost_ip(line)
+            return self._extract_domain_if_starts_with_localhost_ip(line)
 
         elif line.startswith(self.non_routable_ip):
-            return self.__extract_domain_if_starts_with_non_rout_ip(line)
+            return self._extract_domain_if_starts_with_non_rout_ip(line)
 
         else:
-            return self.__extract_domain_with_regex(line)
+            return self._extract_domain_with_regex(line)
 
     def extract_domain_to_unique_domains_set(self) -> None:
         """
