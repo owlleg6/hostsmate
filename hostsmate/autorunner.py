@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from logging import Logger
 
-from hostsmate.cli.ask_user import AskUser
+from hostsmate.cli.prompt import Prompt
 from utils.os_utils import OSUtils
 from hostsmate.logger import HostsLogger
 
@@ -58,7 +58,7 @@ class Autorunner:
             OSUtils().is_shell_dependency_installed('anacron')
 
         if linux_or_bsd_platform and anacron_dependency_installed:
-            autorun_frequency: str = AskUser().ask_autorun_frequency()
+            autorun_frequency: str = Prompt().ask_autorun_frequency()
 
             OSUtils().add_exec_permissions(
                 Autorunner.job_setter_sh_script_path
