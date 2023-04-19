@@ -64,6 +64,7 @@ def test__extract_domain_if_starts_with_localhost_ip(
 
 @pytest.mark.parametrize(
     'raw_line, domain', [
+        ('No domain here', ''),
         ('Today is a sunny day. Here is the domain: example.com', 'example.com\n'),
         ('example.com', 'example.com\n'),
         ('example.com # hello world', 'example.com\n'),
