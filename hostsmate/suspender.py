@@ -36,7 +36,7 @@ class Suspender:
                              f'"{self.renamed_hosts}"')
         except FileNotFoundError:
             self.logger.info(f'Hosts file {self.org_hosts_name} has not been found')
-            SystemExit(f'Hosts file {self.org_hosts_name} has not been found.')
+            raise SystemExit(f'Hosts file {self.org_hosts_name} has not been found.')
 
     def resume(self) -> None:
         """
@@ -47,7 +47,7 @@ class Suspender:
         """
         try:
             self.renamed_hosts.rename(self.org_hosts_name)
-            print('Adblocker has been resumed')
+            print('HostsMate has been resumed.')
             self.logger.info('HostsMate has been resumed.')
         except FileNotFoundError:
             self.logger.info(f'No {self.renamed_hosts} has been found')
