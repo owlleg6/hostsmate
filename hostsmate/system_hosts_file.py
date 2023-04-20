@@ -115,7 +115,7 @@ class SystemHostsFile:
                             self.logger.info(f'"{domain}" domain name has been blacklisted')
                             self.renamed_path.rename(self.original_path)
         except OSError as e:
-            print(f'Operation failed: {e}')
+            print(f'Operation failed.')
             self.logger.error(f'Operation failed: {e}')
 
     def remove_domain(self, domain: str) -> None:
@@ -126,8 +126,8 @@ class SystemHostsFile:
             domain (str): The domain to be whitelisted.
         """
         try:
-            with open(self.original_path, 'w') as hosts_new:
-                with open(self.renamed_path, 'r') as hosts_old:
+            with open(self.renamed_path, 'w') as hosts_new:
+                with open(self.original_path, 'r') as hosts_old:
                     domain: str = StringUtils.strip_domain_prefix(domain)
                     found: bool = False
                     for line in hosts_old:
@@ -135,8 +135,9 @@ class SystemHostsFile:
                             found = True
                             continue
                         hosts_new.write(line)
+            self.renamed_path.rename(self.original_path)
         except OSError as e:
-            print(f'Operation failed: {e}')
+            print(f'Operation failed.')
             self.logger.error(f'Operation failed: {e}')
 
     def create_backup(self, backup_path: str) -> None:
@@ -187,11 +188,12 @@ class SystemHostsFile:
         """
         blacklist_domains: set[str] = UniqueBlacklistedDomains().items
         domains_total_num: int = UniqueBlacklistedDomains().amount
+        header: str = self._get_header()
 
         try:
             print(f'Building new Hosts file...')
             with open(self.original_path, 'w') as hosts:
-                hosts.write(self._get_header())
+                hosts.write(header)
                 for line in blacklist_domains:
                     hosts.write(line)
         except OSError as e:
