@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
@@ -16,11 +17,6 @@ test_domains_to_remove = [
     'another-example.com',
     'blacklisted-domain.com',
 ]
-
-
-@pytest.fixture
-def backup_file_path(tmp_path):
-    return tmp_path / 'hosts_backup'
 
 
 @pytest.fixture
@@ -147,7 +143,7 @@ def test_remove_domain(
     assert f'0.0.0.0 {domain}\n' not in open(sys_hosts_file).readlines()
 
 
-def test_add_remove_domain_os_error(
+def test_remove_domain_os_error(
         sys_hosts_file_instance,
         sys_hosts_file,
         capsys
@@ -156,3 +152,19 @@ def test_add_remove_domain_os_error(
         sys_hosts_file_instance.remove_domain('example.com')
     assert f'0.0.0.0 example.com\n' in open(sys_hosts_file).readlines()
     assert capsys.readouterr().out == 'Operation failed.\n'
+
+
+def test_create_backup(
+        tmp_path,
+        monkeypatch,
+        sys_hosts_file,
+        sys_hosts_file_instance,
+):
+    monkeypatch.setattr(SystemHostsFile, 'original_path', sys_hosts_file)
+    backup_file = sys_hosts_file_instance.create_backup(tmp_path)
+    assert open(sys_hosts_file).read() == open(backup_file).read()
+
+
+def test_create_backup_os_error(capsys):
+    SystemHostsFile().create_backup('/non/existing/path')
+    assert capsys.readouterr().out == 'Error creating backup.\n'
