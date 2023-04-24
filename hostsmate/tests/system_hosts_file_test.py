@@ -1,10 +1,16 @@
+import sys
 from datetime import date, datetime
+
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import pytest
+from freezegun import freeze_time
 
+import hostsmate.unique_blacklisted_domains
+from utils.str_utils import StringUtils
 from hostsmate.system_hosts_file import SystemHostsFile
+from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 
 test_domains_to_add = [
     'malware-domain.com',
@@ -17,11 +23,6 @@ test_domains_to_remove = [
     'another-example.com',
     'blacklisted-domain.com',
 ]
-
-
-@pytest.fixture
-def sys_hosts_file_instance(tmp_path):
-    return SystemHostsFile()
 
 
 @pytest.fixture
@@ -45,7 +46,6 @@ def sys_hosts_file(tmp_path):
 def remove_or_add_domain_setup(
         monkeypatch,
         sys_hosts_file,
-        sys_hosts_file_instance,
         domain
 ):
     monkeypatch.setattr(SystemHostsFile, 'original_path', sys_hosts_file)
@@ -56,13 +56,13 @@ def remove_or_add_domain_setup(
         mock_strip_domain_prefix.return_value = domain
 
 
-def test_header_path_is_a_file(sys_hosts_file_instance):
-    header_path = sys_hosts_file_instance._header_path
+def test_header_path_is_a_file():
+    header_path: Path = SystemHostsFile()._header_path
     assert header_path.is_file()
 
 
-def test_header_path_in_expected_dir(sys_hosts_file_instance):
-    header_path = sys_hosts_file_instance._header_path
+def test_header_path_in_expected_dir():
+    header_path: Path = SystemHostsFile()._header_path
     assert header_path.parent.name == 'resources'
 
 
@@ -73,24 +73,28 @@ def test_header_path_in_expected_dir(sys_hosts_file_instance):
     ('cygwin', Path('/etc/hosts'))
 ])
 def test_original_path(
-        sys_hosts_file_instance,
+        monkeypatch,
         platform,
         exp_path
 ):
-    with patch('sys.platform') as mock_platform:
-        mock_platform.return_value = platform
-        assert sys_hosts_file_instance.original_path == exp_path
+    monkeypatch.setattr(sys, 'platform', platform)
+    assert SystemHostsFile().original_path == exp_path
 
 
-def test_renamed_path(sys_hosts_file_instance):
-    assert sys_hosts_file_instance.renamed_path == Path('/etc/hosts.tmp')
+def test_renamed_path(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        SystemHostsFile, 'original_path',
+        tmp_path / 'hosts_mock'
+    )
+    assert SystemHostsFile().renamed_path == tmp_path / 'hosts_mock.tmp'
 
 
-@patch(
-    'hostsmate.system_hosts_file.SystemHostsFile.original_path',
-    new=Path('/fake/path/')
-)
-def test__get_user_custom_domains_if_hosts_does_not_exist():
+def test__get_user_custom_domains_if_hosts_does_not_exist(monkeypatch):
+
+    monkeypatch.setattr(
+        SystemHostsFile, 'original_path',
+        Path('/fake/path/')
+    )
     assert SystemHostsFile()._get_user_custom_domains() == set()
 
 
@@ -110,23 +114,21 @@ def test__get_user_custom_domains_returns_domains_from_present_hosts_file(
 def test_add_blacklisted_domain(
         monkeypatch,
         sys_hosts_file,
-        sys_hosts_file_instance,
         domain,
         remove_or_add_domain_setup
 ):
-    sys_hosts_file_instance.add_blacklisted_domain(
+    SystemHostsFile().add_blacklisted_domain(
         f'https://{domain}'
     )
     assert f'0.0.0.0 {domain}\n' in open(sys_hosts_file).readlines()
 
 
 def test_add_blacklisted_domain_os_error(
-        sys_hosts_file_instance,
         sys_hosts_file,
         capsys
 ):
     with patch('builtins.open', MagicMock(side_effect=OSError)):
-        sys_hosts_file_instance.add_blacklisted_domain('failed-adding.com')
+        SystemHostsFile().add_blacklisted_domain('failed-adding.com')
     assert f'0.0.0.0 failed-adding.com\n' not in open(sys_hosts_file).readlines()
     assert capsys.readouterr().out == 'Operation failed.\n'
 
@@ -135,21 +137,19 @@ def test_add_blacklisted_domain_os_error(
 def test_remove_domain(
         monkeypatch,
         sys_hosts_file,
-        sys_hosts_file_instance,
         domain,
         remove_or_add_domain_setup
 ):
-    sys_hosts_file_instance.remove_domain(domain)
+    SystemHostsFile().remove_domain(domain)
     assert f'0.0.0.0 {domain}\n' not in open(sys_hosts_file).readlines()
 
 
 def test_remove_domain_os_error(
-        sys_hosts_file_instance,
         sys_hosts_file,
         capsys
 ):
     with patch('builtins.open', MagicMock(side_effect=OSError)):
-        sys_hosts_file_instance.remove_domain('example.com')
+        SystemHostsFile().remove_domain('example.com')
     assert f'0.0.0.0 example.com\n' in open(sys_hosts_file).readlines()
     assert capsys.readouterr().out == 'Operation failed.\n'
 
@@ -158,13 +158,66 @@ def test_create_backup(
         tmp_path,
         monkeypatch,
         sys_hosts_file,
-        sys_hosts_file_instance,
 ):
     monkeypatch.setattr(SystemHostsFile, 'original_path', sys_hosts_file)
-    backup_file = sys_hosts_file_instance.create_backup(tmp_path)
+    backup_file = SystemHostsFile().create_backup(tmp_path)
     assert open(sys_hosts_file).read() == open(backup_file).read()
 
 
 def test_create_backup_os_error(capsys):
     SystemHostsFile().create_backup('/non/existing/path')
     assert capsys.readouterr().out == 'Error creating backup.\n'
+
+
+@pytest.fixture
+@freeze_time('2020-04-20')
+def test__get_header(monkeypatch):
+    custom_domains = {f'0.0.0.0 {domain}' for domain in test_domains_to_add}
+    amount_of_blacklisted_domains = '1,232,245'
+
+    monkeypatch.setattr(
+        SystemHostsFile, '_get_user_custom_domains',
+        lambda _: custom_domains
+    )
+    monkeypatch.setattr(
+        StringUtils, 'sep_num_with_commas',
+        lambda _: amount_of_blacklisted_domains
+    )
+
+    result = SystemHostsFile()._get_header()
+
+    assert amount_of_blacklisted_domains in result
+    assert all(domain in result for domain in custom_domains)
+    assert '2020-04-20' in result
+
+    return result
+
+
+def test_build(tmp_path, monkeypatch):
+    mock_formatted_num_of_domains = '1,232,245'
+    mock_header = '\n\nheader_mock\n\n'
+    mock_hosts_file = tmp_path / 'built_hosts_file'
+    mock_blacklisted_domains = {f'0.0.0.0 {domain}\n' for domain in test_domains_to_remove}
+
+    monkeypatch.setattr(
+        SystemHostsFile, 'original_path',
+        mock_hosts_file
+    )
+    monkeypatch.setattr(
+        UniqueBlacklistedDomains, 'items',
+        mock_blacklisted_domains
+    )
+    monkeypatch.setattr(
+        StringUtils, 'sep_num_with_commas',
+        lambda _: mock_formatted_num_of_domains)
+    monkeypatch.setattr(
+        SystemHostsFile, '_get_header',
+        lambda _: mock_header)
+
+    SystemHostsFile().build()
+
+    with open(mock_hosts_file) as built_hosts:
+        result = built_hosts.read()
+
+        assert all(domain in result for domain in mock_blacklisted_domains)
+        assert mock_header in result
