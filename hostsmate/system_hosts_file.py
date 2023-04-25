@@ -3,7 +3,7 @@ import sys
 import tempfile
 from logging import Logger
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime
 
 from hostsmate.domains_extractor import DomainsExtractor
 from hostsmate.logger import HostsLogger
@@ -22,13 +22,13 @@ class SystemHostsFile:
         _get_user_custom_domains -> set[str]
         add_blacklisted_domain(domain: str) -> None
         remove_domain(domain: str) -> None
-        create_backup(backup_path: str) -> None
+        create_backup(backup_path: str| Path) -> None
         build() -> None
 
     Properties:
         original_path (Path): The path to the hosts file on the current system.
         renamed_path (Path): The path to the temporary renamed hosts file.
-        __header_path (Path): The path to the hosts file static header file.
+        _header_path (Path): The path to the hosts static header file.
     """
 
     def __init__(self):
@@ -56,14 +56,9 @@ class SystemHostsFile:
                         'cygwin'
                 )
         ):
-            hosts_path: Path = Path('/etc/hosts')
-            return hosts_path
-        elif platform.startswith('win'):
-            root_drive: str = Path(sys.executable).anchor
-            hosts_path: Path = Path(root_drive + r'Windows\System32\drivers\etc\hosts')
-
-        self.logger.info(f'path to the hosts file is {hosts_path}')
-        return hosts_path
+            return Path('/etc/hosts')
+        else:
+            raise SystemExit('Sorry, your platform is not supported.')
 
     @property
     def renamed_path(self) -> Path:
@@ -140,18 +135,21 @@ class SystemHostsFile:
             print(f'Operation failed.')
             self.logger.error(f'Operation failed: {e}')
 
-    def create_backup(self, backup_path: str) -> None:
+    def create_backup(self, backup_path: str | Path) -> Path:
         """Create the backup of the user's original Hosts file in the specified
         directory.
 
         Args:
-            backup_path (str): Path to the backup directory
+            backup_path (str| Path): Path to the backup directory
         """
+        backup_path = Path(backup_path) / f'hosts_backup' \
+                                          f'{datetime.now().strftime("%d_%m_%Y")}'
         try:
             with self.original_path.open('rb') as src, backup_path.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
             print(f'Backup file is: {backup_path}')
             self.logger.info(f'Backup file is {backup_path}')
+            return backup_path
         except OSError as e:
             self.logger.error(f'Error creating backup: {e}')
             print(f'Error creating backup.')
@@ -169,7 +167,7 @@ class SystemHostsFile:
         formatted_domains: str = StringUtils.sep_num_with_commas(
             UniqueBlacklistedDomains().amount
         )
-        current_date: str = datetime.now().strftime("%d-%b-%Y")
+        current_date: date = date.today()
         custom_domains: str = '\n'.join(self._get_user_custom_domains())
 
         output: str = template.format(
@@ -180,14 +178,17 @@ class SystemHostsFile:
 
         return output
 
-    def build(self) -> None:
+    def _build(self) -> None:
         """Build the system's hosts file.
 
         Write header, user's custom blacklisted domains (if present in the
         current hosts file), populate with parsed unique blacklisted domains.
         """
         blacklist_domains: set[str] = UniqueBlacklistedDomains().items
-        domains_total_num: int = UniqueBlacklistedDomains().amount
+        formatted_domains_total_num: str = StringUtils.sep_num_with_commas(
+            UniqueBlacklistedDomains().amount
+        )
+        self.logger.info(blacklist_domains)
         header: str = self._get_header()
 
         try:
@@ -203,9 +204,9 @@ class SystemHostsFile:
 
         self.logger.info(f'Hosts file at {self.original_path} '
                          f'was created/updated. '
-                         f'Added {domains_total_num} entries.')
+                         f'Added {formatted_domains_total_num} entries.')
 
-        print(f'Done. Blacklisted {domains_total_num} unique domains.\n'
+        print(f'Done. Blacklisted {formatted_domains_total_num} unique domains.\n'
               f'Enjoy the browsing!')
 
     def update_with_new_domains(self) -> None:
