@@ -11,7 +11,6 @@ from utils.str_utils import StringUtils
 from hostsmate.system_hosts_file import SystemHostsFile
 from hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 
-
 Fixture = Union
 unix_like_hosts_path: Path = Path('/etc/hosts')
 mock_current_time: str = '2020-04-20'
@@ -54,6 +53,7 @@ def sys_hosts_file(tmp_path: Fixture[Path]) -> Path:
 @pytest.fixture
 def non_existing_hosts_path() -> Path:
     return Path('/non/existing/path')
+
 
 @pytest.fixture
 def remove_or_add_domain_setup(
@@ -98,6 +98,15 @@ def test_original_path(
         platform
     )
     assert SystemHostsFile().original_path == exp_path
+
+
+def test_original_path_raises_sys_exit(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        sys, 'platform',
+        'win32'
+    )
+    with pytest.raises(SystemExit):
+        SystemHostsFile().original_path
 
 
 def test_renamed_path(
@@ -210,7 +219,6 @@ def test_create_backup_os_error(
     assert capsys.readouterr().out == 'Error creating backup.\n'
 
 
-@pytest.fixture
 @freeze_time(mock_current_time)
 def test__get_header(monkeypatch: pytest.MonkeyPatch):
     """
@@ -229,6 +237,8 @@ def test__get_header(monkeypatch: pytest.MonkeyPatch):
     )
 
     result: str = SystemHostsFile()._get_header()
+
+    print(result)
 
     assert mock_formatted_num_of_domains in result
     assert all(domain in result for domain in custom_domains)
@@ -260,7 +270,7 @@ def test_build(
         SystemHostsFile, '_get_header',
         lambda _: mock_header)
 
-    SystemHostsFile().build()
+    SystemHostsFile()._build()
 
     with open(mock_hosts_file) as built_hosts:
         result: str = built_hosts.read()
