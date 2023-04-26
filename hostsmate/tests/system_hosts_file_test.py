@@ -45,7 +45,7 @@ def sys_hosts_file(tmp_path: Fixture[Path]) -> Path:
                     '\n'
                     "# End of the user's custom domains\n"
                     '\n'
-                    '0.0.0.0 domain-smaple.com\n'
+                    '0.0.0.0 domain-sample.com\n'
                     '0.0.0.0 domain-to-whitelist.com\n')
         return Path(hosts_sample_path)
 
@@ -237,8 +237,6 @@ def test__get_header(monkeypatch: pytest.MonkeyPatch):
     )
 
     result: str = SystemHostsFile()._get_header()
-
-    print(result)
 
     assert mock_formatted_num_of_domains in result
     assert all(domain in result for domain in custom_domains)
