@@ -1,5 +1,4 @@
 import json
-
 from typing import Union
 from pathlib import Path
 
@@ -13,7 +12,7 @@ Fixture = Union
 
 class TestSources(Sources):
 
-    present_sources = [
+    present_sources: list[str] = [
         'https://example.com/hosts.txt',
         'https://another-example.com/hosts',
         'https://one-more-example.com/hosts_file',
@@ -22,19 +21,21 @@ class TestSources(Sources):
         'https://example-3.com/hosts_file.txt'
     ]
 
-    test_links_to_add = [
+    test_urls_to_add: set[str] = {
         'https://test1.com.au',
         'https://test-2.co.uk',
         'https://test4.gov.us',
-    ]
+    }
 
-    test_links_to_remove = [
+    test_links_to_remove: set[str] = {
         'https://example-1.com/hosts_file.txt',
         'https://example-2.com/hosts_file.txt',
         'https://example-3.com/hosts_file.txt'
-    ]
+    }
 
-    mock_resp_contents = \
+    test_link_for_get_request: str = 'https://foobarzar.com'
+
+    mock_resp_contents: str = \
         '\n'.join(f'blacklisted-domain-{i}.su' for i in range(1, 31))
 
     @pytest.fixture
@@ -46,9 +47,10 @@ class TestSources(Sources):
         with open(self.tmp_sources_path, 'w') as sources:
             json.dump(contents, sources)
 
+    @staticmethod
     @pytest.fixture
-    def file_to_append_contents(self, tmp_path):
-        path = tmp_path / 'contents_dump'
+    def file_to_append_contents(tmp_path: Fixture[Path]) -> Path:
+        path: Path = tmp_path / 'contents_dump'
         path.touch()
         return path
 
@@ -58,17 +60,17 @@ class TestSources(Sources):
 
     def test_source_urls(
             self,
-            sources_file_setup_method
+            sources_file_setup_method: Fixture
     ):
         assert all(
             source_url in self.sources_urls for source_url in self.present_sources
         )
 
-    @pytest.mark.parametrize('test_link', test_links_to_add)
+    @pytest.mark.parametrize('test_link', test_urls_to_add)
     def test_add_url_to_sources(
             self,
             tmp_path: Fixture[Path],
-            sources_file_setup_method,
+            sources_file_setup_method: Fixture,
             test_link: str
     ):
         super().add_url_to_sources(test_link)
@@ -80,7 +82,7 @@ class TestSources(Sources):
     )
     def test_remove_url_from_sources(
             self,
-            sources_file_setup_method,
+            sources_file_setup_method: Fixture[Path],
             test_link: str
     ):
         super().remove_url_from_sources(test_link)
@@ -88,40 +90,58 @@ class TestSources(Sources):
 
     @responses.activate
     def test_fetch_source_contents(self):
-
         responses.add(
             responses.GET,
-            'https://example.com',
+            self.test_link_for_get_request,
             self.mock_resp_contents,
             status=200
         )
-        assert self.fetch_source_contents('https://example.com') == \
+        assert self.fetch_source_contents(self.test_link_for_get_request) == \
                self.mock_resp_contents
 
     @responses.activate
     def test_fetch_source_http_error(self):
-
         responses.add(
             responses.GET,
-            'https://example.com',
+            self.test_link_for_get_request,
             self.mock_resp_contents,
             status=403
         )
-        assert self.fetch_source_contents('https://example.com') == ''
+        assert self.fetch_source_contents(self.test_link_for_get_request) == ''
 
     @responses.activate
-    def test_append_valid_source_contents_to_file(
+    def test_append_source_contents_to_file(
             self,
-            file_to_append_contents,
-            monkeypatch
+            file_to_append_contents: Fixture[Path],
+            monkeypatch: pytest.MonkeyPatch
     ):
         responses.add(
             responses.GET,
-            'https://example.com',
+            self.test_link_for_get_request,
             self.mock_resp_contents,
             status=200
         )
         self.append_source_contents_to_file(
-            'https://example.com', file_to_append_contents
+            self.test_link_for_get_request, file_to_append_contents
         )
         assert self.mock_resp_contents in file_to_append_contents.read_text()
+
+    def test_append_sources_contents_to_file_concurrently(
+            self,
+            file_to_append_contents: Fixture[Path],
+            monkeypatch: pytest.MonkeyPatch,
+    ):
+        monkeypatch.setattr(
+            TestSources,
+            'sources_urls',
+            self.test_urls_to_add
+        )
+        monkeypatch.setattr(
+            self,
+            'append_source_contents_to_file',
+            lambda _: None
+        )
+        result: int = self.append_sources_contents_to_file_concurrently(
+            file_to_append_contents
+        )
+        assert result == len(self.test_urls_to_add)
