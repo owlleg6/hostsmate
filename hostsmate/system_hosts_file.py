@@ -145,9 +145,10 @@ class SystemHostsFile:
         backup_path = Path(backup_path) / f'hosts_backup' \
                                           f'{datetime.now().strftime("%d_%m_%Y")}'
         try:
-            with self.original_path.open('rb') as src, backup_path.open('wb') as dst:
+            with self.original_path.open('rb') as src,\
+                    backup_path.open('wb') as dst:
                 shutil.copyfileobj(src, dst)
-            print(f'Backup file is: {backup_path}')
+            print(f'Backup file location: {backup_path}')
             self.logger.info(f'Backup file is {backup_path}')
             return backup_path
         except OSError as e:
@@ -175,7 +176,6 @@ class SystemHostsFile:
             num_entries=formatted_domains,
             custom_domains=custom_domains
         )
-
         return output
 
     def _build(self) -> None:
@@ -219,4 +219,4 @@ class SystemHostsFile:
                 temp.name
             )
             DomainsExtractor(temp.name).extract_domain_to_unique_domains_set()
-            self.build()
+            self._build()
