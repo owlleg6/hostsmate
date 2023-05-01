@@ -42,10 +42,6 @@ class Sources(ABC):
                 return sources_urls
         except (OSError, json.JSONDecodeError) as e:
             self.logger.error(e)
-            import inspect
-            print(inspect.stack()[1].filename)
-            print(inspect.stack()[1].function)
-            print(inspect.stack()[1].lineno)
             raise SystemExit(f'Error while fetching domain sources: {e}')
 
     def add_url_to_sources(self, new_source) -> None:
@@ -117,7 +113,11 @@ class Sources(ABC):
             print(f'Could not fetch blacklisted domains from {url}')
             return ''
 
-    def append_source_contents_to_file(self, url: str, file: str | Path) -> None:
+    def append_source_contents_to_file(
+            self,
+            url: str,
+            file: str | Path
+    ) -> None:
         """Append contents of the given URL to the temporary file.
            Get the source contents by calling fetch_source_contents method
 
@@ -136,8 +136,10 @@ class Sources(ABC):
             self.logger.error(f'Failed to add contents of {url} to {file}.')
             self.logger.error(e)
 
-    def append_sources_contents_to_file_concurrently(self,
-                                                     file: str | Path) -> int:
+    def append_sources_contents_to_file_concurrently(
+            self,
+            file: str | Path
+    ) -> int:
         """Fetch raw contents from all sources and write them concurrently to
         a file with the process pool executor.
 
@@ -149,14 +151,18 @@ class Sources(ABC):
         Returns
             futures_completed (int): how many processes completed.
         """
-        self.logger.info('In the func')
         with concurrent.futures.ProcessPoolExecutor() as executor:
             futures_completed = 0
+            futures = []
+            for source in self.sources_urls:
+                future: concurrent.futures.Future = executor.submit(
+                    self.append_source_contents_to_file,
+                    source,
+                    file
+                )
+                futures.append(future)
 
-            futures = [executor.submit(self.append_source_contents_to_file, source, file) for source in
-                       self.sources_urls]
-
-            for _ in concurrent.futures.as_completed(futures):
+            for _ in concurrent.futures.as_completed(futures, timeout=3):
                 futures_completed += 1
 
         return futures_completed
