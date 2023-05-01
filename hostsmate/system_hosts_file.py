@@ -36,7 +36,7 @@ class SystemHostsFile:
 
     @property
     def _header_path(self) -> Path:
-        project_root = OSUtils().get_project_root()
+        project_root: Path = OSUtils().get_project_root()
         return project_root / 'hostsmate' / 'resources' / 'hosts_header'
 
     @property
@@ -98,20 +98,16 @@ class SystemHostsFile:
         domain: str = StringUtils.strip_domain_prefix(domain)
         domain_added: bool = False
 
-        try:
-            with open(self.original_path, 'r') as hosts_old:
-                with open(self.renamed_path, 'w') as hosts_new:
-                    for line in hosts_old:
-                        hosts_new.write(line)
-                        if not domain_added and line.startswith('# Start'):
-                            hosts_new.write(f'\n0.0.0.0 {domain}')
-                            domain_added = True
-                            print(f'"{domain}" domain name has been blacklisted')
-                            self.logger.info(f'"{domain}" domain name has been blacklisted')
-                            self.renamed_path.rename(self.original_path)
-        except OSError as e:
-            print(f'Operation failed.')
-            self.logger.error(f'Operation failed: {e}')
+        with open(self.original_path, 'r') as hosts_old:
+            with open(self.renamed_path, 'w') as hosts_new:
+                for line in hosts_old:
+                    hosts_new.write(line)
+                    if not domain_added and line.startswith('# Start'):
+                        hosts_new.write(f'\n0.0.0.0 {domain}')
+                        domain_added = True
+                        print(f'"{domain}" domain name has been blacklisted')
+                        self.logger.info(f'"{domain}" domain name has been blacklisted')
+                        self.renamed_path.rename(self.original_path)
 
     def remove_domain(self, domain: str) -> None:
         """Remove the given domain name from the blacklisted domains in
@@ -120,20 +116,16 @@ class SystemHostsFile:
         Args:
             domain (str): The domain to be whitelisted.
         """
-        try:
-            with open(self.renamed_path, 'w') as hosts_new:
-                with open(self.original_path, 'r') as hosts_old:
-                    domain: str = StringUtils.strip_domain_prefix(domain)
-                    found: bool = False
-                    for line in hosts_old:
-                        if not found and domain in line:
-                            found = True
-                            continue
-                        hosts_new.write(line)
-            self.renamed_path.rename(self.original_path)
-        except OSError as e:
-            print(f'Operation failed.')
-            self.logger.error(f'Operation failed: {e}')
+        with open(self.renamed_path, 'w') as hosts_new:
+            with open(self.original_path, 'r') as hosts_old:
+                domain: str = StringUtils.strip_domain_prefix(domain)
+                found: bool = False
+                for line in hosts_old:
+                    if not found and domain in line:
+                        found = True
+                        continue
+                    hosts_new.write(line)
+        self.renamed_path.rename(self.original_path)
 
     def create_backup(self, backup_path: str | Path) -> Path:
         """Create the backup of the user's original Hosts file in the specified
@@ -144,16 +136,13 @@ class SystemHostsFile:
         """
         backup_path = Path(backup_path) / f'hosts_backup' \
                                           f'{datetime.now().strftime("%d_%m_%Y")}'
-        try:
-            with self.original_path.open('rb') as src,\
-                    backup_path.open('wb') as dst:
-                shutil.copyfileobj(src, dst)
-            print(f'Backup file location: {backup_path}')
-            self.logger.info(f'Backup file is {backup_path}')
-            return backup_path
-        except OSError as e:
-            self.logger.error(f'Error creating backup: {e}')
-            print(f'Error creating backup.')
+
+        with self.original_path.open('rb') as src,\
+                backup_path.open('wb') as dst:
+            shutil.copyfileobj(src, dst)
+        print(f'Backup file location: {backup_path}')
+        self.logger.info(f'Backup file is {backup_path}')
+        return backup_path
 
     def _get_header(self) -> str:
         """Adds a header to the hosts file using the template file located at
@@ -191,16 +180,11 @@ class SystemHostsFile:
         self.logger.info(blacklist_domains)
         header: str = self._get_header()
 
-        try:
-            print(f'Building new Hosts file...')
-            with open(self.original_path, 'w') as hosts:
-                hosts.write(header)
-                for line in blacklist_domains:
-                    hosts.write(line)
-        except OSError as e:
-            print(f'Writing to {self.original_path} failed: {e}')
-            self.logger.error(f'Writing to {self.original_path} failed: {e}')
-            return
+        print(f'Building new Hosts file...')
+        with open(self.original_path, 'w') as hosts:
+            hosts.write(header)
+            for line in blacklist_domains:
+                hosts.write(line)
 
         self.logger.info(f'Hosts file at {self.original_path} '
                          f'was created/updated. '
@@ -212,7 +196,7 @@ class SystemHostsFile:
     def update_with_new_domains(self) -> None:
         """
         Collect domain entries from raw sources, format them, remove
-        duplicates, and write the resulting entries to the sytem hosts file.
+        duplicates, and write the resulting entries to the system hosts file.
         """
         with tempfile.NamedTemporaryFile(mode='a') as temp:
             BlacklistSources().append_sources_contents_to_file_concurrently(

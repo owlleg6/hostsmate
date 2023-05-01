@@ -35,14 +35,10 @@ class Sources(ABC):
             A set of strings representing URLs for the sources specified
             in a JSON resources file.
         """
-        try:
-            with open(self.sources_json_path) as source:
-                json_contents: dict[str, list[str]] = json.load(source)
-                sources_urls: set[str] = set(json_contents['sources'])
-                return sources_urls
-        except (OSError, json.JSONDecodeError) as e:
-            self.logger.error(e)
-            raise SystemExit(f'Error while fetching domain sources: {e}')
+        with open(self.sources_json_path) as source:
+            json_contents: dict[str, list[str]] = json.load(source)
+            sources_urls: set[str] = set(json_contents['sources'])
+            return sources_urls
 
     def add_url_to_sources(self, new_source) -> None:
         """Add specified URL to the sources JSON file.
@@ -63,7 +59,7 @@ class Sources(ABC):
             with open(self.sources_json_path, 'w') as f:
                 json.dump(data, f)
             self.logger.info(f'{new_source} added to {self.sources_json_path}')
-        except (OSError, json.JSONDecodeError) as e:
+        except json.JSONDecodeError as e:
             self.logger.error(f'Operation failed: {e}')
             raise SystemExit('Operation failed.')
 
@@ -79,16 +75,12 @@ class Sources(ABC):
         """
         if source_to_remove not in self.sources_urls:
             raise SystemExit('No such a source to remove.')
-        try:
-            with open(self.sources_json_path, 'r') as f:
-                contents = json.load(f)
-            if source_to_remove in contents['sources']:
-                contents['sources'].remove(source_to_remove)
-                with open(self.sources_json_path, 'w') as f:
-                    json.dump(contents, f)
-        except (OSError, json.JSONDecodeError) as e:
-            self.logger.error(f'Operation failed: {e}')
-            raise SystemExit('Operation failed.')
+        with open(self.sources_json_path, 'r') as f:
+            contents = json.load(f)
+        if source_to_remove in contents['sources']:
+            contents['sources'].remove(source_to_remove)
+            with open(self.sources_json_path, 'w') as f:
+                json.dump(contents, f)
 
     def fetch_source_contents(self, url: str) -> str:
         """Fetch source contents and return it as a string.
@@ -129,12 +121,8 @@ class Sources(ABC):
 
         if contents == '': return
 
-        try:
-            with open(file, 'a') as f:
-                f.write(f'{contents}\n')
-        except OSError as e:
-            self.logger.error(f'Failed to add contents of {url} to {file}.')
-            self.logger.error(e)
+        with open(file, 'a') as f:
+            f.write(f'{contents}\n')
 
     def append_sources_contents_to_file_concurrently(
             self,
@@ -162,7 +150,7 @@ class Sources(ABC):
                 )
                 futures.append(future)
 
-            for _ in concurrent.futures.as_completed(futures, timeout=3):
+            for _ in concurrent.futures.as_completed(futures):
                 futures_completed += 1
 
         return futures_completed
@@ -175,11 +163,8 @@ class Sources(ABC):
         """
         sources_lines: set[str] = set()
 
-        try:
-            for source in self.sources_urls:
-                resp: str = self.fetch_source_contents(source)
-                buffer: StringIO = StringIO(resp)
-                sources_lines.update(buffer.readlines())
-            return sources_lines
-        except UnsupportedOperation as e:
-            self.logger.error(f'Operation failed: {e}')
+        for source in self.sources_urls:
+            resp: str = self.fetch_source_contents(source)
+            buffer: StringIO = StringIO(resp)
+            sources_lines.update(buffer.readlines())
+        return sources_lines
