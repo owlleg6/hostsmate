@@ -27,19 +27,19 @@ class TestSources(Sources):
         'https://test4.gov.us',
     }
 
-    test_links_to_remove: set[str] = {
+    test_urls_to_remove: set[str] = {
         'https://example-1.com/hosts_file.txt',
         'https://example-2.com/hosts_file.txt',
         'https://example-3.com/hosts_file.txt'
     }
 
-    test_link_for_get_request: str = 'https://foobarzar.com'
+    test_url_for_get_request: str = 'https://foobarzar.com'
 
     mock_resp_contents: str = \
         '\n'.join(f'blacklisted-domain-{i}.su' for i in range(1, 31))
 
     @pytest.fixture
-    def sources_file_setup_method(self, tmp_path: Fixture[Path]):
+    def sources_file_setup_method(self, tmp_path: Fixture[Path]) -> None:
         self.tmp_sources_path: Path = tmp_path / 'sources.json'
         contents = {
             'sources': self.present_sources
@@ -73,56 +73,69 @@ class TestSources(Sources):
             sources_file_setup_method: Fixture,
             test_link: str
     ):
-        super().add_url_to_sources(test_link)
+        self.add_url_to_sources(test_link)
         assert test_link in self.sources_urls
 
+    def test_add_url_to_sources_if_source_already_present(
+            self,
+            sources_file_setup_method: Fixture
+    ):
+        with pytest.raises(SystemExit):
+            self.add_url_to_sources(self.present_sources[0])
+
     @pytest.mark.parametrize(
-        'test_link',
-        test_links_to_remove
+        'test_url',
+        test_urls_to_remove
     )
     def test_remove_url_from_sources(
             self,
-            sources_file_setup_method: Fixture[Path],
-            test_link: str
+            sources_file_setup_method: Fixture,
+            test_url: str
     ):
-        super().remove_url_from_sources(test_link)
-        assert test_link not in self.sources_urls
+        self.remove_url_from_sources(test_url)
+        assert test_url not in self.sources_urls
+
+    def test_remove_url_from_sources_if_source_is_not_present(
+            self,
+            sources_file_setup_method: Fixture
+    ):
+        with pytest.raises(SystemExit):
+            self.remove_url_from_sources('https://url.not.in.sources')
 
     @responses.activate
     def test_fetch_source_contents(self):
         responses.add(
             responses.GET,
-            self.test_link_for_get_request,
+            self.test_url_for_get_request,
             self.mock_resp_contents,
             status=200
         )
-        assert self.fetch_source_contents(self.test_link_for_get_request) == \
+        assert self.fetch_source_contents(self.test_url_for_get_request) == \
                self.mock_resp_contents
 
     @responses.activate
     def test_fetch_source_http_error(self):
         responses.add(
             responses.GET,
-            self.test_link_for_get_request,
+            self.test_url_for_get_request,
             self.mock_resp_contents,
             status=403
         )
-        assert self.fetch_source_contents(self.test_link_for_get_request) == ''
+        assert self.fetch_source_contents(self.test_url_for_get_request) == ''
 
     @responses.activate
     def test_append_source_contents_to_file(
             self,
-            file_to_append_contents: Fixture[Path],
-            monkeypatch: pytest.MonkeyPatch
+            file_to_append_contents: Fixture[Path]
     ):
         responses.add(
             responses.GET,
-            self.test_link_for_get_request,
+            self.test_url_for_get_request,
             self.mock_resp_contents,
             status=200
         )
         self.append_source_contents_to_file(
-            self.test_link_for_get_request, file_to_append_contents
+            self.test_url_for_get_request, file_to_append_contents
         )
         assert self.mock_resp_contents in file_to_append_contents.read_text()
 
@@ -145,3 +158,21 @@ class TestSources(Sources):
             file_to_append_contents
         )
         assert result == len(self.test_urls_to_add)
+
+    @responses.activate
+    def test_get_lines_of_all_sources_contents(
+            self,
+            sources_file_setup_method: Fixture
+    ):
+        mock_resp: str = 'FooBar\nBarZoo\nDar\nTanDan\n'
+        exp_result: set = {'FooBar\n', 'BarZoo\n', 'Dar\n', 'TanDan\n'}
+
+        for source_url in self.present_sources:
+            responses.add(
+                responses.GET,
+                source_url,
+                mock_resp,
+                status=200
+            )
+        result: set = self.get_lines_of_all_sources_contents()
+        assert result == exp_result
