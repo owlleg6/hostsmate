@@ -72,7 +72,8 @@ class Parser:
         group.add_argument(
             '-b',
             '--backup',
-            action='store_true',
+            type=str,
+            metavar='[backup-path]',
             help='Create a backup of the existing Hosts '
                  'file in the specific folder.'
         )
