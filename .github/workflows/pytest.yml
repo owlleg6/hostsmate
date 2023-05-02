@@ -13,7 +13,7 @@ jobs:
     - name: Set up Python $python_version
       uses: actions/setup-python@v3
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: $python_version
     
     - name: Install dependencies
       run: |
@@ -22,7 +22,7 @@ jobs:
         sudo pip install freezegun
         sudo pip install -r requirements.txt
         
-    - name: Analysing the code with pytest
+    - name: Analysing the code with PyTest
       run: |
         sudo pytest --cov=./ --cov-report=xml
 
