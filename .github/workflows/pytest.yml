@@ -22,7 +22,7 @@ jobs:
         sudo pip install -r requirements.txt
     - name: Analysing the code with pytest
       run: |
-        sudo pytest --cov=hostsmate/tests,utils/tests --cov-report=xml
+        sudo pytest --cov=./ --cov-report=xml
         ls -la
         ls ./hostsmate
         ls ./utils
