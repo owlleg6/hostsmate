@@ -29,13 +29,13 @@ domains_to_remove: list[str] = [
 
 
 @pytest.fixture
-def sys_hosts_file(tmp_path: Fixture[Path]) -> Path:
+def sys_hosts_file(tmp_path: Fixture[Path]) -> Path:  # type: ignore
     """Sample of the already built Hosts file.
 
     Returns:
         Path: path to the sample temporary Hosts file.
     """
-    hosts_sample_path: Path = tmp_path / 'hosts'
+    hosts_sample_path: Path = tmp_path / 'hosts'  # type: ignore
     with open(hosts_sample_path, 'w') as hosts:
         hosts.write("# Start of the user's custom domains\n"
                     '\n'
@@ -111,19 +111,19 @@ def test_original_path_raises_sys_exit(monkeypatch: pytest.MonkeyPatch):
 
 def test_renamed_path(
         monkeypatch: pytest.MonkeyPatch,
-        tmp_path: Fixture[Path]
+        tmp_path: Fixture[Path]  # type: ignore
 ):
     """Correctness of the renamed_path to the system Hosts file."""
     monkeypatch.setattr(
         SystemHostsFile, 'original_path',
-        tmp_path / 'hosts_mock'
+        tmp_path / 'hosts_mock'  # type: ignore
     )
-    assert SystemHostsFile().renamed_path == tmp_path / 'hosts_mock.tmp'
+    assert SystemHostsFile().renamed_path == tmp_path / 'hosts_mock.tmp'  # type: ignore
 
 
 def test__get_user_custom_domains_if_hosts_does_not_exist(
         monkeypatch: pytest.MonkeyPatch,
-        non_existing_hosts_path: Fixture[Path]
+        non_existing_hosts_path: Fixture[Path]  # type: ignore
 ):
     """Return empty set if the Hosts file does not exist."""
     monkeypatch.setattr(
@@ -135,7 +135,7 @@ def test__get_user_custom_domains_if_hosts_does_not_exist(
 
 def test__get_user_custom_domains_returns_domains_from_present_hosts_file(
         monkeypatch: pytest.MonkeyPatch,
-        sys_hosts_file: Fixture[Path]
+        sys_hosts_file: Fixture[Path]  # type: ignore
 ):
     """
     Return all the listed domains from the custom domains section of the Hosts file.
@@ -154,9 +154,9 @@ def test__get_user_custom_domains_returns_domains_from_present_hosts_file(
 @pytest.mark.parametrize('domain', domains_to_add)
 def test_add_blacklisted_domain(
         monkeypatch: pytest.MonkeyPatch,
-        sys_hosts_file: Fixture[Path],
+        sys_hosts_file: Fixture[Path],  # type: ignore
         domain: str,
-        remove_or_add_domain_setup: Fixture[None]
+        remove_or_add_domain_setup: Fixture[None]  # type: ignore
 ):
     """Write domain to the Hosts file with 0.0.0.0 prefix."""
     SystemHostsFile().add_blacklisted_domain(
@@ -168,9 +168,9 @@ def test_add_blacklisted_domain(
 @pytest.mark.parametrize('domain', domains_to_remove)
 def test_remove_domain(
         monkeypatch: pytest.MonkeyPatch,
-        sys_hosts_file: Fixture[Path],
+        sys_hosts_file: Fixture[Path],  # type: ignore
         domain: str,
-        remove_or_add_domain_setup: Fixture[None]
+        remove_or_add_domain_setup: Fixture[None]  # type: ignore
 ):
     """Remove domain name from the Hosts file."""
     SystemHostsFile().remove_domain(domain)
@@ -178,9 +178,9 @@ def test_remove_domain(
 
 
 def test_create_backup(
-        tmp_path: Fixture[Path],
+        tmp_path: Fixture[Path],  # type: ignore
         monkeypatch: pytest.MonkeyPatch,
-        sys_hosts_file: Fixture[Path],
+        sys_hosts_file: Fixture[Path],  # type: ignore
 ):
     """Backup file has the same contents as the original Hosts."""
     monkeypatch.setattr(
@@ -216,14 +216,15 @@ def test__get_header(monkeypatch: pytest.MonkeyPatch):
 
 
 def test_build(
-        tmp_path: Fixture[Path],
+        tmp_path: Fixture[Path],  # type: ignore
         monkeypatch: pytest.MonkeyPatch
 ):
     """Header and all the blacklisted domains are present in the newly
     created Hosts file"""
     mock_header: str = '\n\nheader_mock\n\n'
-    mock_hosts_file: Path = tmp_path / 'built_hosts_file'
-    mock_blacklisted_domains: set = {f'0.0.0.0 {domain}\n' for domain in domains_to_remove}
+    mock_hosts_file: Path = tmp_path / 'built_hosts_file'  # type: ignore
+    mock_blacklisted_domains: set = \
+        {f'0.0.0.0 {domain}\n' for domain in domains_to_remove}
 
     monkeypatch.setattr(
         SystemHostsFile, 'original_path',
