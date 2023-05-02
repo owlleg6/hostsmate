@@ -15,7 +15,7 @@ on:
 
 env:
   # Setting an environment variable with the value of a configuration variable
-  env_var: ${{ input.python_version }}
+  env_var: ${{ inputs.python_version }}
 
 jobs:
   pytest:
