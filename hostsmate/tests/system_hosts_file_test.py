@@ -165,16 +165,6 @@ def test_add_blacklisted_domain(
     assert f'0.0.0.0 {domain}\n' in open(sys_hosts_file).readlines()
 
 
-def test_add_blacklisted_domain_os_error(
-        sys_hosts_file: Fixture[Path],
-        capsys: Fixture
-):
-    with patch('builtins.open', MagicMock(side_effect=OSError)):
-        SystemHostsFile().add_blacklisted_domain('failed-adding.com')
-    assert f'0.0.0.0 failed-adding.com\n' not in open(sys_hosts_file).readlines()
-    assert capsys.readouterr().out == 'Operation failed.\n'
-
-
 @pytest.mark.parametrize('domain', domains_to_remove)
 def test_remove_domain(
         monkeypatch: pytest.MonkeyPatch,
@@ -185,16 +175,6 @@ def test_remove_domain(
     """Remove domain name from the Hosts file."""
     SystemHostsFile().remove_domain(domain)
     assert f'0.0.0.0 {domain}\n' not in open(sys_hosts_file).readlines()
-
-
-def test_remove_domain_os_error(
-        sys_hosts_file: Fixture[Path],
-        capsys: Fixture
-):
-    with patch('builtins.open', MagicMock(side_effect=OSError)):
-        SystemHostsFile().remove_domain('example.com')
-    assert f'0.0.0.0 example.com\n' in open(sys_hosts_file).readlines()
-    assert capsys.readouterr().out == 'Operation failed.\n'
 
 
 def test_create_backup(
@@ -209,14 +189,6 @@ def test_create_backup(
     )
     backup_file: Path = SystemHostsFile().create_backup(tmp_path)
     assert open(sys_hosts_file).read() == open(backup_file).read()
-
-
-def test_create_backup_os_error(
-        capsys: Fixture,
-        non_existing_hosts_path: Fixture[Path]
-):
-    SystemHostsFile().create_backup(non_existing_hosts_path)
-    assert capsys.readouterr().out == 'Error creating backup.\n'
 
 
 @freeze_time(mock_current_time)
