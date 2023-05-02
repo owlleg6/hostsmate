@@ -1,6 +1,10 @@
 name: pytest-ci
 
-on: [push, pull_request]
+on:
+  push: 
+  pull_request:
+    branches:
+      - master
 
 jobs:
   pytest:
@@ -12,8 +16,6 @@ jobs:
     
     - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v3
-      with:
-        python_version: "${{ env.python_version }}"
     
     - name: Install dependencies
       run: |
