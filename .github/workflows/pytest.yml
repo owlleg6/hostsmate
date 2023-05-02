@@ -16,6 +16,8 @@ jobs:
     
     - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v3
+      with:
+        python-version: ${{ env.python_version }}
     
     - name: Install dependencies
       run: |
