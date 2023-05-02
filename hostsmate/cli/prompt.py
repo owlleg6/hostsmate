@@ -22,29 +22,27 @@ class Prompt:
         Raises:
             SystemExit: if the user entered "q"
         """
-        wrong_input = 'Unrecognized input. Try again.\n'
+        wrong_input: str = 'Unrecognized input. Try again.\n'
 
         freq_map: dict = {
             '1': 'daily',
             '2': 'weekly',
             '3': 'monthly'
         }
-
-        while True:
-            frequency: str = input(
-                'How often do you want to autorun HostsMate to update your '
-                'Hosts file?\n'
-                '(enter 1, 2 or 3)\n'
-                '1. Daily\n'
-                '2. Weekly\n'
-                '3. Monthly\n'
-                'Enter "q" to quit.\n'
-            )
-            if frequency.lower() == 'q':
-                raise SystemExit
-            if frequency in ['1', '2', '3']:
-                self.logger.info(f'Chosen autorun frequency: '
-                                 f'{freq_map[frequency]}')
-                return frequency
-            else:
-                print(wrong_input)
+        frequency: str = input(
+            'How often do you want to autorun HostsMate to update your '
+            'Hosts file?\n'
+            '(enter 1, 2 or 3)\n'
+            '1. Daily\n'
+            '2. Weekly\n'
+            '3. Monthly\n'
+            'Enter "q" to quit.\n'
+        )
+        if frequency.lower() == 'q':
+            raise SystemExit
+        if frequency in ['1', '2', '3']:
+            self.logger.info(f'Chosen autorun frequency: '
+                             f'{freq_map[frequency]}')
+            return frequency
+        else:
+            raise SystemExit(wrong_input)
