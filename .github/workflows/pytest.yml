@@ -5,6 +5,17 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: 'Environment to run tests against'
+        type: string
+        required: false
+        default: "3.11"
+
+env:
+  # Setting an environment variable with the value of a configuration variable
+  env_var: ${{ input.python_version }}
 
 jobs:
   pytest:
