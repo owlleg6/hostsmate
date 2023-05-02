@@ -39,8 +39,8 @@ class TestSources(Sources):
         '\n'.join(f'blacklisted-domain-{i}.su' for i in range(1, 31))
 
     @pytest.fixture
-    def sources_file_setup_method(self, tmp_path: Fixture[Path]) -> None:
-        self.tmp_sources_path: Path = tmp_path / 'sources.json'
+    def sources_file_setup_method(self, tmp_path: Fixture[Path]) -> None:  # type: ignore
+        self.tmp_sources_path: Path = tmp_path / 'sources.json'  # type: ignore
         contents = {
             'sources': self.present_sources
         }
@@ -49,8 +49,8 @@ class TestSources(Sources):
 
     @staticmethod
     @pytest.fixture
-    def file_to_append_contents(tmp_path: Fixture[Path]) -> Path:
-        path: Path = tmp_path / 'contents_dump'
+    def file_to_append_contents(tmp_path: Fixture[Path]) -> Path:  # type: ignore
+        path: Path = tmp_path / 'contents_dump'  # type: ignore
         path.touch()
         return path
 
@@ -60,7 +60,7 @@ class TestSources(Sources):
 
     def test_source_urls(
             self,
-            sources_file_setup_method: Fixture
+            sources_file_setup_method: Fixture  # type: ignore
     ):
         assert all(
             source_url in self.sources_urls for source_url in self.present_sources
@@ -69,8 +69,8 @@ class TestSources(Sources):
     @pytest.mark.parametrize('test_link', test_urls_to_add)
     def test_add_url_to_sources(
             self,
-            tmp_path: Fixture[Path],
-            sources_file_setup_method: Fixture,
+            tmp_path: Fixture[Path],  # type: ignore
+            sources_file_setup_method: Fixture,  # type: ignore
             test_link: str
     ):
         self.add_url_to_sources(test_link)
@@ -78,7 +78,7 @@ class TestSources(Sources):
 
     def test_add_url_to_sources_if_source_already_present(
             self,
-            sources_file_setup_method: Fixture
+            sources_file_setup_method: Fixture  # type: ignore
     ):
         with pytest.raises(SystemExit):
             self.add_url_to_sources(self.present_sources[0])
@@ -89,7 +89,7 @@ class TestSources(Sources):
     )
     def test_remove_url_from_sources(
             self,
-            sources_file_setup_method: Fixture,
+            sources_file_setup_method: Fixture,  # type: ignore
             test_url: str
     ):
         self.remove_url_from_sources(test_url)
@@ -97,7 +97,7 @@ class TestSources(Sources):
 
     def test_remove_url_from_sources_if_source_is_not_present(
             self,
-            sources_file_setup_method: Fixture
+            sources_file_setup_method: Fixture  # type: ignore
     ):
         with pytest.raises(SystemExit):
             self.remove_url_from_sources('https://url.not.in.sources')
@@ -126,7 +126,7 @@ class TestSources(Sources):
     @responses.activate
     def test_append_source_contents_to_file(
             self,
-            file_to_append_contents: Fixture[Path]
+            file_to_append_contents: Fixture[Path]  # type: ignore
     ):
         responses.add(
             responses.GET,
@@ -137,11 +137,11 @@ class TestSources(Sources):
         self.append_source_contents_to_file(
             self.test_url_for_get_request, file_to_append_contents
         )
-        assert self.mock_resp_contents in file_to_append_contents.read_text()
+        assert self.mock_resp_contents in file_to_append_contents.read_text()  # type: ignore
 
     def test_append_sources_contents_to_file_concurrently(
             self,
-            file_to_append_contents: Fixture[Path],
+            file_to_append_contents: Fixture[Path],  # type: ignore
             monkeypatch: pytest.MonkeyPatch,
     ):
         monkeypatch.setattr(
@@ -162,7 +162,7 @@ class TestSources(Sources):
     @responses.activate
     def test_get_lines_of_all_sources_contents(
             self,
-            sources_file_setup_method: Fixture
+            sources_file_setup_method: Fixture  # type: ignore
     ):
         mock_resp: str = 'FooBar\nBarZoo\nDar\nTanDan\n'
         exp_result: set = {'FooBar\n', 'BarZoo\n', 'Dar\n', 'TanDan\n'}
