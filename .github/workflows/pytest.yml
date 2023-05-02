@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       python_version:
-        description: 'Environment to run tests against'
+        description: 'Python version'
         type: string
         required: false
         default: "3.11"
@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3 
     
-    - name: Set up Python ${{ inputs.python_version }}. Manual trigger
+    - name: Set up Python ${{ inputs.python_version }}. Manually triggered
       if: ${{ github.event_name == 'workflow_dispatch' }}
       uses: actions/setup-python@v3
       with:
