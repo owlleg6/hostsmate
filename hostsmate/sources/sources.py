@@ -35,18 +35,10 @@ class Sources(ABC):
             A set of strings representing URLs for the sources specified
             in a JSON resources file.
         """
-        try:
-            with open(self.sources_json_path) as source:
-                json_contents: dict[str, list[str]] = json.load(source)
-                sources_urls: set[str] = set(json_contents['sources'])
-                return sources_urls
-        except (OSError, json.JSONDecodeError) as e:
-            self.logger.error(e)
-            import inspect
-            print(inspect.stack()[1].filename)
-            print(inspect.stack()[1].function)
-            print(inspect.stack()[1].lineno)
-            raise SystemExit(f'Error while fetching domain sources: {e}')
+        with open(self.sources_json_path) as source:
+            json_contents: dict[str, list[str]] = json.load(source)
+            sources_urls: set[str] = set(json_contents['sources'])
+            return sources_urls
 
     def add_url_to_sources(self, new_source) -> None:
         """Add specified URL to the sources JSON file.
@@ -67,7 +59,7 @@ class Sources(ABC):
             with open(self.sources_json_path, 'w') as f:
                 json.dump(data, f)
             self.logger.info(f'{new_source} added to {self.sources_json_path}')
-        except (OSError, json.JSONDecodeError) as e:
+        except json.JSONDecodeError as e:
             self.logger.error(f'Operation failed: {e}')
             raise SystemExit('Operation failed.')
 
@@ -83,16 +75,12 @@ class Sources(ABC):
         """
         if source_to_remove not in self.sources_urls:
             raise SystemExit('No such a source to remove.')
-        try:
-            with open(self.sources_json_path, 'r') as f:
-                contents = json.load(f)
-            if source_to_remove in contents['sources']:
-                contents['sources'].remove(source_to_remove)
-                with open(self.sources_json_path, 'w') as f:
-                    json.dump(contents, f)
-        except (OSError, json.JSONDecodeError) as e:
-            self.logger.error(f'Operation failed: {e}')
-            raise SystemExit('Operation failed.')
+        with open(self.sources_json_path, 'r') as f:
+            contents = json.load(f)
+        if source_to_remove in contents['sources']:
+            contents['sources'].remove(source_to_remove)
+            with open(self.sources_json_path, 'w') as f:
+                json.dump(contents, f)
 
     def fetch_source_contents(self, url: str) -> str:
         """Fetch source contents and return it as a string.
@@ -117,7 +105,11 @@ class Sources(ABC):
             print(f'Could not fetch blacklisted domains from {url}')
             return ''
 
-    def append_source_contents_to_file(self, url: str, file: str | Path) -> None:
+    def append_source_contents_to_file(
+            self,
+            url: str,
+            file: str | Path
+    ) -> None:
         """Append contents of the given URL to the temporary file.
            Get the source contents by calling fetch_source_contents method
 
@@ -129,15 +121,13 @@ class Sources(ABC):
 
         if contents == '': return
 
-        try:
-            with open(file, 'a') as f:
-                f.write(f'{contents}\n')
-        except OSError as e:
-            self.logger.error(f'Failed to add contents of {url} to {file}.')
-            self.logger.error(e)
+        with open(file, 'a') as f:
+            f.write(f'{contents}\n')
 
-    def append_sources_contents_to_file_concurrently(self,
-                                                     file: str | Path) -> int:
+    def append_sources_contents_to_file_concurrently(
+            self,
+            file: str | Path
+    ) -> int:
         """Fetch raw contents from all sources and write them concurrently to
         a file with the process pool executor.
 
@@ -149,12 +139,16 @@ class Sources(ABC):
         Returns
             futures_completed (int): how many processes completed.
         """
-        self.logger.info('In the func')
         with concurrent.futures.ProcessPoolExecutor() as executor:
             futures_completed = 0
-
-            futures = [executor.submit(self.append_source_contents_to_file, source, file) for source in
-                       self.sources_urls]
+            futures = []
+            for source in self.sources_urls:
+                future: concurrent.futures.Future = executor.submit(
+                    self.append_source_contents_to_file,
+                    source,
+                    file
+                )
+                futures.append(future)
 
             for _ in concurrent.futures.as_completed(futures):
                 futures_completed += 1
@@ -169,11 +163,8 @@ class Sources(ABC):
         """
         sources_lines: set[str] = set()
 
-        try:
-            for source in self.sources_urls:
-                resp: str = self.fetch_source_contents(source)
-                buffer: StringIO = StringIO(resp)
-                sources_lines.update(buffer.readlines())
-            return sources_lines
-        except UnsupportedOperation as e:
-            self.logger.error(f'Operation failed: {e}')
+        for source in self.sources_urls:
+            resp: str = self.fetch_source_contents(source)
+            buffer: StringIO = StringIO(resp)
+            sources_lines.update(buffer.readlines())
+        return sources_lines
