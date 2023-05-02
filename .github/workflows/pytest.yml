@@ -10,7 +10,7 @@ on:
       python_version:
         description: 'Environment to run tests against'
         type: string
-        required: true
+        required: false
         default: "3.11"
 
 env:
@@ -25,13 +25,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3 
     
-    - name: Set up Python ${{ inputs.python_version }}
+    - name: Set up Python ${{ inputs.python_version }}. Manual trigger
       if: ${{ github.event_name == 'workflow_dispatch' }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ inputs.python_version }}
     
-    - name: Set up Python ${{ env.python_version }}
+    - name: Set up Python ${{ env.python_version }}. Ci trigger
       if: ${{ github.event_name != 'workflow_dispatch' }}
       uses: actions/setup-python@v3
       with:
