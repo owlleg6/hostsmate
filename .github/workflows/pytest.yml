@@ -22,7 +22,8 @@ jobs:
         sudo pip install -r requirements.txt
     - name: Analysing the code with pytest
       run: |
-        sudo pytest --cov=hostsmate/tests --cov-report=xml
+        #sudo pytest --cov=hostsmate/tests --cov-report=xml
+        sudo pytest --cov-report=xml
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
