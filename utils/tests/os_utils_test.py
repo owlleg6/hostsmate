@@ -35,15 +35,15 @@ def test_ensure_linux_or_bsd(platform: str, exp_res: bool):
     assert result == exp_res
 
 
-def test_add_exec_permissions(tmp_path):
-    file_to_add_permission: Path = tmp_path / 'executable'
+def test_add_exec_permissions(tmp_path: Fixture[Path]):  # type: ignore
+    file_to_add_permission: Path = tmp_path / 'executable'  # type: ignore
     file_to_add_permission.touch()
     OSUtils().add_exec_permissions(file_to_add_permission)
     assert os.access(file_to_add_permission, os.X_OK)
 
 
 def test_execute_sh_command_as_root(tmp_path: Fixture[Path]):  # type: ignore
-    program_to_run: Path = tmp_path / 'prog.sh'
+    program_to_run: Path = tmp_path / 'prog.sh'  # type: ignore
     program_to_run.touch()
     program_to_run.chmod(1)
     assert OSUtils().execute_sh_command_as_root(program_to_run, [])
