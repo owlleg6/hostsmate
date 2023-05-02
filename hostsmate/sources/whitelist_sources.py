@@ -44,8 +44,6 @@ class WhitelistSources(Sources):
         super().add_url_to_sources(new_source)
         print(f'"{new_source}" has been added to whitelist sources.')
 
-        return super().add_url_to_sources(new_source)
-
     def remove_url_from_sources(self, source_to_remove: str) -> None:
         """
         Removes a URL from the list of sources of the whitelisted domains.
