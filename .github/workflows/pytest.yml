@@ -10,12 +10,11 @@ on:
       python_version:
         description: 'Environment to run tests against'
         type: string
-        required: false
+        required: true
         default: "3.11"
 
 env:
-  # Setting an environment variable with the value of a configuration variable
-  env_var: ${{ inputs.python_version }}
+  python_version: ${{ inputs.python_version }}
 
 jobs:
   pytest:
@@ -23,8 +22,7 @@ jobs:
     env:
       python_version: "3.11"
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v3 
     - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v3
       with:
