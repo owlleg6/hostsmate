@@ -1,11 +1,7 @@
-import ctypes
 import pathlib
 import subprocess
 from os import getuid
-from os.path import join
 from pathlib import Path
-from tempfile import gettempdir
-from uuid import uuid4
 
 from utils.utils import Utils
 import hostsmate.logger as l
@@ -16,13 +12,20 @@ class OSUtils(Utils):
     This class contains utility methods for operating system-related tasks.
 
     Methods:
-        ensure_root_privileges(): Ensure that the application is running with
-        root/administrator privileges. Exit if it is not.
+        ensure_root_privileges() -> None: Ensure that the application is running
+        with root privileges. Exit if it is not.
 
-        get_project_root(): Return the root directory of the project.
+        get_project_root() -> Path: Return the root directory of the project.
 
-        mk_tmp_hex_file(): Create a temporary file path using a random
-        hexadecimal UUID.
+        ensure_linux_or_bsd(platform: str) -> Bool: Ensure that the application
+        is running on Linux or FreeBSD platform.
+
+        execute_sh_command_as_root(program: str | Path,
+                                   cli_args: list[int | float | str]
+                                  ) -> Bool: Execute shell command with sudo.
+
+        is_shell_dependency_installed(dependency: str) -> Bool: return True
+        if dependency installed, False otherwise.
    """
 
     def __init__(self):
@@ -57,7 +60,7 @@ class OSUtils(Utils):
         return project_root
 
     @staticmethod
-    def ensure_linux_or_bsd(paltform) -> bool:
+    def ensure_linux_or_bsd(platform) -> bool:
         """Ensure that the current operating system is compatible with the
         feature (Linux and FreeBSD), exit if it is not.
 
@@ -66,7 +69,7 @@ class OSUtils(Utils):
         """
         allowed_platforms: list[str] = ['linux', 'freebsd']
 
-        return paltform in allowed_platforms
+        return platform in allowed_platforms
 
     def execute_sh_command_as_root(
             self,
