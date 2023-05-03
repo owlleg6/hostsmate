@@ -37,14 +37,10 @@ class OSUtils(Utils):
         Raises:
         SystemExit: If the application is not running with root/administrator privileges.
         """
-        try:
-            root: bool = getuid() == 0
-        except AttributeError:
-            root: bool = ctypes.windll.shell32.IsUserAnAdmin() != 0
-
+        root: bool = getuid() == 0
         if not root:
-            exit('Please run the application as a '
-                 'root/administrator to continue.')
+            raise SystemExit('Please run the application as a '
+                             'root/administrator to continue.')
 
     @staticmethod
     def get_project_root() -> pathlib.Path:
@@ -72,26 +68,6 @@ class OSUtils(Utils):
 
         return paltform in allowed_platforms
 
-    def add_exec_permissions(self, program_name) -> bool:
-        """Add executable permissions to the anacron job setter bash script.
-
-        Raises:
-            SystemExit: if there is the error while executing command.
-        """
-        try:
-            command = subprocess.run(
-                ['chmod', '+x', program_name]
-            )
-            self.logger.debug(f'executable permissions added to '
-                              f'{program_name}')
-        except subprocess.SubprocessError as e:
-            self.logger.error(f'Operation failed: {e}')
-            raise SystemExit('Operation failed.')
-
-        return_code = command.returncode
-        self.logger.info(f'return code: {return_code}')
-        return command.returncode == 0
-
     def execute_sh_command_as_root(
             self,
             program: str | Path,
@@ -111,9 +87,8 @@ class OSUtils(Utils):
         Raises:
             SystemExit: if there is the error while executing command.
         """
-        command: list[str, str | Path] = ['sudo', program]
+        command: list[str | Path] = ['sudo', program]
         command.extend(cli_args)
-
         try:
             process: subprocess.CompletedProcess = subprocess.run(command)
         except subprocess.SubprocessError as e:
