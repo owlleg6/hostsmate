@@ -1,4 +1,4 @@
-import os
+import subprocess
 from typing import Union
 from pathlib import Path
 
@@ -7,6 +7,10 @@ import pytest
 from utils.os_utils import OSUtils
 
 Fixture = Union
+
+
+def raise_subprocess_err(_, stdout=None):
+    raise subprocess.SubprocessError
 
 
 def test_get_project_root_returns_path_obj():
@@ -35,13 +39,6 @@ def test_ensure_linux_or_bsd(platform: str, exp_res: bool):
     assert result == exp_res
 
 
-def test_add_exec_permissions(tmp_path: Fixture[Path]):  # type: ignore
-    file_to_add_permission: Path = tmp_path / 'executable'  # type: ignore
-    file_to_add_permission.touch()
-    OSUtils().add_exec_permissions(file_to_add_permission)
-    assert os.access(file_to_add_permission, os.X_OK)
-
-
 def test_execute_sh_command_as_root(tmp_path: Fixture[Path]):  # type: ignore
     program_to_run: Path = tmp_path / 'prog.sh'  # type: ignore
     program_to_run.touch()
@@ -49,5 +46,25 @@ def test_execute_sh_command_as_root(tmp_path: Fixture[Path]):  # type: ignore
     assert OSUtils().execute_sh_command_as_root(program_to_run, [])
 
 
+def test_execute_sh_command_as_root_raises_sys_exit(
+        monkeypatch: pytest.MonkeyPatch,
+):
+    monkeypatch.setattr(
+        subprocess, 'run', raise_subprocess_err
+    )
+    with pytest.raises(SystemExit):
+        OSUtils().execute_sh_command_as_root('grep', [])
+
+
 def test_is_shell_dependency_installed():
     assert OSUtils().is_shell_dependency_installed('grep')
+
+
+def test_is_shell_dependency_installed_raises_sys_exit(
+        monkeypatch: pytest.MonkeyPatch,
+):
+    monkeypatch.setattr(
+        subprocess, 'run', raise_subprocess_err
+    )
+    with pytest.raises(SystemExit):
+        OSUtils().is_shell_dependency_installed('grep')

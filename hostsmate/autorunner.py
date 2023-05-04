@@ -15,6 +15,15 @@ class Autorunner:
         hostsmate_app (Path) = path to the hostsmate.py file.
         job_setter_sh_script_path (Path) = path to the anacron_job_setter.sh
         which sets up an anacron job (bash only).
+
+    Methods:
+        run_anacron_setter_sh_script(autorun_frequency: str) -> Bool:
+        Run the anacron_job_setter.sh script.
+
+        set_up_anacron_job() -> Bool: Sets up an anacron job to run the application
+        on a specified schedule.
+
+
     """
     hostsmate_app: Path = OSUtils.get_project_root() / 'hostsmate.py'
     job_setter_sh_script_path: Path = \
@@ -23,7 +32,7 @@ class Autorunner:
     def __init__(self):
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
-    def run_anacron_setter_sh_script(self, autorun_frequency) -> bool:
+    def run_anacron_setter_sh_script(self, autorun_frequency: str) -> bool:
         """Run the anacron_job_setter.sh script.
 
         Returns:
@@ -57,12 +66,10 @@ class Autorunner:
         anacron_dependency_installed: bool = \
             OSUtils().is_shell_dependency_installed('anacron')
 
+        Autorunner.job_setter_sh_script_path.chmod(1)
+
         if linux_or_bsd_platform and anacron_dependency_installed:
             autorun_frequency: str = Prompt().ask_autorun_frequency()
-
-            OSUtils().add_exec_permissions(
-                Autorunner.job_setter_sh_script_path
-            )
 
             self.run_anacron_setter_sh_script(
                 autorun_frequency
