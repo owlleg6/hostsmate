@@ -1,16 +1,39 @@
 name: pytest-ci
 
-on: [push, pull_request]
-
+on:
+  push: 
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "hostsmate/*"
+      - "utils/*"
+  
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: 'Run with python version'
+        type: string
+        required: false
+        default: "3.11"
+        
 jobs:
   pytest:
     runs-on: ubuntu-latest
     env:
       python_version: "3.11"
+      
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3 
     
-    - name: Set up Python ${{ env.python_version }}
+    - name: Set up Python ${{ inputs.python_version }}. Manually triggered
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ inputs.python_version }}
+    
+    - name: Set up Python ${{ env.python_version }}. Ci trigger
+      if: ${{ github.event_name != 'workflow_dispatch' }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ env.python_version }}
@@ -18,8 +41,6 @@ jobs:
     - name: Install dependencies
       run: |
         sudo python -m pip install --upgrade pip
-        sudo pip install pytest-cov
-        sudo pip install freezegun
         sudo pip install -r requirements.txt
         
     - name: Analysing the code with Pytest
