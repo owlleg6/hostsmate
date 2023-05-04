@@ -188,7 +188,6 @@ class SystemHostsFile:
         formatted_domains_total_num: str = StringUtils.sep_num_with_commas(
             UniqueBlacklistedDomains().amount
         )
-        self.logger.info(blacklist_domains)
         header: str = self._get_header()
 
         try:
