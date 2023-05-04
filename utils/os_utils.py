@@ -3,11 +3,10 @@ import subprocess
 from os import getuid
 from pathlib import Path
 
-from utils.utils import Utils
 import hostsmate.logger as l
 
 
-class OSUtils(Utils):
+class OSUtils:
     """
     This class contains utility methods for operating system-related tasks.
 

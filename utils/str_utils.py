@@ -1,9 +1,7 @@
 from urllib.parse import urlparse
 
-from utils.utils import Utils
 
-
-class StringUtils(Utils):
+class StringUtils:
     """
     A utility class that provides static methods for manipulating strings.
     """
