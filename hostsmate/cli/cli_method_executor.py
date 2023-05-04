@@ -12,10 +12,16 @@ from hostsmate.sources.blacklist_sources import BlacklistSources
 
 class CLIMethodExecutor:
     """
-    A class responsible for executing a method based on parsed command-line arguments.
+    A class responsible for executing a method based on parsed command-line
+     arguments.
 
     Attributes:
-        flag_method_map (dict): A mapping of command-line arguments to their corresponding methods.
+        flag_method_map (dict): A mapping of command-line arguments to their
+        corresponding methods.
+
+    Methods:
+        execute(cli_arg: tuple[str, str | bool]) -> None: Execute the method
+        based on the given command-line argument and its value.
     """
 
     def __init__(self):
@@ -39,9 +45,9 @@ class CLIMethodExecutor:
             self,
             cli_arg:
             tuple[str, str | bool]
-    ) -> Callable:
+    ) -> None:
         """
-        Executes the method based on the given command-line argument and its value.
+        Execute the method based on the given command-line argument and its value.
 
         Args:
             cli_arg (tuple): A tuple containing the command-line argument and its value.
@@ -50,14 +56,13 @@ class CLIMethodExecutor:
         self.logger.info(f'CLI args passed: {arg, value}')
 
         try:
-            if type(value) == str:
+            if isinstance(value, str):
                 self.logger.info(f'Starting method: {self.flag_method_map[arg]}'
                                  f'with args {value}')
                 self.flag_method_map[arg](value)
             else:
                 self.logger.info(f'Starting method: {self.flag_method_map[arg]}')
                 self.flag_method_map[arg]()
-                return self.flag_method_map[arg]
 
         except OSError as e:
             print(f'Operation failed: {e}')
