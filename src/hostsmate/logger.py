@@ -1,3 +1,4 @@
+import datetime
 import logging
 from pathlib import Path
 
@@ -19,17 +20,15 @@ class HostsLogger:
         Returns:
             logging.Logger: The logger object.
         """
-
-        logs_dir: Path = self.get_logs_dir()
+        log_file: Path = self.get_logs_dir() / f'{datetime.date.today()}.log'
 
         logger: logging.Logger = logging.getLogger(name)
         logger.setLevel(logging.DEBUG)
 
         if not self.has_file_handler(logger):
             formatter = logging.Formatter(
-                '%(asctime)s [%(levelname)s] '
-                '[%(name)s.%(funcName)s] - %(message)s')
-            file_handler = logging.FileHandler(f'{logs_dir}/hosts.log')
+                '%(asctime)s [%(levelname)s] [%(name)s.%(funcName)s] - %(message)s')
+            file_handler: logging.FileHandler = logging.FileHandler(log_file)
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
         return logger
@@ -45,7 +44,9 @@ class HostsLogger:
         Returns:
             bool: True if a file handler has already been added, False otherwise.
         """
-        return any(isinstance(handler, logging.FileHandler) for handler in logger.handlers)
+        return any(
+            isinstance(handler, logging.FileHandler) for handler in logger.handlers
+        )
 
     @staticmethod
     def get_logs_dir() -> Path:
