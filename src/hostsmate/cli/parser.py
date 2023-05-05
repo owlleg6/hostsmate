@@ -37,7 +37,8 @@ class Parser:
             predefined arguments.
         """
         parser = argparse.ArgumentParser(
-            description='Welcome to HostsMate! A system-wide ad blocker by Kravchenkoda. '
+            description='Welcome to HostsMate! A system-wide ad blocker by '
+                        'Kravchenkoda. '
                         'Protect yourself from malware, tracking, ads and spam.\n'
                         'HostsMate blacklists 1.4 million+ domains from 44 sources '
                         'that update regularly to keep your system safe.\n\n'
