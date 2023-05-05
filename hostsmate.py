@@ -1,5 +1,5 @@
-from hostsmate.cli.parser import Parser
-from hostsmate.cli.cli_method_executor import CLIMethodExecutor
+from src.hostsmate.cli.parser import Parser
+from src.hostsmate.cli.cli_method_executor import CLIMethodExecutor
 
 
 def main() -> None:
