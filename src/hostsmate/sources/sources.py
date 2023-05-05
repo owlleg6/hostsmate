@@ -119,7 +119,8 @@ class Sources(ABC):
         """
         contents: str = self.fetch_source_contents(url)
 
-        if contents == '': return
+        if not contents:
+            return
 
         with open(file, 'a') as f:
             f.write(f'{contents}\n')
