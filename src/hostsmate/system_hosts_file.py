@@ -89,8 +89,8 @@ class SystemHostsFile:
         return users_custom_domains
 
     def add_blacklisted_domain(self, domain: str) -> None:
-        """Blacklist the given domain by writing it to the user's custom domains section of the
-        Hosts file with 0.0.0.0 prefix.
+        """Blacklist the given domain by writing it to the user's custom domains
+        section of the Hosts file with 0.0.0.0 prefix.
 
         Args:
             domain (str): domain name to be added to the Hosts file
@@ -179,7 +179,7 @@ class SystemHostsFile:
         )
         header: str = self._get_header()
 
-        print(f'Building new Hosts file...')
+        print('Building new Hosts file...')
         with open(self.original_path, 'w') as hosts:
             hosts.write(header)
             for line in blacklist_domains:
