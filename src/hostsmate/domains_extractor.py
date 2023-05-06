@@ -132,3 +132,4 @@ class DomainsExtractor:
                 else:
                     domain: str = self.extract_domain_from_line(line)
                     UniqueBlacklistedDomains().add_domain(domain)
+            self.logger.info(f'Extracted domains from {self.file_path}')
