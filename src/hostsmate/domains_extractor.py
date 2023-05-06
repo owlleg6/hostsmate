@@ -9,7 +9,8 @@ from src.hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
 
 class DomainsExtractor:
     """
-    The DomainsExtractor class extracts domain names from a file containing raw blacklist sources contents.
+    The DomainsExtractor class extracts domain names from a file containing raw
+    blacklist sources contents.
 
     Attributes:
         localhost_ip (str): A string representing the IP address for localhost.
