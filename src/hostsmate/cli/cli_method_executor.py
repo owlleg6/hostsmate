@@ -66,5 +66,7 @@ class CLIMethodExecutor:
 
         except OSError as e:
             print(f'Operation failed: {e}')
+            self.logger.error(f'Operation failed: {e}')
         except JSONDecodeError as e:
             print(f'Operation failed: {e}')
+            self.logger.error(f'Operation failed: {e}')
