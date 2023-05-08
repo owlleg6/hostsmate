@@ -31,7 +31,7 @@ jobs:
 
   pytest-test:
 
-    uses: owlleg6/hostsmate/.github/workflows/templates/setup.yml@cicd/flake8-workflow
+    uses: owlleg6/hostsmate/.github/workflows/setup.yml@cicd/flake8-workflow
     with:
       python_version: {{ env.python_version }}
 
