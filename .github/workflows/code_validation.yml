@@ -25,11 +25,14 @@ on:
         required: false
         default: "3.11"
 
+permissions:
+  contents: read
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
     name: Run PyTest
+    permissions:
+      contents: read
     env:
       PYTHON_VERSION: "3.11"
     uses: owlleg6/hostsmate/.github/workflows/pytest.yml@cicd/flake8-workflow
@@ -37,8 +40,9 @@ jobs:
       python_version: "3.11" #${{ inputs.python_version || env.PYTHON_VERSION }}
 
   flake8:
-    runs-on: ubuntu-latest
     name: Run Flake8
+    permissions:
+      contents: read
     env:
       PYTHON_VERSION: "3.11"
     uses: owlleg6/hostsmate/.github/workflows/flake8.yml@cicd/flake8-workflow
