@@ -34,7 +34,7 @@ jobs:
   pytest:
     uses: owlleg6/hostsmate/.github/workflows/pytest.yml@cicd/flake8-workflow
     with:
-      python_version: ${{ inputs.python_version || env.python_version }}
+      python_version: ${{ inputs.python_version || env.PYTHON_VERSION }}
 
   flake8:
     uses: owlleg6/hostsmate/.github/workflows/flake8.yml@cicd/flake8-workflow
