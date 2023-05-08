@@ -1,12 +1,23 @@
 name: code-validation
 
 on:
-  push: 
+  push:
+    branches:
+      - develop
+      - master
+    paths-ignore:
+      - ".github/*"
+
   pull_request:
     branches:
       - develop
+      - master
+    types:
+      - opened
+      - edited
+      - closed
     paths:
-      - "src/tests/*"
+      - "src/*"
   
   workflow_dispatch:
     inputs:
@@ -17,37 +28,20 @@ on:
         default: "3.11"
         
 jobs:
-  pytest:
-    runs-on: ubuntu-latest
-    env:
-      python_version: "3.11"
-      
-    steps:
-    - uses: actions/checkout@v3 
-    
-    - name: Set up Python ${{ inputs.python_version }}. Manually triggered
-      if: ${{ github.event_name == 'workflow_dispatch' }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ inputs.python_version }}
-    
-    - name: Set up Python ${{ env.python_version }}. Ci trigger
-      if: ${{ github.event_name != 'workflow_dispatch' }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ env.python_version }}
-    
-    - name: Install dependencies
-      run: |
-        sudo python -m pip install --upgrade pip
-        sudo pip install -r requirements.txt
-        
-    - name: Analysing the code with Pytest
-      run: |
-        sudo pytest --cov=./ --cov-report=xml
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
+  pytest:
+
+    uses: owlleg6/hostsmate/.github/workflows/templates/setup.yml
+    with:
+      python_version: {{ env.python_version }}
+
+      steps:
+      - name: Analysing the code with Pytest
+        run: |
+          sudo pytest --cov=./ --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
