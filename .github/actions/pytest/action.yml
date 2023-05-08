@@ -2,10 +2,6 @@ name: pytest-action
 description: "action that runs pytest"
 
 inputs:
-  python_version:
-    description: 'Run with python version'
-    required: false
-    default: "3.11"
   codecov_token:
     description: 'Code Cov token stored in GitHub Secrets'
     required: true
@@ -13,17 +9,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set up Python ${{ inputs.python_version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ inputs.python_version }}
-
-    - name: Install dependencies
-      shell: bash
-      run: |
-        sudo python -m pip install --upgrade pip
-        sudo pip install -r requirements.txt
-
     - name: Analysing the code with Pytest
       shell: bash
       run: |

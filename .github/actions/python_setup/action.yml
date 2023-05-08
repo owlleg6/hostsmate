@@ -1,0 +1,22 @@
+name: python-setop-action
+description: "action that setups python environment"
+
+inputs:
+  python_version:
+    description: 'Run with python version'
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python ${{ inputs.python_version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo python -m pip install --upgrade pip
+        sudo pip install -r requirements.txt

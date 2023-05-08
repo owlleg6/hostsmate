@@ -22,7 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: flake8-action
-        uses: owlleg6/hostsmate/.github/actions/flake8@cicd/flake8-workflow
+      - name: Setup Python ${{ inputs.python_version }} Environment
+        uses: owlleg6/hostsmate/.github/actions/python_setup@cicd/flake8-workflow
         with:
           python_version: ${{ inputs.python_version }}
+
+      - name: Flake8 Code Analysis
+        uses: owlleg6/hostsmate/.github/actions/flake8@cicd/flake8-workflow

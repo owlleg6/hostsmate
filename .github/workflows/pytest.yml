@@ -22,8 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: pytest-action
-        uses: owlleg6/hostsmate/.github/actions/pytest@cicd/flake8-workflow
+      - name: Setup Python ${{ inputs.python_version }} Environment
+        uses: owlleg6/hostsmate/.github/actions/python_setup@cicd/flake8-workflow
         with:
           python_version: ${{ inputs.python_version }}
+
+      - name: PyTest Code Coverage
+        uses: owlleg6/hostsmate/.github/actions/pytest@cicd/flake8-workflow
+        with:
           codecov_token: ${{ secrets.CODECOV_TOKEN }}
