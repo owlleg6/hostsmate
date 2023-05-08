@@ -31,6 +31,7 @@ permissions:
 jobs:
   pytest:
     name: Run PyTest
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     env:
@@ -41,6 +42,7 @@ jobs:
 
   flake8:
     name: Run Flake8
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     env:
