@@ -19,10 +19,10 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-    - name: pytest
-      uses: owlleg6/hostsmate/.github/actions/action_pytest.yml@cicd/flake8-workflow
-      with:
-        python_version: {{ input.python_version }}
+      - name: pytest
+        uses: owlleg6/hostsmate/.github/actions/action_pytest.yml@cicd/flake8-workflow
+        with:
+          python_version: {{ input.python_version }}
