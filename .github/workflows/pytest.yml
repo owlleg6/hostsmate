@@ -32,6 +32,25 @@ env:
 
 jobs:
 
-  pytest-test:
+  pytest:
     uses: owlleg6/hostsmate/.github/workflows/setup.yml@cicd/flake8-workflow
+    steps:
+      - name: Analysing the code with Pytest
+        run: |
+          sudo pytest --cov=./ --cov-report=xml
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+
+  flake8:
+    uses: owlleg6/hostsmate/.github/workflows/setup.yml@cicd/flake8-workflow
+    steps:
+      - name: Run flake8
+        run: >
+          sudo flake8 ./src/hostsmate ./src/utils  
+          --max-complexity 10 
+          --max-line-length 88  
+          --benchmark -v

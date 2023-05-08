@@ -1,4 +1,4 @@
-name: template
+name: python-setup
 
 on:
   workflow_call:
@@ -10,7 +10,7 @@ on:
         default: "3.11"
 
 jobs:
-  template:
+  python-setup:
     runs-on: ubuntu-latest
     env:
       python_version: "3.11"
