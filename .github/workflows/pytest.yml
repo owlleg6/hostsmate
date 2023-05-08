@@ -6,8 +6,7 @@ on:
     branches:
       - master
     paths:
-      - "hostsmate/*"
-      - "utils/*"
+      - "src/tests/*"
   
   workflow_dispatch:
     inputs:
