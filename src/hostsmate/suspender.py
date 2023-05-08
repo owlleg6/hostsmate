@@ -7,7 +7,8 @@ from src.hostsmate.system_hosts_file import SystemHostsFile
 
 class Suspender:
     """
-    A class for suspending and resuming an adblocker by renaming the system's Hosts file.
+    A class for suspending and resuming an adblocker by renaming the system's
+    Hosts file.
 
     Attributes:
         org_hosts_name (Path): a path to the system's Hosts file.
