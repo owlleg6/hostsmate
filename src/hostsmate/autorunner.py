@@ -12,9 +12,9 @@ class Autorunner:
      Hosts file with anacron by modifying /etc/anacrontab file.
 
     Attributes:
-        hostsmate_app (Path) = path to the hostsmate_tests.py file.
+        hostsmate_app (Path) = path to the hostsmate.py file.
         job_setter_sh_script_path (Path) = path to the anacron_job_setter.sh
-        which sets up an anacron job (bash only).
+        which sets up an anacron job.
 
     Methods:
         run_anacron_setter_sh_script(autorun_frequency: str) -> Bool:
@@ -22,8 +22,6 @@ class Autorunner:
 
         set_up_anacron_job() -> Bool: Sets up an anacron job to run the application
         on a specified schedule.
-
-
     """
     hostsmate_app: Path = OSUtils.get_project_root().parent / 'hostsmate.py'
     job_setter_sh_script_path: Path = \
@@ -39,7 +37,7 @@ class Autorunner:
             bool: True if the command was executed with 0 return code;
             False otherwise.
         """
-        command = [autorun_frequency, f'python3 {self.hostsmate_app} --go']
+        command = [autorun_frequency, f'python3 {self.hostsmate_app} --run']
         done: bool = OSUtils().execute_sh_command_as_root(
             self.job_setter_sh_script_path, command)
         if done:

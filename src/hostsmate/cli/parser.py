@@ -60,7 +60,7 @@ class Parser:
             '-a',
             '--autorun',
             action='store_true',
-            help='Setup automatic update of your Hosts file (Linux only)'
+            help='Setup automatic update of your Hosts file (Linux and FreeBSD only).'
         )
         group.add_argument(
             '-s',
