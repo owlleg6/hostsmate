@@ -1,19 +1,16 @@
 name: pytest
+description: "action that runs pytest"
 
 inputs:
   python_version:
     description: 'Run with python version'
-    type: string
     required: false
     default: "3.11"
 
 runs:
   using: "composite"
-  #python-setup:
-  #  runs-on: ubuntu-latest
 
   steps:
-#    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v3
@@ -21,11 +18,13 @@ runs:
         python-version: ${{ inputs.python_version }}
 
     - name: Install dependencies
+      shell: bash
       run: |
         sudo python -m pip install --upgrade pip
         sudo pip install -r requirements.txt
 
     - name: Analysing the code with Pytest
+      shell: bash
       run: |
         sudo pytest --cov=./ --cov-report=xml
 

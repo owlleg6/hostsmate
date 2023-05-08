@@ -1,9 +1,9 @@
 name: flake8
+description: "action that runs flake8"
 
 inputs:
   python_version:
     description: 'Run with python version'
-    type: string
     required: false
     default: "3.11"
 
@@ -18,11 +18,13 @@ runs:
         python-version: ${{ input.python_version }}
 
     - name: Install dependencies
+      shell: bash
       run: |
         sudo python -m pip install --upgrade pip
         sudo pip install -r requirements.txt
 
     - name: Run flake8
+      shell: bash
       run: >
         sudo flake8 ./src/hostsmate ./src/utils
         --max-complexity 10
