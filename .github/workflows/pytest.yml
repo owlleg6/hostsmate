@@ -30,7 +30,8 @@ on:
 jobs:
 
   pytest-test:
-
+    env:
+      python_version: "3.11"
     uses: owlleg6/hostsmate/.github/workflows/setup.yml@cicd/flake8-workflow
     with:
       python_version: {{ env.python_version }}
