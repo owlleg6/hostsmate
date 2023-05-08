@@ -9,9 +9,7 @@ on:
       - ".github/*"
 
   pull_request:
-    branches:
-      - develop
-      - master
+    branches: [ master, develop]
     types:
       - opened
       - edited
@@ -30,6 +28,7 @@ on:
 
 jobs:
   pytest:
+    name: Run PyTest
     env:
       PYTHON_VERSION: "3.11"
     uses: owlleg6/hostsmate/.github/workflows/pytest.yml@cicd/flake8-workflow
@@ -37,6 +36,7 @@ jobs:
       python_version: "3.11" #${{ inputs.python_version || env.PYTHON_VERSION }}
 
   flake8:
+    name: Run Flake8
     env:
       PYTHON_VERSION: "3.11"
     uses: owlleg6/hostsmate/.github/workflows/flake8.yml@cicd/flake8-workflow
