@@ -25,4 +25,4 @@ jobs:
       - name: flake8
         uses: owlleg6/hostsmate/.github/actions/action_flake8.yml@cicd/flake8-workflow
         with:
-          python_version: {{ input.python_version }}
+          python_version: "3.11" #{{ input.python_version }}
