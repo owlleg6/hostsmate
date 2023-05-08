@@ -1,4 +1,4 @@
-name: pytest
+name: flake8
 
 on:
   workflow_call:
@@ -15,14 +15,14 @@ on:
         type: string
         required: false
         default: "3.11"
-        
+
 jobs:
   code-validation:
     runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v3
 
-    - name: pytest
-      uses: owlleg6/hostsmate/.github/actions/action_pytest.yml@cicd/flake8-workflow
+    - name: flake8
+      uses: owlleg6/hostsmate/.github/actions/action_flake8.yml@cicd/flake8-workflow
       with:
         python_version: {{ input.python_version }}

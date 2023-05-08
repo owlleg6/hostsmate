@@ -1,0 +1,36 @@
+name: pytest
+
+inputs:
+  python_version:
+    description: 'Run with python version'
+    type: string
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  #python-setup:
+  #  runs-on: ubuntu-latest
+
+  steps:
+#    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ input.python_version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ input.python_version }}
+
+    - name: Install dependencies
+      run: |
+        sudo python -m pip install --upgrade pip
+        sudo pip install -r requirements.txt
+
+    - name: Analysing the code with Pytest
+      run: |
+        sudo pytest --cov=./ --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml

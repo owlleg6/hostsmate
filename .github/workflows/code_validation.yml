@@ -1,0 +1,47 @@
+name: code-validation
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+    paths-ignore:
+      - ".github/*"
+
+  pull_request:
+    branches:
+      - develop
+      - master
+    types:
+      - opened
+      - edited
+      - closed
+    paths:
+      - "src/*"
+
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: 'Run with python version'
+        type: string
+        required: false
+        default: "3.11"
+
+env:
+  python_version: "3.11"
+
+jobs:
+  code-validation:
+    runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v3
+
+  pytest:
+    uses: owlleg6/hostsmate/.github/workflows/pytest.yml@cicd/flake8-workflow
+    with:
+      python_version: {{ inputs.python_version || env.python_version }}
+
+  flake8:
+    uses: owlleg6/hostsmate/.github/workflows/flake8.yml@cicd/flake8-workflow
+    with:
+      python_version: {{ inputs.python_version || env.python_version }}
