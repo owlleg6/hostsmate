@@ -17,7 +17,7 @@ on:
         default: "3.11"
 
 jobs:
-  code-validation:
+  flake8:
     runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v3
