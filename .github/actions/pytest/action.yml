@@ -6,6 +6,9 @@ inputs:
     description: 'Run with python version'
     required: false
     default: "3.11"
+  codecov_token:
+    description: 'Code Cov token stored in GitHub Secrets'
+    required: true
 
 runs:
   using: "composite"
@@ -31,5 +34,5 @@ runs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ inputs.codecov_token }}
         file: ./coverage.xml

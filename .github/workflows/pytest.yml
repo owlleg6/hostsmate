@@ -26,3 +26,4 @@ jobs:
         uses: owlleg6/hostsmate/.github/actions/pytest@cicd/flake8-workflow
         with:
           python_version: "3.11" #{{ input.python_version }}
+          codecov_token: ${{ secrets.CODECOV_TOKEN }}
