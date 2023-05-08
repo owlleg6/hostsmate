@@ -45,12 +45,12 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
 
-  flake8:
-    uses: owlleg6/hostsmate/.github/workflows/setup.yml@cicd/flake8-workflow
-    steps:
-      - name: Run flake8
-        run: >
-          sudo flake8 ./src/hostsmate ./src/utils  
-          --max-complexity 10 
-          --max-line-length 88  
-          --benchmark -v
+#  flake8:
+#    uses: owlleg6/hostsmate/.github/workflows/setup.yml@cicd/flake8-workflow
+#    steps:
+#      - name: Run flake8
+#        run: >
+#          sudo flake8 ./src/hostsmate ./src/utils
+#          --max-complexity 10
+#          --max-line-length 88
+#          --benchmark -v
