@@ -38,7 +38,7 @@ jobs:
 
       - name: Run flake8
         run: |
-          sudo flake8 src/hostsmate/ \ 
-            --max-complexity 10 \
-            --max-line-length 88 \ 
-            --benchmark -v
+          sudo flake8 ./src/hostsmate ./src/utils \ 
+          --max-complexity 10 \
+          --max-line-length 88 \ 
+          --benchmark -v
