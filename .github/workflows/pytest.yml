@@ -1,4 +1,4 @@
-name: code-validation
+name: pytest-test
 
 on:
   push:
