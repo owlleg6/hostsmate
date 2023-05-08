@@ -3,7 +3,7 @@ import subprocess
 from os import getuid
 from pathlib import Path
 
-import src.hostsmate.logger as l
+import src.hostsmate.logger as logger
 
 
 class OSUtils:
@@ -29,15 +29,16 @@ class OSUtils:
 
     def __init__(self):
         self.ensure_root_privileges()
-        self.logger = l.HostsLogger().create_logger('Utils')
+        self.logger = logger.HostsLogger().create_logger('Utils')
 
     @staticmethod
     def ensure_root_privileges():
         """
-        Ensure that the application is running with root/administrator privileges. Exit if it is not.
+        Ensure that the application is running with root/administrator privileges.
+        Exit if it is not.
 
         Raises:
-        SystemExit: If the application is not running with root/administrator privileges.
+        SystemExit: If the application is not running with root privileges.
         """
         root: bool = getuid() == 0
         if not root:
@@ -49,8 +50,8 @@ class OSUtils:
         """
         Return the root directory of the project.
 
-        The root directory is defined as the parent directory of the directory containing
-        the module that this method is called from.
+        The root directory is defined as the parent directory of the directory
+        containing the module that this method is called from.
 
         Returns:
             pathlib.Path: The root directory of the project.
