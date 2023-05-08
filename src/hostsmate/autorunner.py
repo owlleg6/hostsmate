@@ -41,7 +41,7 @@ class Autorunner:
         done: bool = OSUtils().execute_sh_command_as_root(
             self.job_setter_sh_script_path, command)
         if done:
-            print('Autorunner has been set')
+            print('Autorunner has been set.')
             self.logger.info(f'Executed with 0 status code: '
                              f'{self.job_setter_sh_script_path}')
         else:
