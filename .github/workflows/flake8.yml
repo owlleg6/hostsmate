@@ -8,13 +8,13 @@ on:
         type: string
         required: false
         default: "3.11"
-  #workflow_dispatch:
-  #  inputs:
-  #    python_version:
-  #      description: 'Run with python version'
-  #      type: string
-  #      required: false
-  #      default: "3.11"
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: 'Run with python version'
+        type: string
+        required: false
+        default: "3.11"
 
 jobs:
   flake8:
