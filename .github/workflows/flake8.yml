@@ -23,6 +23,6 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: flake8
-        uses: owlleg6/hostsmate/.github/actions/action_flake8.yml@cicd/flake8-workflow
+        uses: owlleg6/hostsmate/.github/actions/flake8@cicd/flake8-workflow
         with:
           python_version: "3.11" #{{ input.python_version }}

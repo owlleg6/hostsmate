@@ -23,6 +23,6 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: pytest
-        uses: owlleg6/hostsmate/.github/actions/action_pytest.yml@cicd/flake8-workflow
+        uses: owlleg6/hostsmate/.github/actions/pytest@cicd/flake8-workflow
         with:
           python_version: "3.11" #{{ input.python_version }}
