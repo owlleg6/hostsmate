@@ -37,19 +37,22 @@ class Parser:
             predefined arguments.
         """
         parser = argparse.ArgumentParser(
-            description='Welcome to HostsMate! A system-wide ad blocker by '
-                        'Kravchenkoda. '
+            description='Welcome to HostsMate!'
                         'Protect yourself from malware, tracking, ads and spam.\n'
-                        'HostsMate blacklists 1.4 million+ domains from 44 sources '
-                        'that update regularly to keep your system safe.\n\n'
+                        'HostsMate blocks over 1.5 million domains from '
+                        'regularly updated sources to keep your system safe.\n'
+                        'Customize blacklist and whitelist sources, '
+                        'manually block or whitelist domains, suspend HostsMate '
+                        'if necessary.\n\n'
+                        'Developed by kravchenkoda\n'
                         'GitHub repository: https://github.com/kravchenkoda/hostsmate',
             formatter_class=argparse.RawDescriptionHelpFormatter
         )
         group = parser.add_mutually_exclusive_group()
 
         group.add_argument(
-            '-g',
-            '--go',
+            '-R',
+            '--run',
             action='store_true',
             help='Parse domains from blacklist sources and start the HostsMate.'
         )
@@ -93,14 +96,14 @@ class Parser:
             help='Whitelist specified domain.')
 
         group.add_argument(
-            '-y',
+            '-W',
             '--add-whitelist-source',
             metavar='[domain]',
             type=str,
             help='Add URL with whitelisted domains to whitelist sources.')
 
         group.add_argument(
-            '-u',
+            '-B',
             '--add-blacklist-source',
             metavar='[domain]',
             type=str,

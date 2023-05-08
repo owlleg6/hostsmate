@@ -10,7 +10,7 @@ from src.hostsmate.cli.parser import Parser
 def test_create_parser(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(
         sys, 'argv',
-        ['hostsmate_tests.py', '--go']
+        ['hostsmate_tests.py', '--run']
     )
     parser: argparse.ArgumentParser = Parser().parser
 
@@ -35,7 +35,7 @@ def test_help_if_no_args(monkeypatch: pytest.MonkeyPatch):
 def test_parse_single_arg(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(
         sys, 'argv',
-        ['hostsmate_tests.py', '--go']
+        ['hostsmate_tests.py', '--run']
     )
 
-    assert Parser().parse_single_arg() == ('go', True)
+    assert Parser().parse_single_arg() == ('run', True)
