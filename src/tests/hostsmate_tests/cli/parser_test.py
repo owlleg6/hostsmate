@@ -39,4 +39,3 @@ def test_parse_single_arg(monkeypatch: pytest.MonkeyPatch):
     )
 
     assert Parser().parse_single_arg() == ('go', True)
-
