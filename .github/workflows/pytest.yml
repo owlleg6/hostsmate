@@ -29,19 +29,9 @@ on:
         
 jobs:
 
-  pytest:
+  pytest-test:
 
     uses: owlleg6/hostsmate/.github/workflows/templates/setup.yml@cicd/flake8-workflow
     with:
       python_version: {{ env.python_version }}
 
-      steps:
-      - name: Analysing the code with Pytest
-        run: |
-          sudo pytest --cov=./ --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
