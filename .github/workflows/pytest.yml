@@ -1,10 +1,10 @@
-name: pytest-ci
+name: code-validation
 
 on:
   push: 
   pull_request:
     branches:
-      - master
+      - develop
     paths:
       - "src/tests/*"
   
