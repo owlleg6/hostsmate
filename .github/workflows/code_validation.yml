@@ -28,6 +28,7 @@ on:
 
 jobs:
   pytest:
+    runs-on: ubuntu-latest
     name: Run PyTest
     env:
       PYTHON_VERSION: "3.11"
@@ -36,6 +37,7 @@ jobs:
       python_version: "3.11" #${{ inputs.python_version || env.PYTHON_VERSION }}
 
   flake8:
+    runs-on: ubuntu-latest
     name: Run Flake8
     env:
       PYTHON_VERSION: "3.11"
