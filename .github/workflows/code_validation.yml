@@ -1,4 +1,4 @@
-name: code-validation
+name: Code Validation
 
 on:
   push:
