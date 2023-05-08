@@ -1,4 +1,4 @@
-name: flake8
+name: flake8-action
 description: "action that runs flake8"
 
 inputs:
@@ -10,12 +10,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-#    - uses: actions/checkout@v3
-
-    - name: Set up Python ${{ input.python_version }}
+    - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v3
       with:
-        python-version: ${{ input.python_version }}
+        python-version: ${{ inputs.python_version }}
 
     - name: Install dependencies
       shell: bash

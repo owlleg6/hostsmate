@@ -22,8 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: pytest
+      - name: pytest-action
         uses: owlleg6/hostsmate/.github/actions/pytest@cicd/flake8-workflow
         with:
-          python_version: "3.11" #{{ input.python_version }}
+          python_version: ${{ inputs.python_version }}
           codecov_token: ${{ secrets.CODECOV_TOKEN }}

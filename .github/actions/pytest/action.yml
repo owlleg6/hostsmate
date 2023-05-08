@@ -1,4 +1,4 @@
-name: pytest
+name: pytest-action
 description: "action that runs pytest"
 
 inputs:
@@ -12,9 +12,7 @@ inputs:
 
 runs:
   using: "composite"
-
   steps:
-
     - name: Set up Python ${{ inputs.python_version }}
       uses: actions/setup-python@v3
       with:

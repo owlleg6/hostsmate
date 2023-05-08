@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: flake8
+      - name: flake8-action
         uses: owlleg6/hostsmate/.github/actions/flake8@cicd/flake8-workflow
         with:
-          python_version: "3.11" #{{ input.python_version }}
+          python_version: ${{ inputs.python_version }}
