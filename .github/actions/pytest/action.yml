@@ -1,0 +1,21 @@
+name: pytest-action
+description: "action that runs pytest"
+
+inputs:
+  codecov_token:
+    description: 'Code Cov token stored in GitHub Secrets'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Analysing the code with Pytest
+      shell: bash
+      run: |
+        sudo pytest --cov=./ --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ inputs.codecov_token }}
+        file: ./coverage.xml

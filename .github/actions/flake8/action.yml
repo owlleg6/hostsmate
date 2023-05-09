@@ -1,0 +1,19 @@
+name: flake8-action
+description: "action that runs flake8"
+
+inputs:
+  python_version:
+    description: 'Run with python version'
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run flake8
+      shell: bash
+      run: >
+        sudo flake8 ./src/hostsmate ./src/utils
+        --max-complexity 10
+        --max-line-length 88
+        --benchmark -v
