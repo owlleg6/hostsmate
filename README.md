@@ -2,13 +2,13 @@
 [![PyTest](https://github.com/kravchenkoda/hostsmate/actions/workflows/pytest.yml/badge.svg)](https://github.com/kravchenkoda/hostsmate/actions/workflows/pytest.yml)
 # HostsMate
 
----
+
 Welcome to HostsMate! Protect yourself from malware, tracking, ads, and spam. HostsMate blocks over 1.5M domains from regularly updated sources to keep your system safe. Customize blacklist and whitelist sources, manually block or whitelist domains, suspend HostsMate if necessary.
 
 
 ## Installation
 
----
+
 To install `hostsmate`, you can use `pip`. Make sure to run the installation command with `sudo` to be able to further run `hostsmate` with `sudo`, which is required.
 
 ```bash
@@ -17,7 +17,7 @@ sudo pip install hostsmate
 
 ## How to use
 
----
+
 Make sure to use `sudo` when running `hostsmate` to ensure that it has the necessary permissions to modify your system's hosts file.
 
 
@@ -52,7 +52,7 @@ options:
 ```
 ## Usage details
 
----
+
 
 * `--blacklist-domain`  option saves the specified domain to `user's custom domains` section of the Hosts file.
 These domain names will be preserved when Hosts file gets updated.
@@ -73,10 +73,10 @@ Autorun frequency may be set to *daily*, *weekly* or *monthly*. Daily is recomme
                  
 ## Logs
 
----
+
 A log file is created for every date `hostsmate` ran in `<package-root>/logs` directory.
                                            
 ## License
 
----
+
 This project is licensed under the terms of the [MIT License](https://github.com/kravchenkoda/hostsmate/blob/master/LICENSE).
