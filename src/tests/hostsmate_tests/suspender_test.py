@@ -1,5 +1,5 @@
 import pytest
-from src.hostsmate.suspender import Suspender
+from hostsmate_src.suspender import Suspender
 
 
 @pytest.fixture

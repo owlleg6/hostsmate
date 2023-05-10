@@ -5,12 +5,12 @@ from logging import Logger
 from pathlib import Path
 from datetime import date, datetime
 
-from src.hostsmate.domains_extractor import DomainsExtractor
-from src.hostsmate.logger import HostsLogger
-from src.hostsmate.sources.blacklist_sources import BlacklistSources
-from src.hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
-from src.utils.os_utils import OSUtils
-from src.utils.str_utils import StringUtils
+from hostsmate_src.domains_extractor import DomainsExtractor
+from hostsmate_src.logger import HostsLogger
+from hostsmate_src.sources.blacklist_sources import BlacklistSources
+from hostsmate_src.unique_blacklisted_domains import UniqueBlacklistedDomains
+from utils.os_utils import OSUtils
+from utils.str_utils import StringUtils
 
 
 class SystemHostsFile:

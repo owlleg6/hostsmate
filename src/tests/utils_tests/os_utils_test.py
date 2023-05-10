@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from src.utils.os_utils import OSUtils
+from utils.os_utils import OSUtils
 
 Fixture = Union
 

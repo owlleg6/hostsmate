@@ -2,7 +2,7 @@ import datetime
 import logging
 from pathlib import Path
 
-import src.utils.os_utils as utils
+import utils.os_utils as utils
 
 
 class HostsLogger:

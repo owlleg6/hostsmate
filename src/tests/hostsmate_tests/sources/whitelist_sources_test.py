@@ -1,8 +1,8 @@
 import pytest
 from typing import Union
 
-from src.hostsmate.sources.sources import Sources
-from src.hostsmate.sources.whitelist_sources import WhitelistSources
+from hostsmate_src.sources.sources import Sources
+from hostsmate_src.sources.whitelist_sources import WhitelistSources
 
 Fixture = Union
 

@@ -5,9 +5,9 @@ from typing import Union
 import pytest
 from freezegun import freeze_time
 
-from src.utils.str_utils import StringUtils
-from src.hostsmate.system_hosts_file import SystemHostsFile
-from src.hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
+from utils.str_utils import StringUtils
+from hostsmate_src.system_hosts_file import SystemHostsFile
+from hostsmate_src.unique_blacklisted_domains import UniqueBlacklistedDomains
 
 Fixture = Union
 unix_like_hosts_path: Path = Path('/etc/hosts')

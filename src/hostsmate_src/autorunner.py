@@ -2,9 +2,9 @@ import sys
 from pathlib import Path
 from logging import Logger
 
-from src.hostsmate.cli.prompt import Prompt
-from src.utils.os_utils import OSUtils
-from src.hostsmate.logger import HostsLogger
+from hostsmate_src.cli.prompt import Prompt
+from utils.os_utils import OSUtils
+from hostsmate_src.logger import HostsLogger
 
 
 class Autorunner:

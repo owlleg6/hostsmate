@@ -1,9 +1,9 @@
 from pathlib import Path
 from logging import Logger
 
-from src.hostsmate.sources.sources import Sources
-from src.utils.os_utils import OSUtils
-from src.hostsmate.logger import HostsLogger
+from hostsmate_src.sources.sources import Sources
+from utils.os_utils import OSUtils
+from hostsmate_src.logger import HostsLogger
 
 
 class BlacklistSources(Sources):

@@ -1,8 +1,8 @@
 from pathlib import Path
 from logging import Logger
 
-from src.hostsmate.logger import HostsLogger
-from src.hostsmate.system_hosts_file import SystemHostsFile
+from hostsmate_src.logger import HostsLogger
+from hostsmate_src.system_hosts_file import SystemHostsFile
 
 
 class Suspender:

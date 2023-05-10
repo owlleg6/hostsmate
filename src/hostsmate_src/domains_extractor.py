@@ -2,9 +2,9 @@ from logging import Logger
 import re
 from pathlib import Path
 
-from src.hostsmate.sources.whitelist_sources import WhitelistSources
-from src.hostsmate.logger import HostsLogger
-from src.hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
+from hostsmate_src.sources.whitelist_sources import WhitelistSources
+from hostsmate_src.logger import HostsLogger
+from hostsmate_src.unique_blacklisted_domains import UniqueBlacklistedDomains
 
 
 class DomainsExtractor:

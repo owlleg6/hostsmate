@@ -4,8 +4,8 @@ import uuid
 
 import pytest
 
-from src.hostsmate.domains_extractor import DomainsExtractor
-from src.hostsmate.unique_blacklisted_domains import UniqueBlacklistedDomains
+from hostsmate_src.domains_extractor import DomainsExtractor
+from hostsmate_src.unique_blacklisted_domains import UniqueBlacklistedDomains
 
 
 @pytest.fixture
@@ -99,7 +99,7 @@ def test_extract_domain_from_line(
 
 def test_extract_domain_to_unique_domains_set(dom_extr_instance):
     with patch(
-            'src.hostsmate.domains_extractor.WhitelistSources.'
+            'hostsmate_src.sources.whitelist_sources.WhitelistSources.'
             'get_lines_of_all_sources_contents'
     ) as mock_whitelist:
         mock_whitelist.return_value = {'whitelisted.net\n', 'whitelisted.org\n'}

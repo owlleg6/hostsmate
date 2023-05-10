@@ -1,7 +1,7 @@
 import pytest
 from typing import Union
 
-from src.hostsmate.cli.prompt import Prompt
+from hostsmate_src.cli.prompt import Prompt
 
 Fixture = Union
 

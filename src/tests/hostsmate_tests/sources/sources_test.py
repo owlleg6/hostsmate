@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import responses
 
-from src.hostsmate.sources.sources import Sources
+from hostsmate_src.sources.sources import Sources
 
 Fixture = Union
 

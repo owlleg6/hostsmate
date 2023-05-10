@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock
 from json import JSONDecodeError
 
-from src.hostsmate.cli.cli_method_executor import CLIMethodExecutor
+from hostsmate_src.cli.cli_method_executor import CLIMethodExecutor
 
 
 method_mock: Mock = Mock()

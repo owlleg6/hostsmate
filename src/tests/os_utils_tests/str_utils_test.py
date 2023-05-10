@@ -1,4 +1,4 @@
-from src.utils.str_utils import StringUtils
+from utils.str_utils import StringUtils
 import pytest
 
 

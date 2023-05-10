@@ -6,7 +6,7 @@ from pathlib import Path
 
 from requests import get, Response, RequestException
 
-from src.hostsmate.logger import HostsLogger
+from hostsmate_src.logger import HostsLogger
 
 
 class Sources(ABC):

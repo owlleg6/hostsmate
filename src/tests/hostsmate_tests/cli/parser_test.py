@@ -4,7 +4,7 @@ from argparse import RawDescriptionHelpFormatter
 
 import pytest
 
-from src.hostsmate.cli.parser import Parser
+from hostsmate_src.cli.parser import Parser
 
 
 def test_create_parser(monkeypatch: pytest.MonkeyPatch):

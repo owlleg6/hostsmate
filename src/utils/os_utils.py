@@ -3,7 +3,7 @@ import subprocess
 from os import getuid
 from pathlib import Path
 
-import src.hostsmate.logger as logger
+from hostsmate_src import logger as logger
 
 
 class OSUtils:

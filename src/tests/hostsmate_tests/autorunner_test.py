@@ -1,9 +1,9 @@
 import pytest
 from typing import Union
 
-from src.hostsmate.autorunner import Autorunner
-from src.hostsmate.cli.prompt import Prompt
-from src.utils.os_utils import OSUtils
+from hostsmate_src.autorunner import Autorunner
+from hostsmate_src.cli.prompt import Prompt
+from utils.os_utils import OSUtils
 
 Fixture = Union
 

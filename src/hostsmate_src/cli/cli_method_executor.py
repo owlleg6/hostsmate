@@ -2,12 +2,12 @@ from typing import Callable
 from logging import Logger
 from json import JSONDecodeError
 
-from src.hostsmate.autorunner import Autorunner
-from src.hostsmate.suspender import Suspender
-from src.hostsmate.logger import HostsLogger
-from src.hostsmate.system_hosts_file import SystemHostsFile
-from src.hostsmate.sources.whitelist_sources import WhitelistSources
-from src.hostsmate.sources.blacklist_sources import BlacklistSources
+from hostsmate_src.autorunner import Autorunner
+from hostsmate_src.suspender import Suspender
+from hostsmate_src.logger import HostsLogger
+from hostsmate_src.system_hosts_file import SystemHostsFile
+from hostsmate_src.sources.whitelist_sources import WhitelistSources
+from hostsmate_src.sources.blacklist_sources import BlacklistSources
 
 
 class CLIMethodExecutor:
@@ -28,7 +28,7 @@ class CLIMethodExecutor:
         self.logger: Logger = HostsLogger().create_logger(__class__.__name__)
 
     flag_method_map: dict[str, Callable] = {
-        'go': SystemHostsFile().update_with_new_domains,
+        'run': SystemHostsFile().update_with_new_domains,
         'autorun': Autorunner().set_up_anacron_job,
         'backup': SystemHostsFile().create_backup,
         'suspend': Suspender().suspend,
