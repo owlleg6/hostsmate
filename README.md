@@ -27,7 +27,7 @@ Start `hostsmate` with `sudo hostsmate --run`.
 
 ```
 usage: hostsmate [-h] [-R | -a | -s | -r | -b [backup-path] | -x [domain] |
- -w [domain] | -W [domain] | -B [domain] | -i [domain] | -o [domain]]
+ -w [domain] | -W [url] | -B [url] | -i [url] | -o [url]]
 
 options:
   -h, --help            show this help message and exit
