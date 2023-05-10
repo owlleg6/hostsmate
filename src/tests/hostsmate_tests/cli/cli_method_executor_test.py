@@ -36,7 +36,7 @@ def dummy_flag_method_map_setup(
 
 def test_all_cli_options_present_in_args_map():
     available_cli_options: list[str] = [
-        'go',
+        'run',
         'autorun',
         'backup',
         'suspend',
