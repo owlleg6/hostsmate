@@ -18,7 +18,7 @@ sudo pip install hostsmate
 ## How to use
 
 
-Make sure to use `sudo` when running `hostsmate` to ensure that it has the necessary permissions to modify your system's hosts file.
+Always use `sudo` when running `hostsmate` to ensure that it has the necessary permissions to modify your system's hosts file.
 
 
 Start `hostsmate` with `sudo hostsmate --run`.
