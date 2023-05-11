@@ -4,6 +4,10 @@ from urllib.parse import urlparse
 class StringUtils:
     """
     A utility class that provides static methods for manipulating strings.
+
+    Methods:
+        strip_domain_prefix(url: str) -> str
+        sep_num_with_commas(number: int) -> str:
     """
 
     @staticmethod
@@ -30,7 +34,7 @@ class StringUtils:
             return url
 
     @staticmethod
-    def sep_num_with_commas(number: int):
+    def sep_num_with_commas(number: int) -> str:
         """
         Given an integer, return a string representation of the integer with
         commas separating each group of three digits.
