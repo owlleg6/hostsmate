@@ -68,7 +68,8 @@ class SystemHostsFile:
 
     def _get_user_custom_domains(self) -> set[str]:
         """
-        Extracts user's custom domains from the Hosts file.
+        Extract user's custom domains from the user's custom domains
+        Hosts file section.
 
         Returns:
             A set of strings representing user's custom domains.
@@ -133,6 +134,9 @@ class SystemHostsFile:
 
         Args:
             backup_path (str| Path): Path to the backup directory
+
+        Returns:
+            A Path object representing an absolute path to the backup file.
         """
         backup_path = Path(backup_path) / f'hosts_backup' \
                                           f'{datetime.now().strftime("%d_%m_%Y")}'
@@ -145,7 +149,7 @@ class SystemHostsFile:
         return backup_path
 
     def _get_header(self) -> str:
-        """Adds a header to the hosts file using the template file located at
+        """Add a header to the hosts file using the template file located at
         self.__header_path.
 
         Returns:

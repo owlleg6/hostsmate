@@ -13,6 +13,10 @@ class Suspender:
     Attributes:
         org_hosts_name (Path): a path to the system's Hosts file.
         renamed_hosts (Path): a path the renamed system's Hosts file (with tilda).
+
+    Methods:
+        suspend() -> None
+        resume() -> None
     """
 
     org_hosts_name: Path = SystemHostsFile().original_path
