@@ -1,6 +1,5 @@
 import pathlib
 import subprocess
-from os import getuid
 from pathlib import Path
 
 from hostsmate_src import logger as logger
@@ -11,9 +10,6 @@ class OSUtils:
     This class contains utility methods for operating system-related tasks.
 
     Methods:
-        ensure_root_privileges() -> None: Ensure that the application is running
-        with root privileges. Exit if it is not.
-
         get_project_root() -> Path: Return the root directory of the project.
 
         ensure_linux_or_bsd(platform: str) -> Bool: Ensure that the application
@@ -28,22 +24,7 @@ class OSUtils:
    """
 
     def __init__(self):
-        self.ensure_root_privileges()
         self.logger = logger.HostsLogger().create_logger('Utils')
-
-    @staticmethod
-    def ensure_root_privileges():
-        """
-        Ensure that the application is running with root/administrator privileges.
-        Exit if it is not.
-
-        Raises:
-        SystemExit: If the application is not running with root privileges.
-        """
-        root: bool = getuid() == 0
-        if not root:
-            raise SystemExit('Please run the application as a '
-                             'root/administrator to continue.')
 
     @staticmethod
     def get_project_root() -> pathlib.Path:
