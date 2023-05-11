@@ -3,7 +3,9 @@
 # HostsMate
 
 
-Welcome to HostsMate! Protect yourself from malware, tracking, ads, and spam. HostsMate blocks over 1.5M domains from regularly updated sources to keep your system safe. Customize blacklist and whitelist sources, manually block or whitelist domains, suspend HostsMate if necessary.
+Welcome to HostsMate! A CLI tool for Unix-like operating systems that works with /etc/hosts file.
+
+Protect yourself from malware, tracking, ads, and spam. HostsMate blocks over 1.5M domains from regularly updated sources to keep your system safe. Customize blacklist and whitelist sources, manually block or whitelist domains, suspend HostsMate if necessary.
 
 
 ## Installation
@@ -13,6 +15,12 @@ To install `hostsmate`, you can use `pip`. Make sure to run the installation com
 
 ```bash
 sudo pip install hostsmate
+```
+
+To run tests as well, install `hostsmate` with dev dependencies:
+
+```bash
+sudo pip install hostsmate[dev]
 ```
 
 ## How to use
