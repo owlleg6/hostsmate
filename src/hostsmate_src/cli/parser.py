@@ -11,6 +11,18 @@ class Parser:
 
     It uses argparse module to define a set of cli options,
     parse arguments given to the application and run corresponding methods.
+
+    Attributes:
+        logger (logging.Logger)
+        parser (argparse.ArgumentParser): An ArgumentParser object with the
+            predefined arguments.
+        args_ (dict[str, str | bool]): parsed arguments and their values.
+
+    Methods:
+        create_parser() -> argparse.ArgumentParser
+        help_if_no_args() -> None: print help message if no arguments were provided.
+        parse_single_arg() -> tuple[str, str | bool]: parse a single argument
+        and its value provided by the user.
     """
 
     def __init__(self):
@@ -26,11 +38,8 @@ class Parser:
 
     def create_parser(self) -> argparse.ArgumentParser:
         """
-        Creates an ArgumentParser object with predefined arguments for the
-        command-line user interface. The predefined arguments include options
-        to start, suspend, or resume the adblocker, create a backup of the
-        existing Hosts file, blacklist or whitelist specified domains, and set
-        up automatic updates for the Hosts file.
+        Create an ArgumentParser object with predefined arguments for the
+        command-line user interface.
 
         Returns:
             argparse.ArgumentParser: An ArgumentParser object with the
