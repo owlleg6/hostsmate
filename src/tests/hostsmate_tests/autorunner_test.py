@@ -9,7 +9,7 @@ Fixture = Union
 
 
 def test_correct_hostsmate_app_path():
-    assert Autorunner.hostsmate_app.name == 'hostsmate.py'
+    assert Autorunner.hostsmate_executable.name == 'execute.py'
 
 
 def test_correct_shell_script_path():
