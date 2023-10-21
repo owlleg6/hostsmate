@@ -2,8 +2,6 @@ import datetime
 import logging
 from pathlib import Path
 
-import utils.os_utils as utils
-
 
 class HostsLogger:
     """
@@ -56,7 +54,7 @@ class HostsLogger:
         Returns:
             Path: The path to the logs directory.
         """
-        logs_dir: Path = utils.OSUtils.get_project_root() / 'logs'
+        logs_dir: Path = Path('/var/log/hostsmate')
 
         if not logs_dir.exists():
             logs_dir.mkdir()
