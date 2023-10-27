@@ -63,74 +63,74 @@ class Parser:
             '-R',
             '--run',
             action='store_true',
-            help='Parse domains from blacklist sources and start the HostsMate.'
+            help='parse domains from blacklist sources and update the hosts file'
         )
         group.add_argument(
             '-a',
             '--autorun',
             action='store_true',
-            help='Setup automatic update of your Hosts file (Linux and FreeBSD only).'
+            help='setup automatic update of your Hosts file (Linux and FreeBSD only)'
         )
         group.add_argument(
             '-s',
             '--suspend',
             action='store_true',
-            help="Suspend HostsMate. Don't forget to turn it back!")
+            help="suspend Hostsmate")
         group.add_argument(
             '-r',
             '--resume',
             action='store_true',
-            help='Resume HostsMate after suspension.'
+            help='resume Hostsmate'
         )
         group.add_argument(
             '-b',
             '--backup',
             type=str,
-            metavar='[backup-path]',
-            help='Create a backup of the existing Hosts '
-                 'file in the specific folder.'
+            metavar='[backup-dir]',
+            help='create a backup of the existing Hosts '
+                 'file in the specific directory'
         )
         group.add_argument(
             '-x',
             '--blacklist-domain',
             type=str,
             metavar='[domain]',
-            help='Blacklist specified domain.'
+            help='blacklist specified domain'
         )
         group.add_argument(
             '-w',
             '--whitelist-domain',
             metavar='[domain]',
             type=str,
-            help='Whitelist specified domain.')
+            help='whitelist specified domain')
 
         group.add_argument(
             '-W',
             '--add-whitelist-source',
             metavar='[url]',
             type=str,
-            help='Add URL with whitelisted domains to whitelist sources.')
+            help='add URL with whitelisted domains to whitelist sources')
 
         group.add_argument(
             '-B',
             '--add-blacklist-source',
             metavar='[url]',
             type=str,
-            help='Add URL with blacklisted domains to blakclist sources.')
+            help='add URL with blacklisted domains to blacklist sources')
 
         group.add_argument(
             '-i',
             '--remove-whitelist-source',
             metavar='[url]',
             type=str,
-            help='Remove URL with whitelisted domains from whitelist sources.')
+            help='remove URL with whitelisted domains from whitelist sources')
 
         group.add_argument(
             '-o',
             '--remove-blacklist-source',
             metavar='[url]',
             type=str,
-            help='Remove URL with blacklisted domains from blacklist sources.')
+            help='remove URL with blacklisted domains from blacklist sources')
 
         self.logger.info('argparse.ArgumentParser instance created.')
         return parser
