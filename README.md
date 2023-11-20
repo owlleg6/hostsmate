@@ -39,31 +39,31 @@ usage: hostsmate [-h] [-R | -a | -s | -r | -b [backup-path] | -x [domain] |
 
 options:
   -h, --help            show this help message and exit
-  -R, --run             Parse domains from blacklist sources and start the HostsMate.
-  -a, --autorun         Setup automatic update of your Hosts file (Linux and FreeBSD only).
-  -s, --suspend         Suspend HostsMate. Don't forget to turn it back!
-  -r, --resume          Resume HostsMate after suspension.
-  -b [backup-path], --backup [backup-path]
-                        Create a backup of the existing Hosts file in the specific folder.
+  -R, --run             parse domains from blacklist sources and start the HostsMate
+  -a, --autorun         setup automatic update of your Hosts file (Linux and FreeBSD only)
+  -s, --suspend         suspend HostsMate
+  -r, --resume          resume HostsMate.
+  -b [backup-dir], --backup [backup-dir]
+                        create a backup of the existing Hosts file in the specific directory
   -x [domain], --blacklist-domain [domain]
-                        Blacklist specified domain.
+                        blacklist specified domain
   -w [domain], --whitelist-domain [domain]
-                        Whitelist specified domain.
+                        whitelist specified domain
   -W [url], --add-whitelist-source [url]
-                        Add URL with whitelisted domains to whitelist sources.
+                        add URL with whitelisted domains to whitelist sources
   -B [url], --add-blacklist-source [url]
-                        Add URL with blacklisted domains to blakclist sources.
+                        add URL with blacklisted domains to blakclist sources
   -i [url], --remove-whitelist-source [url]
-                        Remove URL with whitelisted domains from whitelist sources.
+                        remove URL with whitelisted domains from whitelist sources
   -o [url], --remove-blacklist-source [url]
-                        Remove URL with blacklisted domains from blacklist sources.
+                        remove URL with blacklisted domains from blacklist sources
 ```
 ## Usage details
 
 
 
 * `--blacklist-domain`  option saves the specified domain to `user's custom domains` section of the Hosts file.
-These domain names will be preserved when Hosts file gets updated.
+These domain names will be preserved when the Hosts file is updated.
             
 
 * Using `--add-blacklist-source` and `--add-whitelist-source` options you can add URL containing a list of domains, 
@@ -82,8 +82,8 @@ Autorun frequency may be set to *daily*, *weekly* or *monthly*. Daily is recomme
 ## Logs
 
 
-A log file is created for every date `hostsmate` ran in `<package-root>/logs` directory.
-                                           
+A log file is created for every date `hostsmate` ran in `/var/logs/hostsmate` directory.
+
 ## License
 
 
