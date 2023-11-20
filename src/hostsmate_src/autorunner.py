@@ -40,7 +40,7 @@ class Autorunner:
             False otherwise.
         """
         command: list[str] = \
-            [autorun_frequency, f'hostsmate --run']
+            [autorun_frequency, 'hostsmate --run']
         done: bool = OSUtils().execute_sh_command_as_root(
             self.job_setter_sh_script_path, command)
         if done:
