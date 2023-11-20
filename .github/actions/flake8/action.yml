@@ -13,7 +13,7 @@ runs:
     - name: Run flake8
       shell: bash
       run: >
-        sudo flake8 ./src/hostsmate ./src/utils
+        sudo flake8 ./src/hostsmate_src ./src/utils
         --max-complexity 10
         --max-line-length 88
         --benchmark -v
